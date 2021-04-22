@@ -1,0 +1,3 @@
+include ':media'
+include ':sample'
+rootProject.name = "ModernStorage"
