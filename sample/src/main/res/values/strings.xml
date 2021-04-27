@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">ModernStorage Sample</string>
+    <string name="demo_mediastore">MediaStore</string>
+
+    <string name="mediastore_type_label">Type</string>
+    <string name="mediastore_source_label">Source</string>
+    <string name="mediastore_add_media_label">Add media</string>
+    <string name="mediastore_type_image">Image</string>
+    <string name="mediastore_type_video">Video</string>
+    <string name="mediastore_source_internet">Internet</string>
+    <string name="mediastore_source_camera">Camera</string>
 </resources>

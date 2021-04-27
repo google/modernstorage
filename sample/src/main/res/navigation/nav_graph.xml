@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mediaStoreFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.google.modernstorage.sample.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment_to_mediaStoreFragment"
+            app:destination="@id/mediaStoreFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/mediaStoreFragment"
+        android:name="com.google.modernstorage.sample.mediastore.MediaStoreFragment"
+        android:label="MediaStoreFragment" />
+</navigation>
