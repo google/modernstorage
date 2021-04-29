@@ -1,11 +1,14 @@
 package com.google.modernstorage.sample.mediastore
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.google.modernstorage.media.CustomTakeVideo
+import com.google.modernstorage.media.CustomTakePicture
 import com.google.modernstorage.sample.R
 import com.google.modernstorage.sample.databinding.FragmentMediastoreBinding
 
@@ -61,8 +64,11 @@ class MediaStoreFragment : Fragment() {
         binding.addMedia.isEnabled = false
 
         when (type) {
-            MediaType.IMAGE -> viewModel.saveRandomImageFromInternet {
-                binding.addMedia.isEnabled = true
+            MediaType.IMAGE -> {
+
+                viewModel.saveRandomImageFromInternet {
+                    binding.addMedia.isEnabled = true
+                }
             }
             MediaType.VIDEO -> viewModel.saveRandomVideoFromInternet {
                 binding.addMedia.isEnabled = true
@@ -71,6 +77,40 @@ class MediaStoreFragment : Fragment() {
     }
 
     private fun captureMedia(type: MediaType) {
+        binding.addMedia.isEnabled = false
 
+        viewModel.createMediaUriForCamera(type) { uri ->
+            when (type) {
+                MediaType.IMAGE -> actionTakeImage.launch(uri)
+                MediaType.VIDEO -> actionTakeVideo.launch(uri)
+            }
+        }
+    }
+
+    private val actionTakeImage = registerForActivityResult(CustomTakePicture()) { success ->
+        if (!success) {
+            Log.e(tag, "Image taken FAIL")
+            return@registerForActivityResult
+        }
+
+        Log.d(tag, "Image taken SUCCESS")
+
+        if(viewModel.temporaryCameraImageUri == null) {
+            Log.e(tag, "Can't find previously saved temporary Camera Image URI")
+        } else {
+            viewModel.setCurrentMedia(viewModel.temporaryCameraImageUri!!)
+            viewModel.clearTemporaryCameraImageUri()
+        }
+
+    }
+
+    private val actionTakeVideo = registerForActivityResult(CustomTakeVideo()) { uri ->
+        if (uri == null) {
+            Log.e(tag, "Video taken FAIL")
+            return@registerForActivityResult
+        }
+
+        Log.d(tag, "Video taken SUCCESS")
+        viewModel.setCurrentMedia(uri)
     }
 }
