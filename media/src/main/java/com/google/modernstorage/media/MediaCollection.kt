@@ -5,7 +5,6 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 
-
 fun getImageCollection(location: StorageLocation): Uri? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         getImageCollectionApi29(location)
@@ -21,7 +20,6 @@ private fun getImageCollectionApi29(location: StorageLocation): Uri? {
         SharedPrimary -> MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
     }
 }
-
 
 private fun getImageCollectionApi21(location: StorageLocation): Uri? {
     return when(location) {
@@ -47,7 +45,6 @@ private fun getVideoCollectionApi29(location: StorageLocation): Uri? {
         SharedPrimary -> MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
     }
 }
-
 
 private fun getVideoCollectionApi21(location: StorageLocation): Uri? {
     return when(location) {

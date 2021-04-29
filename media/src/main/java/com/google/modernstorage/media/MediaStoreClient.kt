@@ -3,7 +3,6 @@ package com.google.modernstorage.media
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.provider.MediaStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -13,10 +12,9 @@ val UnaccessibleCollectionException = Exception("Collection URI could not be use
 val UriNotCreatedException = Exception("URI could not be created")
 val UnopenableOutputStreamException = Exception("Output stream could not be opened")
 
-// TODO: Handle Bitmap input
-// TODO: Handle ByteArray input
-
 class MediaStoreClient(private val context: Context) {
+    suspend fun getResourceByUri(uri: Uri) = getMediaResourceById(context, uri)
+
     suspend fun createImageUri(filename: String, location: StorageLocation): Uri? {
         return withContext(Dispatchers.IO) {
             val entry = ContentValues().apply {
@@ -24,24 +22,11 @@ class MediaStoreClient(private val context: Context) {
             }
 
             val collection = getImageCollection(location) ?: throw UnaccessibleCollectionException
-
             return@withContext context.contentResolver.insert(collection, entry)
         }
     }
 
     suspend fun addImageFromStream(
-        filename: String,
-        inputStream: InputStream,
-        location: StorageLocation
-    ) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            addImageFromStreamApi21(filename, inputStream, location)
-        } else {
-            addImageFromStreamApi21(filename, inputStream, location)
-        }
-    }
-
-    private suspend fun addImageFromStreamApi21(
         filename: String,
         inputStream: InputStream,
         location: StorageLocation
@@ -70,24 +55,11 @@ class MediaStoreClient(private val context: Context) {
             }
 
             val collection = getVideoCollection(location) ?: throw UnaccessibleCollectionException
-
             return@withContext context.contentResolver.insert(collection, entry)
         }
     }
 
     suspend fun addVideoFromStream(
-        filename: String,
-        inputStream: InputStream,
-        location: StorageLocation
-    ) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            addVideoFromStreamApi21(filename, inputStream, location)
-        } else {
-            addVideoFromStreamApi21(filename, inputStream, location)
-        }
-    }
-
-    private suspend fun addVideoFromStreamApi21(
         filename: String,
         inputStream: InputStream,
         location: StorageLocation

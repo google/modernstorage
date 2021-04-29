@@ -1,58 +1,36 @@
 package com.google.modernstorage.media
 
-import android.content.Context
-import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
-import android.util.Size
 
-interface MediaResource {
-    val uri: Uri
-    val filename: String
-    val size: Long
+data class MediaResource(
+    val uri: Uri,
+    val filename: String,
+    val size: Long,
+    val type: MediaType,
+    val mimeType: String,
+)
 
-    fun getThumbnail(context: Context): Bitmap?
-}
+enum class MediaType(val value: Int) {
+    NONE(0),
+    IMAGE(1),
+    AUDIO(2),
+    VIDEO(3),
+    PLAYLIST(4),
+    SUBTITLE(5),
+    DOCUMENT(6);
 
-private val MINI_KIND = Size(512, 384)
-
-data class ImageResource(
-    override val uri: Uri,
-    override val filename: String,
-    override val size: Long
-) : MediaResource {
-
-    override fun getThumbnail(context: Context): Bitmap? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            context.contentResolver.loadThumbnail(uri, MINI_KIND, null)
-        } else {
-            MediaStore.Images.Thumbnails.getThumbnail(
-                context.contentResolver,
-                uri.lastPathSegment!!.toLong(),
-                MediaStore.Images.Thumbnails.MINI_KIND,
-                null
-            )
-        }
-    }
-}
-
-data class VideoResource(
-    override val uri: Uri,
-    override val filename: String,
-    override val size: Long
-) : MediaResource {
-
-    override fun getThumbnail(context: Context): Bitmap? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            context.contentResolver.loadThumbnail(uri, MINI_KIND, null)
-        } else {
-            MediaStore.Video.Thumbnails.getThumbnail(
-                context.contentResolver,
-                uri.lastPathSegment!!.toLong(),
-                MediaStore.Video.Thumbnails.MINI_KIND,
-                null
-            )
+    companion object {
+        fun getEnum(value: Int): MediaType {
+            return when (value) {
+                0 -> NONE
+                1 -> IMAGE
+                2 -> AUDIO
+                3 -> VIDEO
+                4 -> PLAYLIST
+                5 -> SUBTITLE
+                6 -> DOCUMENT
+                else -> throw Exception("Unknown MediaStoreType value")
+            }
         }
     }
 }
