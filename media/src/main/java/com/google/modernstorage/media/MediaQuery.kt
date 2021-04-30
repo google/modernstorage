@@ -10,7 +10,7 @@ suspend fun getMediaResourceById(context: Context, mediaUri: Uri): MediaResource
     val projection = arrayOf(
         FileColumns.DISPLAY_NAME,
         FileColumns.SIZE,
-        FileColumns.MEDIA_TYPE,
+//        FileColumns.MEDIA_TYPE,
         FileColumns.MIME_TYPE,
     )
 
@@ -30,14 +30,15 @@ suspend fun getMediaResourceById(context: Context, mediaUri: Uri): MediaResource
 
             val displayNameColumn = cursor.getColumnIndexOrThrow(FileColumns.DISPLAY_NAME)
             val sizeColumn = cursor.getColumnIndexOrThrow(FileColumns.SIZE)
-            val mediaTypeColumn = cursor.getColumnIndexOrThrow(FileColumns.MEDIA_TYPE)
+//            val mediaTypeColumn = cursor.getColumnIndexOrThrow(FileColumns.MEDIA_TYPE)
             val mimeTypeColumn = cursor.getColumnIndexOrThrow(FileColumns.MIME_TYPE)
 
             return@withContext MediaResource(
                 uri = mediaUri,
                 filename = cursor.getString(displayNameColumn),
                 size = cursor.getLong(sizeColumn),
-                type = MediaType.getEnum(cursor.getInt(mediaTypeColumn)),
+//                type = MediaType.getEnum(cursor.getInt(mediaTypeColumn)),
+                type = MediaType.IMAGE,
                 mimeType = cursor.getString(mimeTypeColumn),
             )
         }

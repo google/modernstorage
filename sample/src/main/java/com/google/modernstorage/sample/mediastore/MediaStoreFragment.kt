@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import com.google.modernstorage.media.CustomTakeVideo
 import com.google.modernstorage.media.CustomTakePicture
 import com.google.modernstorage.sample.R
@@ -41,6 +42,16 @@ class MediaStoreFragment : Fragment() {
             }
         }
 
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.addMedia.isEnabled = !isLoading
+        }
+
+        viewModel.currentMedia.observe(viewLifecycleOwner) { currentMedia ->
+            currentMedia ?: return@observe
+
+            binding.details.text = currentMedia.toString()
+        }
+
         return binding.root
     }
 
@@ -61,23 +72,25 @@ class MediaStoreFragment : Fragment() {
     }
 
     private fun downloadMedia(type: MediaType) {
-        binding.addMedia.isEnabled = false
+        viewModel.setLoadingStatus(true)
 
         when (type) {
             MediaType.IMAGE -> {
 
-                viewModel.saveRandomImageFromInternet {
-                    binding.addMedia.isEnabled = true
+                viewModel.saveRandomImageFromInternet { imageUri ->
+                    viewModel.setLoadingStatus(false)
+                    viewModel.setCurrentMedia(imageUri)
                 }
             }
-            MediaType.VIDEO -> viewModel.saveRandomVideoFromInternet {
-                binding.addMedia.isEnabled = true
+            MediaType.VIDEO -> viewModel.saveRandomVideoFromInternet { videoUri ->
+                viewModel.setLoadingStatus(false)
+                viewModel.setCurrentMedia(videoUri)
             }
         }
     }
 
     private fun captureMedia(type: MediaType) {
-        binding.addMedia.isEnabled = false
+        viewModel.setLoadingStatus(true)
 
         viewModel.createMediaUriForCamera(type) { uri ->
             when (type) {
@@ -88,6 +101,8 @@ class MediaStoreFragment : Fragment() {
     }
 
     private val actionTakeImage = registerForActivityResult(CustomTakePicture()) { success ->
+        viewModel.setLoadingStatus(false)
+
         if (!success) {
             Log.e(tag, "Image taken FAIL")
             return@registerForActivityResult
@@ -105,6 +120,8 @@ class MediaStoreFragment : Fragment() {
     }
 
     private val actionTakeVideo = registerForActivityResult(CustomTakeVideo()) { uri ->
+        viewModel.setLoadingStatus(false)
+
         if (uri == null) {
             Log.e(tag, "Video taken FAIL")
             return@registerForActivityResult

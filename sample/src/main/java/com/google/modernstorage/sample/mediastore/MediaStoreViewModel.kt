@@ -2,10 +2,7 @@ package com.google.modernstorage.sample.mediastore
 
 import android.app.Application
 import android.net.Uri
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.google.modernstorage.media.MediaResource
 import com.google.modernstorage.media.MediaStoreClient
 import com.google.modernstorage.media.SharedPrimary
@@ -19,15 +16,24 @@ class MediaStoreViewModel(
     application: Application,
     private val savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application) {
+    private val httpClient by lazy { OkHttpClient() }
     private val mediaStore: MediaStoreClient by lazy { MediaStoreClient(application) }
 
-    private val httpClient by lazy { OkHttpClient() }
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
 
+    fun setLoadingStatus(isLoading: Boolean) {
+        _isLoading.value = isLoading
+    }
+
+    val _currentMedia: LiveData<MediaResource?> = MutableLiveData(null)
     val currentMedia: LiveData<MediaResource?> = savedStateHandle.getLiveData<MediaResource?>("currentMedia")
 
     fun setCurrentMedia(uri: Uri) {
         viewModelScope.launch {
-            savedStateHandle.set("currentMedia", mediaStore.getResourceByUri(uri))
+            mediaStore.getResourceByUri(uri)?.let {
+                savedStateHandle.set("currentMediaUri", uri)
+            }
         }
     }
 
@@ -42,7 +48,7 @@ class MediaStoreViewModel(
         savedStateHandle.remove<Uri>("temporaryCameraImageUri")
     }
 
-    fun saveRandomImageFromInternet(callback: () -> Unit) {
+    fun saveRandomImageFromInternet(callback: (uri: Uri) -> Unit) {
         viewModelScope.launch {
             val request = Request.Builder().url(SampleData.image.random()).build()
 
@@ -51,21 +57,21 @@ class MediaStoreViewModel(
 
                 response.body?.use { responseBody ->
                     val filename = generateFilename(MediaSource.INTERNET, "jpg")
-                    mediaStore.addImageFromStream(
+                    val imageUri = mediaStore.addImageFromStream(
                         filename = filename,
                         inputStream = responseBody.byteStream(),
                         location = SharedPrimary
                     )
 
                     withContext(Dispatchers.Main) {
-                        callback()
+                        callback(imageUri)
                     }
                 }
             }
         }
     }
 
-    fun saveRandomVideoFromInternet(callback: () -> Unit) {
+    fun saveRandomVideoFromInternet(callback: (uri: Uri) -> Unit) {
         viewModelScope.launch {
             val request = Request.Builder().url(SampleData.video.random()).build()
 
@@ -74,14 +80,14 @@ class MediaStoreViewModel(
 
                 response.body?.use { responseBody ->
                     val filename = generateFilename(MediaSource.INTERNET, "mp4")
-                    mediaStore.addVideoFromStream(
+                    val videoUri = mediaStore.addVideoFromStream(
                         filename = filename,
                         inputStream = responseBody.byteStream(),
                         location = SharedPrimary
                     )
 
                     withContext(Dispatchers.Main) {
-                        callback()
+                        callback(videoUri)
                     }
                 }
             }

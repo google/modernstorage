@@ -30,8 +30,8 @@ class MediaStoreClient(private val context: Context) {
         filename: String,
         inputStream: InputStream,
         location: StorageLocation
-    ) {
-        withContext(Dispatchers.IO) {
+    ): Uri {
+        return withContext(Dispatchers.IO) {
             val imageUri = createImageUri(filename, location)
 
             if (imageUri == null) {
@@ -44,6 +44,8 @@ class MediaStoreClient(private val context: Context) {
                         inputStream.copyTo(outputStream)
                     }
                 }
+
+                return@withContext imageUri
             }
         }
     }
@@ -63,8 +65,8 @@ class MediaStoreClient(private val context: Context) {
         filename: String,
         inputStream: InputStream,
         location: StorageLocation
-    ) {
-        withContext(Dispatchers.IO) {
+    ): Uri {
+        return withContext(Dispatchers.IO) {
             val videoUri = createVideoUri(filename, location)
 
             if (videoUri == null) {
@@ -77,6 +79,8 @@ class MediaStoreClient(private val context: Context) {
                         inputStream.copyTo(outputStream)
                     }
                 }
+
+                return@withContext videoUri
             }
         }
     }
