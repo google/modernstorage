@@ -17,9 +17,7 @@ class CustomTakePicture : ActivityResultContract<Uri, Boolean>() {
         return null
     }
 
-    override fun parseResult(resultCode: Int, intent: Intent?): Boolean {
-        return intent !== null && resultCode != Activity.RESULT_OK
-    }
+    override fun parseResult(resultCode: Int, intent: Intent?) = resultCode == Activity.RESULT_OK
 }
 
 
