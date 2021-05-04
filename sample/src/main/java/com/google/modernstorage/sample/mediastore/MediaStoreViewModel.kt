@@ -2,10 +2,15 @@ package com.google.modernstorage.sample.mediastore
 
 import android.app.Application
 import android.net.Uri
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.google.modernstorage.media.MediaResource
 import com.google.modernstorage.media.MediaStoreClient
 import com.google.modernstorage.media.SharedPrimary
+import com.google.modernstorage.media.canWriteInMediaStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -19,6 +24,9 @@ class MediaStoreViewModel(
     private val httpClient by lazy { OkHttpClient() }
     private val mediaStore: MediaStoreClient by lazy { MediaStoreClient(application) }
 
+    val canWriteInMediaStore: Boolean
+        get() = canWriteInMediaStore(getApplication())
+
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
 
@@ -26,13 +34,24 @@ class MediaStoreViewModel(
         _isLoading.value = isLoading
     }
 
-    val _currentMedia: LiveData<MediaResource?> = MutableLiveData(null)
-    val currentMedia: LiveData<MediaResource?> = savedStateHandle.getLiveData<MediaResource?>("currentMedia")
+    private val _currentMedia: MutableLiveData<MediaResource?> = MutableLiveData(null)
+    val currentMedia: LiveData<MediaResource?> get() = _currentMedia
+
+    init {
+        savedStateHandle.get<Uri>("currentMediaUri")?.let { uri ->
+            if(canWriteInMediaStore) {
+                viewModelScope.launch {
+                    _currentMedia.value = mediaStore.getResourceByUri(uri)
+                }
+            }
+        }
+    }
 
     fun setCurrentMedia(uri: Uri) {
         viewModelScope.launch {
             mediaStore.getResourceByUri(uri)?.let {
                 savedStateHandle.set("currentMediaUri", uri)
+                _currentMedia.value = mediaStore.getResourceByUri(uri)
             }
         }
     }

@@ -1,15 +1,16 @@
 package com.google.modernstorage.sample.mediastore
 
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import com.google.modernstorage.media.CustomTakeVideo
 import com.google.modernstorage.media.CustomTakePicture
+import com.google.modernstorage.media.CustomTakeVideo
 import com.google.modernstorage.sample.R
 import com.google.modernstorage.sample.databinding.FragmentMediastoreBinding
 
@@ -26,7 +27,53 @@ class MediaStoreFragment : Fragment() {
     ): View {
         _binding = FragmentMediastoreBinding.inflate(inflater, container, false)
 
-        setupButtonGroups()
+        setupButtonListeners()
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.addMedia.isEnabled = !isLoading
+        }
+
+        viewModel.currentMedia.observe(viewLifecycleOwner) { currentMedia ->
+            currentMedia ?: return@observe
+            binding.details.text = currentMedia.toString()
+        }
+
+        return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        handlePermissionSectionVisibility()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun handlePermissionSectionVisibility() {
+        if (viewModel.canWriteInMediaStore) {
+            binding.demoSection.visibility = View.VISIBLE
+            binding.permissionSection.visibility = View.GONE
+        } else {
+            binding.demoSection.visibility = View.GONE
+            binding.permissionSection.visibility = View.VISIBLE
+        }
+    }
+
+    private fun setupButtonListeners() {
+        binding.requestPermissionButton.setOnClickListener {
+            actionRequestPermission.launch(WRITE_EXTERNAL_STORAGE)
+        }
+
+        binding.mediastoreType.clearChecked()
+        binding.mediastoreSource.clearChecked()
+
+        binding.mediastoreType.isSelectionRequired = true
+        binding.mediastoreSource.isSelectionRequired = true
+
+        binding.mediastoreType.check(R.id.type_image)
+        binding.mediastoreSource.check(R.id.source_internet)
 
         binding.addMedia.setOnClickListener {
             val type = when (binding.mediastoreType.checkedButtonId) {
@@ -41,34 +88,6 @@ class MediaStoreFragment : Fragment() {
                 else -> throw Exception("This is not supposed to happen")
             }
         }
-
-        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.addMedia.isEnabled = !isLoading
-        }
-
-        viewModel.currentMedia.observe(viewLifecycleOwner) { currentMedia ->
-            currentMedia ?: return@observe
-
-            binding.details.text = currentMedia.toString()
-        }
-
-        return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    private fun setupButtonGroups() {
-        binding.mediastoreType.clearChecked()
-        binding.mediastoreSource.clearChecked()
-
-        binding.mediastoreType.isSelectionRequired = true
-        binding.mediastoreSource.isSelectionRequired = true
-
-        binding.mediastoreType.check(R.id.type_image)
-        binding.mediastoreSource.check(R.id.source_internet)
     }
 
     private fun downloadMedia(type: MediaType) {
@@ -94,10 +113,17 @@ class MediaStoreFragment : Fragment() {
 
         viewModel.createMediaUriForCamera(type) { uri ->
             when (type) {
-                MediaType.IMAGE -> actionTakeImage.launch(uri)
+                MediaType.IMAGE -> {
+                    viewModel.saveTemporaryCameraImageUri(uri)
+                    actionTakeImage.launch(uri)
+                }
                 MediaType.VIDEO -> actionTakeVideo.launch(uri)
             }
         }
+    }
+
+    private val actionRequestPermission = registerForActivityResult(RequestPermission()) {
+        handlePermissionSectionVisibility()
     }
 
     private val actionTakeImage = registerForActivityResult(CustomTakePicture()) { success ->

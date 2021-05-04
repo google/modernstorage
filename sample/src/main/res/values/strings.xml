@@ -2,6 +2,9 @@
     <string name="app_name">ModernStorage Sample</string>
     <string name="demo_mediastore">MediaStore</string>
 
+
+    <string name="mediastore_permission_message">To add files, we need to request the storage permission</string>
+    <string name="mediastore_permission_label">Request Permission</string>
     <string name="mediastore_type_label">Type</string>
     <string name="mediastore_source_label">Source</string>
     <string name="mediastore_add_media_label">Add media</string>
