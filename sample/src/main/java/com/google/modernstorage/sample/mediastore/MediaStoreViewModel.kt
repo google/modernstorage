@@ -26,7 +26,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.modernstorage.media.MediaResource
 import com.google.modernstorage.media.MediaStoreClient
 import com.google.modernstorage.media.SharedPrimary
-import com.google.modernstorage.media.canWriteInMediaStore
+import com.google.modernstorage.media.canWriteOwnEntriesInMediaStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -41,7 +41,7 @@ class MediaStoreViewModel(
     private val mediaStore: MediaStoreClient by lazy { MediaStoreClient(application) }
 
     val canWriteInMediaStore: Boolean
-        get() = canWriteInMediaStore(getApplication())
+        get() = canWriteOwnEntriesInMediaStore(getApplication())
 
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> get() = _isLoading

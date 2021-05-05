@@ -23,7 +23,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat.checkSelfPermission
 
-fun canReadInMediaStore(context: Context): Boolean {
+fun canReadOwnEntriesInMediaStore(context: Context): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         true
     } else {
@@ -37,9 +37,27 @@ fun canReadInMediaStore(context: Context): Boolean {
     }
 }
 
-fun canWriteInMediaStore(context: Context): Boolean {
+fun canWriteOwnEntriesInMediaStore(context: Context): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         true
+    } else {
+        checkSelfPermission(context, WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+    }
+}
+
+fun canReadSharedEntriesInMediaStore(context: Context): Boolean {
+    return checkSelfPermission(
+        context,
+        READ_EXTERNAL_STORAGE
+    ) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(
+        context,
+        READ_EXTERNAL_STORAGE
+    ) == PackageManager.PERMISSION_GRANTED
+}
+
+fun canWriteSharedEntriesInMediaStore(context: Context): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        canReadSharedEntriesInMediaStore(context)
     } else {
         checkSelfPermission(context, WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
     }
