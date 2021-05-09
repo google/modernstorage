@@ -3,6 +3,9 @@
 ModernStorage is a group of libraries that provide an abstraction layer over storage on Android to
 simplify its interactions by apps developers.
 
+## Is it ready?
+Not yet! We've just started uploading our work but we will have proper documentation, tests and releases really soon!
+
 ## Contributions
 
 Please contribute! We will gladly review any pull requests.
