@@ -1,11 +1,11 @@
 /*
- * Copyright 2021 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-include ':media'
-include ':sample'
-rootProject.name = "ModernStorage"
-include ':filesystem'
+package com.google.modernstorage.filesystem
+
+import android.net.Uri
+import java.net.URI
+
+/**
+ * Convenience method to convert a [Uri] into a [URI].
+ */
+fun Uri.toURI() = URI(this.toString())
+
+/**
+ * Convenience method to convert a [URI] into a [Uri].
+ */
+fun URI.toUri(): Uri = Uri.parse(this.toString())
