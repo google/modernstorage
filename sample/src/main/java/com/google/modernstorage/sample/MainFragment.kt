@@ -26,7 +26,16 @@ import com.google.modernstorage.sample.ui.Demo
 import com.google.modernstorage.sample.ui.DemoListAdapter
 
 private val apiList = arrayOf(
-    Demo(R.string.demo_mediastore, R.id.action_mainFragment_to_mediaStoreFragment),
+    Demo(
+        R.drawable.ic_baseline_collections_24,
+        R.string.demo_mediastore,
+        R.id.action_mainFragment_to_mediaStoreFragment
+    ),
+    Demo(
+        R.drawable.ic_baseline_folder_24,
+        R.string.demo_filesystem,
+        R.id.action_mainFragment_to_fileSystemFragment
+    ),
 )
 
 class MainFragment : Fragment() {
@@ -42,8 +51,6 @@ class MainFragment : Fragment() {
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = DemoListAdapter(apiList)
-
-        binding.recyclerView
 
         return binding.root
     }

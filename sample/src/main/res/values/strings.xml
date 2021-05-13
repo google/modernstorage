@@ -17,7 +17,12 @@
 <resources>
     <string name="app_name">ModernStorage Sample</string>
     <string name="demo_mediastore">MediaStore</string>
+    <string name="demo_filesystem">FileSystem</string>
 
+    <!-- Fragment labels -->
+    <string name="fragment_main_label">ModernStorage Demos</string>
+    <string name="mediastore_fragment_label">MediaStore Demo</string>
+    <string name="filesystem_fragment_label">FileSystem Demo</string>
 
     <string name="mediastore_permission_message">To add files, we need to request the storage permission</string>
     <string name="mediastore_permission_label">Request Permission</string>
