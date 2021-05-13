@@ -14,46 +14,34 @@
  * limitations under the License.
  */
 
-package com.google.modernstorage.sample
+package com.google.modernstorage.sample.filesystem
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.modernstorage.sample.databinding.FragmentDemoListBinding
-import com.google.modernstorage.sample.ui.Demo
-import com.google.modernstorage.sample.ui.DemoListAdapter
+import androidx.fragment.app.viewModels
+import com.google.modernstorage.sample.databinding.FragmentFilesystemBinding
 
-private val apiList = arrayOf(
-    Demo(
-        R.drawable.ic_baseline_collections_24,
-        R.string.demo_mediastore,
-        R.id.action_mainFragment_to_mediaStoreFragment
-    ),
-    Demo(
-        R.drawable.ic_baseline_folder_24,
-        R.string.demo_filesystem,
-        R.id.action_mainFragment_to_fileSystemFragment
-    ),
-)
-
-class MainFragment : Fragment() {
-    private var _binding: FragmentDemoListBinding? = null
+class FileSystemFragment : Fragment() {
+    private var _binding: FragmentFilesystemBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: FileSystemViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentDemoListBinding.inflate(inflater, container, false)
-
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerView.adapter = DemoListAdapter(apiList)
+        _binding = FragmentFilesystemBinding.inflate(inflater, container, false)
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
     override fun onDestroyView() {

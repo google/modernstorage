@@ -19,19 +19,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mediaStoreFragment">
+    app:startDestination="@id/mainFragment">
 
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.google.modernstorage.sample.MainFragment"
-        android:label="fragment_main"
-        tools:layout="@layout/fragment_main" >
+        android:label="@string/fragment_main_label"
+        tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/action_mainFragment_to_mediaStoreFragment"
             app:destination="@id/mediaStoreFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_fileSystemFragment"
+            app:destination="@id/fileSystemFragment" />
     </fragment>
     <fragment
         android:id="@+id/mediaStoreFragment"
         android:name="com.google.modernstorage.sample.mediastore.MediaStoreFragment"
-        android:label="MediaStoreFragment" />
+        android:label="@string/mediastore_fragment_label" />
+    <fragment
+        android:id="@+id/fileSystemFragment"
+        android:name="com.google.modernstorage.sample.filesystem.FileSystemFragment"
+        android:label="@string/filesystem_fragment_label" />
 </navigation>
