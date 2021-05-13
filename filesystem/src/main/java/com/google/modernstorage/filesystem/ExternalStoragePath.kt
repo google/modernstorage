@@ -37,7 +37,6 @@ class ExternalStoragePath internal constructor(
 ) : ContentPath(fileSystem, uri) {
 
     private val mountRoot: String
-    override val isTree: Boolean
 
     /**
      * Uri that can be queried to get a list of child documents (if any).
@@ -59,7 +58,6 @@ class ExternalStoragePath internal constructor(
         validateUri(uri)
 
         mountRoot = uri.path.substringBefore(":").substringAfterLast('/')
-        isTree = uri.path.startsWith("/tree")
     }
 
     override fun compareTo(other: Path?): Int {
