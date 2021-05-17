@@ -31,6 +31,12 @@ val UnopenableOutputStreamException = Exception("Output stream could not be open
 class MediaStoreClient(private val context: Context) {
     suspend fun getResourceByUri(uri: Uri) = getMediaResourceById(context, uri)
 
+    suspend inline fun withResourceByUri(uri: Uri, block: (MediaResource?) -> Unit) =
+        block.invoke(getResourceByUri(uri))
+
+    suspend inline fun withResourceByUriIfExist(uri: Uri, block: (MediaResource) -> Unit) =
+        getResourceByUri(uri)?.let(block)
+
     suspend fun createImageUri(filename: String, location: StorageLocation): Uri? {
         return withContext(Dispatchers.IO) {
             val entry = ContentValues().apply {
