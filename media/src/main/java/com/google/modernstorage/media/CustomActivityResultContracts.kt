@@ -36,7 +36,6 @@ class CustomTakePicture : ActivityResultContract<Uri, Boolean>() {
     override fun parseResult(resultCode: Int, intent: Intent?) = resultCode == Activity.RESULT_OK
 }
 
-
 class CustomTakeVideo : ActivityResultContract<Uri, Uri?>() {
     override fun createIntent(context: Context, input: Uri): Intent {
         return Intent(MediaStore.ACTION_VIDEO_CAPTURE)

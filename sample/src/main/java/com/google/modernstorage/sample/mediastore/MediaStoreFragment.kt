@@ -152,13 +152,12 @@ class MediaStoreFragment : Fragment() {
 
         Log.d(tag, "Image taken SUCCESS")
 
-        if(viewModel.temporaryCameraImageUri == null) {
+        if (viewModel.temporaryCameraImageUri == null) {
             Log.e(tag, "Can't find previously saved temporary Camera Image URI")
         } else {
             viewModel.setCurrentMedia(viewModel.temporaryCameraImageUri!!)
             viewModel.clearTemporaryCameraImageUri()
         }
-
     }
 
     private val actionTakeVideo = registerForActivityResult(CustomTakeVideo()) { uri ->

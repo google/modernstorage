@@ -20,9 +20,9 @@ import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
+import java.io.InputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.InputStream
 
 val UnaccessibleCollectionException = Exception("Collection URI could not be used")
 val UriNotCreatedException = Exception("URI could not be created")

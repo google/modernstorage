@@ -55,7 +55,7 @@ class MediaStoreViewModel(
 
     init {
         savedStateHandle.get<Uri>("currentMediaUri")?.let { uri ->
-            if(canWriteInMediaStore) {
+            if (canWriteInMediaStore) {
                 viewModelScope.launch {
                     _currentMedia.value = mediaStore.getResourceByUri(uri)
                 }
