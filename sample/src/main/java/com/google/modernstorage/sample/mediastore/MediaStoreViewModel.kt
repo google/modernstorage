@@ -65,7 +65,7 @@ class MediaStoreViewModel(
 
     fun setCurrentMedia(uri: Uri) {
         viewModelScope.launch {
-            mediaStore.getResourceByUri(uri)?.let {
+            mediaStore.withResourceByUriIfExist(uri) {
                 savedStateHandle.set("currentMediaUri", uri)
                 _currentMedia.value = mediaStore.getResourceByUri(uri)
             }
