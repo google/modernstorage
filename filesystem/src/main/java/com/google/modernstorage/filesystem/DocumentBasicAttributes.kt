@@ -71,7 +71,9 @@ public class DocumentBasicAttributes(
 
     override fun isRegularFile() = !isDirectory
 
-    override fun isDirectory() = mimeType == DocumentsContract.Document.MIME_TYPE_DIR
+    override fun isDirectory() =
+        mimeType == DocumentsContract.Document.MIME_TYPE_DIR ||
+                mimeType == DocumentsContract.Root.MIME_TYPE_ITEM
 
     override fun isSymbolicLink() = false
 
