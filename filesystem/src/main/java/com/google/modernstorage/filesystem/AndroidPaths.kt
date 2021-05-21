@@ -16,7 +16,6 @@
 
 package com.google.modernstorage.filesystem
 
-import android.content.Context
 import android.net.Uri
 import com.google.modernstorage.filesystem.AndroidFileSystems.getFileSystemProvider
 import java.net.URI
@@ -38,7 +37,7 @@ object AndroidPaths {
      * @see [Paths.get]
      */
     @JvmStatic
-    fun get(context: Context, uri: Uri): Path = get(context, uri.toURI())
+    fun get(uri: Uri): Path = get(uri.toURI())
 
     /**
      * Method to retrieve a [Path] for a given [URI]. This method will automatically fallback to
@@ -47,5 +46,5 @@ object AndroidPaths {
      * @see [Paths.get]
      */
     @JvmStatic
-    fun get(context: Context, uri: URI): Path = getFileSystemProvider(context, uri).getPath(uri)
+    fun get(uri: URI): Path = getFileSystemProvider(uri).getPath(uri)
 }

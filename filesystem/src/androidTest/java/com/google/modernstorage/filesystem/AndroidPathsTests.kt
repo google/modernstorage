@@ -19,6 +19,7 @@ package com.google.modernstorage.filesystem
 import android.content.Context
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
+import org.junit.Before
 import org.junit.Test
 import java.io.File
 import java.net.URI
@@ -30,11 +31,16 @@ import java.nio.file.FileSystems
 class AndroidPathsTests {
     private val context = ApplicationProvider.getApplicationContext<Context>()
 
+    @Before
+    fun setup() {
+        AndroidFileSystems.initialize(context)
+    }
+
     @Test
     fun constructPath_CorrectContentPath() {
         val mediaUriString = "content://media/external/files/media/1"
 
-        val mediaPath = AndroidPaths.get(context, URI(mediaUriString))
+        val mediaPath = AndroidPaths.get(URI(mediaUriString))
         assert(mediaPath is ContentPath)
         assert(mediaPath !is ExternalStoragePath)
     }
@@ -44,7 +50,7 @@ class AndroidPathsTests {
         val externalUriString =
             "content://com.android.externalstorage.documents/tree/primary%3ATest/document/primary%3ATest"
 
-        val storagePath = AndroidPaths.get(context, URI(externalUriString))
+        val storagePath = AndroidPaths.get(URI(externalUriString))
         assert(storagePath is ExternalStoragePath)
     }
 
@@ -52,14 +58,14 @@ class AndroidPathsTests {
     fun constructPath_UriMatchesURI() {
         val mediaUriString = "content://media/external/files/media/1"
 
-        val mediaPathFromUri = AndroidPaths.get(context, Uri.parse(mediaUriString))
-        val mediaPathFromURI = AndroidPaths.get(context, URI(mediaUriString))
+        val mediaPathFromUri = AndroidPaths.get(Uri.parse(mediaUriString))
+        val mediaPathFromURI = AndroidPaths.get(URI(mediaUriString))
         assert(mediaPathFromUri.toUri() == mediaPathFromURI.toUri())
     }
 
     @Test
     fun constructPath_FileScheme() {
-        val filePath = AndroidPaths.get(context, File(context.filesDir, "Test.txt").toURI())
+        val filePath = AndroidPaths.get(File(context.filesDir, "Test.txt").toURI())
         assert(filePath.fileSystem == FileSystems.getDefault())
     }
 }

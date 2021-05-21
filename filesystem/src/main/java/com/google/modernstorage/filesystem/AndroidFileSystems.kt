@@ -39,14 +39,24 @@ object AndroidFileSystems {
     private val installedProviders = mutableMapOf<String, FileSystemProvider>()
 
     /**
+     * Used to perform one-time initialization for the filesystem library.
+     *
+     * This method must be called before utilizing [AndroidFileSystems] or [AndroidPaths].
+     */
+    @JvmStatic
+    fun initialize(context: Context) {
+        installContentFileSystem(context.applicationContext)
+    }
+
+    /**
      * Convenience method to retrieve a [FileSystem] given an Android [Uri].
      */
     @JvmStatic
-    fun getFileSystem(context: Context, uri: Uri) = getFileSystem(context, uri.toURI())
+    fun getFileSystem(uri: Uri) = getFileSystem(uri.toURI())
 
     @JvmStatic
-    fun getFileSystem(context: Context, uri: URI): FileSystem {
-        ensureProvidersLoaded(context)
+    fun getFileSystem(uri: URI): FileSystem {
+        ensureProvidersLoaded()
         val provider = installedProviders[uri.scheme]
         return if (provider != null) {
             provider.getFileSystem(uri)
@@ -56,8 +66,8 @@ object AndroidFileSystems {
     }
 
     @JvmStatic
-    fun newFileSystem(context: Context, uri: URI, env: MutableMap<String, Any>): FileSystem {
-        ensureProvidersLoaded(context)
+    fun newFileSystem(uri: URI, env: MutableMap<String, Any>): FileSystem {
+        ensureProvidersLoaded()
         val provider = installedProviders[uri.scheme]
         return if (provider != null) {
             provider.newFileSystem(uri, env)
@@ -75,9 +85,7 @@ object AndroidFileSystems {
     @Throws(IllegalStateException::class)
     fun installProvider(fileSystemProvider: FileSystemProvider) {
         synchronized(installedProviders) {
-            if (fileSystemProvider.scheme == ContentResolver.SCHEME_CONTENT ||
-                fileSystemProvider.scheme in installedProviders
-            ) {
+            if (installedProviders[fileSystemProvider.scheme] != null) {
                 throw IllegalStateException(
                     "Provider for ${fileSystemProvider.scheme} already registered"
                 )
@@ -86,19 +94,25 @@ object AndroidFileSystems {
         }
     }
 
-    internal fun getFileSystemProvider(context: Context, uri: URI): FileSystemProvider {
-        ensureProvidersLoaded(context)
+    internal fun getFileSystemProvider(uri: URI): FileSystemProvider {
+        ensureProvidersLoaded()
         return installedProviders[uri.scheme] ?: getSystemLoadedProvider(uri.scheme)
     }
 
-    private fun ensureProvidersLoaded(context: Context) {
+    private fun installContentFileSystem(context: Context) {
+        synchronized(installedProviders) {
+            if (installedProviders[ContentResolver.SCHEME_CONTENT] == null) {
+                installProvider(ContentFileSystemProvider(context))
+            }
+        }
+    }
+
+    private fun ensureProvidersLoaded() {
         synchronized(installedProviders) {
             if (installedProviders.isEmpty() ||
-                !installedProviders.containsKey(ContentResolver.SCHEME_CONTENT)
+                installedProviders[ContentResolver.SCHEME_CONTENT] == null
             ) {
-                val contentFileSystemProvider =
-                    ContentFileSystemProvider(context.applicationContext)
-                installedProviders[contentFileSystemProvider.scheme] = contentFileSystemProvider
+                throw IllegalStateException(NOT_INITIALIZED)
             }
         }
     }
@@ -112,3 +126,5 @@ object AndroidFileSystems {
         throw FileSystemNotFoundException("Could not find file system for scheme: $scheme")
     }
 }
+
+private const val NOT_INITIALIZED = "AndroidFileSystems.initialize was not called"
