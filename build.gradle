@@ -23,12 +23,16 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.0'
+        classpath 'com.android.tools.build:gradle:4.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
+}
+
+plugins {
+    id "com.diffplug.spotless" version "5.12.5"
 }
 
 allprojects {
@@ -39,6 +43,20 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+subprojects {
+    apply plugin: 'com.diffplug.spotless'
+    spotless {
+        kotlin {
+            target "**/*.kt"
+            ktlint('0.41.0')
+            licenseHeaderFile rootProject.file('spotless/copyright.txt')
+        }
+
+        groovyGradle {
+            target '**/*.gradle'
+            greclipse().configFile(rootProject.file('spotless/greclipse.properties'))
+            licenseHeaderFile rootProject.file('spotless/copyright.txt'),
+                    '(buildscript|apply|import|plugins)'
+        }
+    }
 }
