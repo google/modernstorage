@@ -65,7 +65,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
     implementation 'com.squareup.okhttp3:okhttp:4.9.1'
 
-    implementation project(":media")
+    implementation project(":mediastore")
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

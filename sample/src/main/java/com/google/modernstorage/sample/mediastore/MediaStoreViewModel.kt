@@ -23,10 +23,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.google.modernstorage.media.MediaResource
-import com.google.modernstorage.media.MediaStoreClient
-import com.google.modernstorage.media.SharedPrimary
-import com.google.modernstorage.media.canWriteOwnEntriesInMediaStore
+import com.google.modernstorage.mediastore.MediaResource
+import com.google.modernstorage.mediastore.MediaStoreClient
+import com.google.modernstorage.mediastore.SharedPrimary
+import com.google.modernstorage.mediastore.canWriteOwnEntriesInMediaStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -38,7 +38,7 @@ class MediaStoreViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application) {
     private val httpClient by lazy { OkHttpClient() }
-    private val mediaStore: MediaStoreClient by lazy { MediaStoreClient(application) }
+    private val mediaStore by lazy { MediaStoreClient(application) }
 
     val canWriteInMediaStore: Boolean
         get() = canWriteOwnEntriesInMediaStore(getApplication())

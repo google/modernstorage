@@ -25,8 +25,8 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.google.modernstorage.media.CustomTakePicture
-import com.google.modernstorage.media.CustomTakeVideo
+import com.google.modernstorage.mediastore.CustomTakePicture
+import com.google.modernstorage.mediastore.CustomTakeVideo
 import com.google.modernstorage.sample.R
 import com.google.modernstorage.sample.databinding.FragmentMediastoreBinding
 

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-include ':mediastore'
-include ':sample'
-rootProject.name = "ModernStorage"
+package com.google.modernstorage.mediastore
+
+sealed class StorageLocation
+object Internal : StorageLocation()
+object SharedPrimary : StorageLocation()
+// TODO: Handle secondary shared storage
+//class SharedSecondary(val volume: StorageVolume) : StorageLocation()
