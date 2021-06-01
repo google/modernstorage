@@ -20,8 +20,8 @@
 
     <application>
         <provider
-            android:name=".TestDocumentProvider"
-            android:authorities="com.google.modernstorage.test.documents"
+            android:name=".provider.TestDocumentProvider"
+            android:authorities="${applicationId}.documents"
             android:enabled="true"
             android:exported="true"
             android:grantUriPermissions="true"

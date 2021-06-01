@@ -20,6 +20,8 @@ import android.content.Context
 import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
+import com.google.modernstorage.filesystem.provider.TestDocumentProvider
+import com.google.modernstorage.filesystem.provider.document
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -30,34 +32,31 @@ import java.io.FileWriter
 import java.nio.file.Files
 
 
-class SinglePathTests {
+class DocumentPathTests {
     private val context = ApplicationProvider.getApplicationContext<Context>()
-    private val testFile = File(context.filesDir, "test.txt")
     private val testUri =
-        Uri.parse("content://com.google.modernstorage.test.documents/document/${testFile.name}")
+        Uri.parse("content://${context.packageName}.documents/document/test.txt")
     private val testNonExistingUri =
-        Uri.parse("content://com.google.modernstorage.test.documents/document/MISSING_FILE")
+        Uri.parse("content://${context.packageName}.documents/document/MISSING_FILE")
 
     private val testFileContent = listOf(
         "This is a test file.",
         "It contains two lines of text."
     )
 
+    private val testRoot = document("test.txt") {
+        content { testFileContent.joinToString("\n") }
+    }
+
     @Before
     fun setup() {
         AndroidFileSystems.initialize(context)
-        if (!testFile.exists()) {
-            FileWriter(testFile).use { fileWriter ->
-                testFileContent.forEach { line -> fileWriter.write("$line\n") }
-            }
-        }
+        TestDocumentProvider.addRoot(testRoot)
     }
 
     @After
     fun teardown() {
-        if (testFile.exists()) {
-            testFile.delete()
-        }
+        TestDocumentProvider.clearAll()
     }
 
     @Test
