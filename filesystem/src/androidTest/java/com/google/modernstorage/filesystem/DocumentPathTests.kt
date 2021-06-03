@@ -17,7 +17,6 @@
 package com.google.modernstorage.filesystem
 
 import android.content.Context
-import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import com.google.modernstorage.filesystem.provider.TestDocumentProvider
@@ -26,9 +25,7 @@ import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import java.io.File
 import java.io.FileNotFoundException
-import java.io.FileWriter
 import java.nio.file.Files
 
 
@@ -79,3 +76,4 @@ class DocumentPathTests {
         }
     }
 }
+

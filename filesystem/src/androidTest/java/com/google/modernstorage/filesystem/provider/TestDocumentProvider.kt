@@ -23,11 +23,8 @@ import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract.Document
 import android.provider.DocumentsContract.Root
 import android.provider.DocumentsProvider
-import android.util.Log
-import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileWriter
-import java.io.OutputStreamWriter
 import kotlin.concurrent.thread
 
 class TestDocumentProvider : DocumentsProvider() {
@@ -86,30 +83,36 @@ class TestDocumentProvider : DocumentsProvider() {
         val useProjection = projection ?: defaultRootProjection
         val cursor = MatrixCursor(useProjection)
 
-        // Add row for the root document/directory
-        cursor.newRow().apply {
-            add(Root.COLUMN_ROOT_ID, "root")
-            add(Root.COLUMN_SUMMARY, "")
-            add(Root.COLUMN_FLAGS, Root.FLAG_SUPPORTS_CREATE or Root.FLAG_SUPPORTS_IS_CHILD)
-            add(Root.COLUMN_TITLE, "TestProvider")
-            add(Root.COLUMN_DOCUMENT_ID, "")
-            add(Root.COLUMN_MIME_TYPES, "*/*")
-            add(Root.COLUMN_AVAILABLE_BYTES, null)
+        testRoots.forEach { root ->
+            // Add row for the root document/directory
+            cursor.newRow().apply {
+                add(Root.COLUMN_ROOT_ID, root.docId)
+                add(Root.COLUMN_SUMMARY, "")
+                add(Root.COLUMN_FLAGS, Root.FLAG_SUPPORTS_CREATE or Root.FLAG_SUPPORTS_IS_CHILD)
+                add(Root.COLUMN_TITLE, "TestProvider")
+                add(Root.COLUMN_DOCUMENT_ID, root.docId)
+                add(Root.COLUMN_MIME_TYPES, "*/*")
+                add(Root.COLUMN_AVAILABLE_BYTES, null)
+            }
         }
+
         return cursor
     }
 
     override fun queryDocument(documentId: String?, projection: Array<out String>?): Cursor {
-        documentId ?: throw FileNotFoundException()
+        val document = docIdsToDoc[documentId] ?: throw FileNotFoundException()
 
-        val file = if (documentId.startsWith("files/")) {
-            Log.d("nicole", "Starts with files/ building directory without that: $documentId")
-            File(requireContext().filesDir, documentId.substring("files/".length))
-        } else {
-            Log.d("nicole", "Looks like a direct path: $documentId")
-            File(requireContext().filesDir, documentId)
+        val useProjection = projection ?: defaultRootProjection
+        val cursor = MatrixCursor(useProjection)
+        cursor.newRow().apply {
+            add(Document.COLUMN_DOCUMENT_ID, document.docId)
+            add(Document.COLUMN_MIME_TYPE, document.mimeType)
+            add(Document.COLUMN_DISPLAY_NAME, document.displayName)
+            add(Document.COLUMN_LAST_MODIFIED, 0)
+            add(Document.COLUMN_FLAGS, 0)
+            add(Document.COLUMN_SIZE, document.size)
         }
-        throw IllegalArgumentException("doc: path='${file.absolutePath}', documentId='$documentId'")
+        return cursor
     }
 
     override fun queryChildDocuments(
@@ -117,13 +120,31 @@ class TestDocumentProvider : DocumentsProvider() {
         projection: Array<out String>?,
         sortOrder: String?
     ): Cursor {
-        throw IllegalStateException()
+        val parentDocument = docIdsToDoc[parentDocumentId] ?: throw FileNotFoundException()
+        val useProjection = projection ?: defaultRootProjection
+
+        val cursor = MatrixCursor(useProjection)
+        parentDocument.children?.forEach { childDocument ->
+            cursor.newRow().apply {
+                val fullDocId = "$parentDocumentId/${childDocument.docId}"
+                add(Document.COLUMN_DOCUMENT_ID, fullDocId)
+                add(Document.COLUMN_MIME_TYPE, childDocument.mimeType)
+                add(Document.COLUMN_DISPLAY_NAME, childDocument.displayName)
+                add(Document.COLUMN_LAST_MODIFIED, 0)
+                add(Document.COLUMN_FLAGS, 0)
+                add(Document.COLUMN_SIZE, childDocument.size)
+            }
+        }
+
+        return cursor
     }
 
     override fun isChildDocument(parentDocumentId: String?, documentId: String?): Boolean {
-        val parentDocument = File(requireContext().filesDir, parentDocumentId!!)
-        val childDocument = File(parentDocument, documentId!!)
-        return childDocument.exists()
+        // The actual check can be multiple levels down, so root -> dirA -> dir2, and this would
+        // ask, "is dir2 a child of root?" -- In a real system you'd probably want to actually
+        // do this check, but here it's a lot of work for something that's good enough for
+        // the test cases.
+        return docIdsToDoc[documentId] != null
     }
 
     override fun openDocument(
@@ -134,8 +155,8 @@ class TestDocumentProvider : DocumentsProvider() {
         val document = docIdsToDoc[documentId] ?: throw FileNotFoundException()
         val (readFd, writeFd) = ParcelFileDescriptor.createPipe()
         thread(name = "io") {
-            val out = ParcelFileDescriptor.AutoCloseOutputStream(writeFd)
-            OutputStreamWriter(out).apply { write((document.content)) }
+            FileWriter(writeFd.fileDescriptor).apply { write((document.content)) }
+            writeFd.close()
         }
         return readFd
     }
