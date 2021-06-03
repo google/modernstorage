@@ -16,12 +16,30 @@
 
 package com.google.modernstorage.filesystem.provider
 
+import android.provider.DocumentsContract.Document
+import android.webkit.MimeTypeMap
+
 class TestDocument(
     val docId: String,
     val displayName: String = docId,
     val content: String?,
     val children: List<TestDocument>?
-)
+) {
+    val mimeType
+        get() = when {
+            children?.isNotEmpty() == true -> {
+                Document.MIME_TYPE_DIR
+            }
+            displayName.lastIndexOf(".") > 0 -> {
+                MimeTypeMap.getFileExtensionFromUrl(docId)
+            }
+            else -> {
+                "application/octet-stream"
+            }
+        }
+
+    val size get() = content?.length ?: 0
+}
 
 class TestDocumentBuilder(private val docId: String) {
     var displayName: String? = null
