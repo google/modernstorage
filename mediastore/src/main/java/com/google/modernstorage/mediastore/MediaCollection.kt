@@ -20,6 +20,11 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 
+/**
+ * Returns the [MediaStore] Image collection based on the provided [StorageLocation].
+ *
+ * @param location Location representing a storage volume.
+ */
 fun getImageCollection(location: StorageLocation): Uri? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         getImageCollectionApi29(location)
@@ -43,6 +48,11 @@ private fun getImageCollectionApi21(location: StorageLocation): Uri? {
     }
 }
 
+/**
+ * Returns the [MediaStore] Video collection based on the provided [StorageLocation].
+ *
+ * @param location Location representing a storage volume.
+ */
 fun getVideoCollection(location: StorageLocation): Uri? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         getVideoCollectionApi29(location)
