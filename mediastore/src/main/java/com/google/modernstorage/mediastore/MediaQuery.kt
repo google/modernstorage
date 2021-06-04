@@ -21,6 +21,12 @@ import android.provider.MediaStore.Files.FileColumns
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+/**
+ * Returns a [MediaResource] if it finds its content [Uri] in MediaStore otherwise returns `null`
+ *
+ * @param context Context used to query MediaStore.
+ * @param mediaUri [Uri] representing the MediaStore entry.
+ */
 suspend fun getMediaResourceById(context: Context, mediaUri: Uri): MediaResource? {
     val projection = arrayOf(
         FileColumns.DISPLAY_NAME,
