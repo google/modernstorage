@@ -16,8 +16,6 @@
 
 package com.google.modernstorage.filesystem
 
-import android.net.Uri
-import android.provider.DocumentsContract
 import java.io.File
 import java.net.URI
 import java.nio.file.LinkOption
@@ -27,24 +25,13 @@ import java.nio.file.WatchKey
 import java.nio.file.WatchService
 
 /**
- * Base class representing a generic `content://` scheme [Uri] as a [Path]
+ * Base class representing a generic `content://` scheme as a [Path]
  */
 open class ContentPath(private val fs: ContentFileSystem, protected val uri: URI) : Path {
-    internal val androidUri = Uri.parse(uri.toString())
-    internal open val isTree = DocumentsContract.isTreeUri(androidUri)
-
-    /**
-     * Uri that can be queried to get a list of child documents (if any).
-     */
-    internal open val childDocumentsUri
-        get() = DocumentsContract.buildChildDocumentsUri(
-            androidUri.authority,
-            DocumentsContract.getDocumentId(androidUri)
-        )
 
     override fun compareTo(other: Path?): Int {
         // Use `!!` to assert non-null (or throw a more useful exception)
-        return (other!! as? ContentPath)?.androidUri?.compareTo(androidUri)
+        return (other!! as? ContentPath)?.toUri()?.compareTo(uri)
             ?: throw ClassCastException("Cannot compare to a non-ContentPath Path")
     }
 

@@ -16,7 +16,6 @@
 
 package com.google.modernstorage.filesystem
 
-import android.net.Uri
 import android.os.Environment
 import android.os.Process
 import android.provider.DocumentsContract
@@ -29,7 +28,13 @@ import java.nio.file.WatchKey
 import java.nio.file.WatchService
 
 /**
- * Representation of a `content://` [Uri] backed by Android's
+ * The authority for `ExternalStorageProvider`. This is a constant in [DocumentsContract],
+ * but it's marked as `@hide`, so the value is replicated here.
+ */
+internal const val EXTERNAL_STORAGE_PROVIDER_AUTHORITY = "com.android.externalstorage.documents"
+
+/**
+ * Representation of a `content://` URI backed by Android's
  * `com.android.externalstorage.ExternalStorageProvider`.
  */
 class ExternalStoragePath internal constructor(
@@ -37,22 +42,6 @@ class ExternalStoragePath internal constructor(
 ) : ContentPath(fileSystem, uri) {
 
     private val mountRoot: String
-
-    /**
-     * Uri that can be queried to get a list of child documents (if any).
-     */
-    override val childDocumentsUri
-        get() = if (isTree) {
-            DocumentsContract.buildChildDocumentsUriUsingTree(
-                androidUri,
-                DocumentsContract.getDocumentId(androidUri)
-            )
-        } else {
-            DocumentsContract.buildChildDocumentsUri(
-                androidUri.authority,
-                DocumentsContract.getDocumentId(androidUri)
-            )
-        }
 
     init {
         validateUri(uri)
@@ -173,8 +162,8 @@ class ExternalStoragePath internal constructor(
         } else {
             File("/storage/$mountRoot")
         }
-        val documentPath = androidUri.path?.substringAfterLast(":")
-            ?: throw UnsupportedOperationException("Cannot convert $androidUri to a File")
+        val documentPath = uri.path?.substringAfterLast(":")
+            ?: throw UnsupportedOperationException("Cannot convert $uri to a File")
         val asFile = File(rootFile, documentPath)
         if (asFile.exists()) {
             return asFile
@@ -184,7 +173,7 @@ class ExternalStoragePath internal constructor(
     }
 
     private fun validateUri(uri: URI) {
-        if (uri.authority != "com.android.externalstorage.documents") {
+        if (uri.authority != EXTERNAL_STORAGE_PROVIDER_AUTHORITY) {
             throw IllegalArgumentException("Bad authority: $uri")
         }
         if (uri.path.length < 2) {

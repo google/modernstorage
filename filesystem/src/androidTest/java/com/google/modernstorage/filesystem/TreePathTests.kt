@@ -18,6 +18,7 @@ package com.google.modernstorage.filesystem
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.test.core.app.ApplicationProvider
 import com.google.modernstorage.filesystem.provider.TestDocumentProvider
 import com.google.modernstorage.filesystem.provider.document
@@ -62,9 +63,11 @@ class TreePathTests {
     fun filesWalk_FlatDirectory() {
         val expectedDocuments = mutableSetOf(
             "content://com.google.modernstorage.filesystem.test.documents/tree/root/document/root",
+            "content://com.google.modernstorage.filesystem.test.documents/tree/root/document/root%2Ftest-1.txt",
             "content://com.google.modernstorage.filesystem.test.documents/tree/root/document/root%2Ftest-2.txt",
             "content://com.google.modernstorage.filesystem.test.documents/tree/root/document/root%2Ftest-3.txt",
             "content://com.google.modernstorage.filesystem.test.documents/tree/root/document/root%2Fsubdir",
+            "content://com.google.modernstorage.filesystem.test.documents/tree/root/document/root%2Fsubdir%2Fchild1.txt",
             "content://com.google.modernstorage.filesystem.test.documents/tree/root/document/root%2Fsubdir%2Fchild2.txt",
             "content://com.google.modernstorage.filesystem.test.documents/tree/root/document/root%2Fsubdir%2Fchild3.txt"
         )

@@ -16,51 +16,14 @@
 
 package com.google.modernstorage.filesystem
 
-import android.provider.DocumentsContract
-import java.io.FileNotFoundException
-import java.io.IOException
 import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.attribute.FileTime
 
-internal fun buildDocumentBasicAttributes(
-    provider: ContentFileSystemProvider,
-    path: ContentPath
-): DocumentBasicAttributes {
-    val context = provider.applicationContext
-    context.contentResolver.query(
-        path.androidUri,
-        arrayOf(
-            DocumentsContract.Document.COLUMN_LAST_MODIFIED,
-            DocumentsContract.Document.COLUMN_MIME_TYPE,
-            DocumentsContract.Document.COLUMN_SIZE
-        ),
-        null,
-        null,
-        null
-    )?.use { cursor ->
-        if (cursor.moveToNext()) {
-            val lastModifiedTime = FileTime.fromMillis(cursor.getLong(0))
-            val mimeType = cursor.getString(1)
-            val size = cursor.getLong(2)
-            return DocumentBasicAttributes(
-                lastModifiedTime,
-                mimeType,
-                size
-            )
-        } else {
-            // No such file?
-            throw FileNotFoundException("File for ${path.androidUri}")
-        }
-    }
-
-    // Couldn't read the attributes
-    throw IOException("Could not query ContentResolver for ${path.androidUri}")
-}
-
-public class DocumentBasicAttributes(
+class DocumentBasicAttributes internal constructor(
     private val lastModifiedTime: FileTime,
-    private val mimeType: String,
-    private val size: Long
+    val mimeType: String,
+    private val size: Long,
+    private val isFolder: Boolean
 ) : BasicFileAttributes {
 
     override fun lastModifiedTime() = lastModifiedTime
@@ -71,9 +34,7 @@ public class DocumentBasicAttributes(
 
     override fun isRegularFile() = !isDirectory
 
-    override fun isDirectory() =
-        mimeType == DocumentsContract.Document.MIME_TYPE_DIR ||
-                mimeType == DocumentsContract.Root.MIME_TYPE_ITEM
+    override fun isDirectory() = isFolder
 
     override fun isSymbolicLink() = false
 
