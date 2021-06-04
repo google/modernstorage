@@ -19,6 +19,7 @@ package com.google.modernstorage.filesystem
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
+import com.google.modernstorage.filesystem.internal.AndroidContentContract
 import java.net.URI
 import java.nio.file.FileSystem
 import java.nio.file.FileSystemNotFoundException
@@ -102,7 +103,7 @@ object AndroidFileSystems {
     private fun installContentFileSystem(context: Context) {
         synchronized(installedProviders) {
             if (installedProviders[ContentResolver.SCHEME_CONTENT] == null) {
-                installProvider(ContentFileSystemProvider(context))
+                installProvider(ContentFileSystemProvider(AndroidContentContract(context)))
             }
         }
     }

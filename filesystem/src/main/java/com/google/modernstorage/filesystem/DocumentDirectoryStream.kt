@@ -16,57 +16,31 @@
 
 package com.google.modernstorage.filesystem
 
-import android.database.Cursor
-import android.util.Log
-import java.lang.Exception
 import java.nio.file.DirectoryStream
 import java.nio.file.Path
 
-internal class DocumentDirectoryStream(
-    private val cursor: Cursor,
-    private val buildPath: (documentId: String) -> Path
+internal class SequenceDocumentDirectoryStream(
+    private val sequence: Sequence<Path>,
 ) : DirectoryStream<Path> {
-
     private var receivedIterator = false
+
     private val streamIterator = object : MutableIterator<Path> {
-        override fun hasNext(): Boolean {
-            if (cursor.isClosed) {
-                throw IllegalStateException("Directory stream is closed")
-            }
-            return if (cursor.isBeforeFirst) {
-                cursor.moveToFirst()
-            } else {
-                !cursor.isLast
-            }
-        }
+        private val iterator = sequence.iterator()
 
-        override fun next(): Path {
-            if (cursor.moveToNext()) {
-                val documentId = cursor.getString(0)
-                return buildPath(documentId)
-            } else {
-                throw NoSuchElementException("No more child documents")
-            }
-        }
+        override fun hasNext() = iterator.hasNext()
 
-        override fun remove() {
-            throw UnsupportedOperationException("Removing is not supported")
-        }
+        override fun next() = iterator.next()
+
+        override fun remove() = throw UnsupportedOperationException()
     }
 
     override fun close() {
-        if (cursor.isClosed) {
-            throw IllegalStateException("Directory stream is already closed")
-        }
-        cursor.close()
+        // Nothing to do.
     }
 
     override fun iterator(): MutableIterator<Path> {
         if (receivedIterator) {
             throw IllegalStateException("Iterator already obtained")
-        }
-        if (cursor.isClosed) {
-            throw IllegalStateException("Directory stream is closed")
         }
         receivedIterator = true
         return streamIterator

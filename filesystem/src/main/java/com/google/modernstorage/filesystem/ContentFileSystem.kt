@@ -16,7 +16,6 @@
 
 package com.google.modernstorage.filesystem
 
-import com.google.modernstorage.filesystem.ContentFileSystemProvider
 import java.nio.file.FileStore
 import java.nio.file.FileSystem
 import java.nio.file.Path
@@ -28,11 +27,7 @@ open class ContentFileSystem(
     private val provider: ContentFileSystemProvider,
 ) : FileSystem() {
 
-    internal val applicationContext = provider.applicationContext
-
-    override fun close() {
-        TODO("Not yet implemented")
-    }
+    override fun close() = Unit
 
     override fun provider() = provider
 
