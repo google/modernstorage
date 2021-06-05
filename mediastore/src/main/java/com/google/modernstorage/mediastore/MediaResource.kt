@@ -43,26 +43,32 @@ enum class MediaType(val value: Int) {
      * Representing [FileColumns.MEDIA_TYPE_NONE]
      */
     NONE(0),
+
     /**
      * Representing [FileColumns.MEDIA_TYPE_IMAGE]
      */
     IMAGE(1),
+
     /**
      * Representing [FileColumns.MEDIA_TYPE_AUDIO]
      */
     AUDIO(2),
+
     /**
      * Representing [FileColumns.MEDIA_TYPE_VIDEO]
      */
     VIDEO(3),
+
     /**
      * Representing [FileColumns.MEDIA_TYPE_PLAYLIST]
      */
     PLAYLIST(4),
+
     /**
      * Representing [FileColumns.MEDIA_TYPE_SUBTITLE]
      */
     SUBTITLE(5),
+
     /**
      * Representing [FileColumns.MEDIA_TYPE_DOCUMENT]
      */

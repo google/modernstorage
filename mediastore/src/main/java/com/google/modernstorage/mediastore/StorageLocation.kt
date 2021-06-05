@@ -15,8 +15,21 @@
  */
 package com.google.modernstorage.mediastore
 
+
+/**
+ *  Represents a storage volume to be used as target when using [MediaStoreClient].
+ */
 sealed class StorageLocation
+
+/**
+ *  Represents the internal storage of the current application.
+ */
 object Internal : StorageLocation()
+
+/**
+ *  Represents the primary shared storage of the device.
+ */
 object SharedPrimary : StorageLocation()
+
 // TODO: Handle secondary shared storage
 // class SharedSecondary(val volume: StorageVolume) : StorageLocation()
