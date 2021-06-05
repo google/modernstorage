@@ -16,7 +16,17 @@
 package com.google.modernstorage.mediastore
 
 import android.net.Uri
+import android.provider.MediaStore.Files.FileColumns
 
+/**
+ * Represents an [android.provider.MediaStore] entry.
+ *
+ * @property uri The first name.
+ * @property filename File name with extension.
+ * @property size Size of the file in bytes.
+ * @property type The last name.
+ * @property mimeType The last name.
+ */
 data class MediaResource(
     val uri: Uri,
     val filename: String,
@@ -25,16 +35,45 @@ data class MediaResource(
     val mimeType: String,
 )
 
+/**
+ *  Media type enum class representing the [FileColumns.MEDIA_TYPE] column
+ */
 enum class MediaType(val value: Int) {
+    /**
+     * Representing [FileColumns.MEDIA_TYPE_NONE]
+     */
     NONE(0),
+    /**
+     * Representing [FileColumns.MEDIA_TYPE_IMAGE]
+     */
     IMAGE(1),
+    /**
+     * Representing [FileColumns.MEDIA_TYPE_AUDIO]
+     */
     AUDIO(2),
+    /**
+     * Representing [FileColumns.MEDIA_TYPE_VIDEO]
+     */
     VIDEO(3),
+    /**
+     * Representing [FileColumns.MEDIA_TYPE_PLAYLIST]
+     */
     PLAYLIST(4),
+    /**
+     * Representing [FileColumns.MEDIA_TYPE_SUBTITLE]
+     */
     SUBTITLE(5),
+    /**
+     * Representing [FileColumns.MEDIA_TYPE_DOCUMENT]
+     */
     DOCUMENT(6);
 
     companion object {
+        /**
+         * Returns the matching [MediaType] enum given an int value
+         *
+         * @param value int value of the [MediaType] as written in [FileColumns.MEDIA_TYPE] column
+         */
         fun getEnum(value: Int): MediaType {
             return when (value) {
                 0 -> NONE
