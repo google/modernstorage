@@ -2,55 +2,34 @@
 # ModernStorage
 
 ModernStorage is a group of libraries that provide an abstraction layer over storage on Android to
-simplify its interactions by apps developers. Coil is:
+simplify its interactions by apps developers. ModernStorage is:
 
-- **Fast**: Coil performs a number of optimizations including memory and disk caching, downsampling the image in memory, re-using bitmaps, automatically pausing/cancelling requests, and more.
-- **Lightweight**: Coil adds ~2000 methods to your APK (for apps that already use OkHttp and Coroutines), which is comparable to Picasso and significantly less than Glide and Fresco.
-- **Easy to use**: Coil's API leverages Kotlin's language features for simplicity and minimal boilerplate.
-- **Modern**: Coil is Kotlin-first and uses modern libraries including Coroutines, OkHttp, Okio, and AndroidX Lifecycles.
+- **Easy to use**: ModernStorage focus on API simplicity. Rather than calling four separate methods with the Android Framework API, you should call only one with ModernStorage.
+- **Opinionated**: ModernStorage is written by the Android DevRel team in collaboration with the Android Storage team, taking in account all the feedback from the developer community to address common issues when dealing with storage on Android.
 
 ## Download
 
-Coil is available on `mavenCentral()`.
+ModernStorage is available on `mavenCentral()`.
 
 ```kotlin
+// For MediaStore interactions
 implementation("com.google.modernstorage:mediastore:1.0.0-alpha01")
-implementation("com.google.modernstorage:saf:1.0.0-alpha01")
+// For non-media files on shared storage & SAF interactions, stay tuned
+// implementation("com.google.modernstorage:filesystem:1.0.0-alpha01")
 ```
 
 ## Quick Start
 
-To load an image into an `ImageView`, use the `load` extension function:
-
-```kotlin
-// URL
-imageView.load("https://www.example.com/image.jpg")
-
-// Resource
-imageView.load(R.drawable.image)
-
-// File
-imageView.load(File("/path/to/image.jpg"))
-
-// And more...
-```
-
-Requests can be configured with an optional trailing lambda:
-
-```kotlin
-imageView.load("https://www.example.com/image.jpg") {
-    crossfade(true)
-    placeholder(R.drawable.image)
-    transformations(CircleCropTransformation())
-}
-```
+* For MediaStore interactions, check out this [guide](/mediastore)
+* For non-media files on shared storage & SAF interactions, stay tuned for the upcoming **filesystem** package
 
 ## Is it ready?
 Not yet! We've just started uploading our work but we will have proper documentation, tests and releases really soon!
 
 ## Contributions
 
-Please contribute! We will gladly review any pull requests.
+We're still at an early stage sharing the vision of ModernStorage and would love to have more feature requests and ideas proposed as issues.
+We would be glad to review pull requests, but keep in mind that we want to minimize expanding the API surface until we get more feedback from developers.
 Make sure to read the [Contributing](CONTRIBUTING.md) page first though.
 
 ## License
