@@ -20,6 +20,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import com.google.modernstorage.filesystem.internal.AndroidContentContract
+import com.google.modernstorage.filesystem.internal.PlatformContract
 import java.net.URI
 import java.nio.file.FileSystem
 import java.nio.file.FileSystemNotFoundException
@@ -101,11 +102,7 @@ object AndroidFileSystems {
     }
 
     private fun installContentFileSystem(context: Context) {
-        synchronized(installedProviders) {
-            if (installedProviders[ContentResolver.SCHEME_CONTENT] == null) {
-                installProvider(ContentFileSystemProvider(AndroidContentContract(context)))
-            }
-        }
+        installContentFileSystem(AndroidContentContract(context))
     }
 
     private fun ensureProvidersLoaded() {
@@ -125,6 +122,19 @@ object AndroidFileSystems {
             }
         }
         throw FileSystemNotFoundException("Could not find file system for scheme: $scheme")
+    }
+
+    /**
+     * Installs an implementation of a [ContentFileSystemProvider] backed by a platform specific
+     * [PlatformContract].
+     * @hide
+     */
+    internal fun installContentFileSystem(contract: PlatformContract) {
+        synchronized(installedProviders) {
+            if (installedProviders[contract.scheme] == null) {
+                installProvider(ContentFileSystemProvider(contract))
+            }
+        }
     }
 }
 
