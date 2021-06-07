@@ -26,7 +26,7 @@ import java.net.URI
 import java.nio.file.FileSystems
 
 /**
- * Unit tests for [AndroidPaths].
+ * Unit tests for [AndroidPaths] that depend on Android specific methods.
  */
 class AndroidPathsTests {
     private val context = ApplicationProvider.getApplicationContext<Context>()
@@ -34,24 +34,6 @@ class AndroidPathsTests {
     @Before
     fun setup() {
         AndroidFileSystems.initialize(context)
-    }
-
-    @Test
-    fun constructPath_CorrectContentPath() {
-        val mediaUriString = "content://media/external/files/media/1"
-
-        val mediaPath = AndroidPaths.get(URI(mediaUriString))
-        assert(mediaPath is ContentPath)
-        assert(mediaPath !is ExternalStoragePath)
-    }
-
-    @Test
-    fun constructPath_CorrectExternalStoragePath() {
-        val externalUriString =
-            "content://com.android.externalstorage.documents/tree/primary%3ATest/document/primary%3ATest"
-
-        val storagePath = AndroidPaths.get(URI(externalUriString))
-        assert(storagePath is ExternalStoragePath)
     }
 
     @Test

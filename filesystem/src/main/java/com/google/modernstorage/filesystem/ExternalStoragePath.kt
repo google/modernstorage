@@ -50,7 +50,12 @@ class ExternalStoragePath internal constructor(
     }
 
     override fun compareTo(other: Path?): Int {
-        TODO("Not yet implemented")
+        // If both are ExternalStoragePaths, then the scheme and authority must be the same,
+        // so the only difference could be the URI paths.
+        other as? ExternalStoragePath
+            ?: throw ClassCastException("Cannot compare to a non-ExternalStoragePath Path")
+        val otherPath = other.toUri().path
+        return otherPath.compareTo(toUri().path, ignoreCase = true)
     }
 
     override fun iterator(): MutableIterator<Path> {
@@ -183,6 +188,12 @@ class ExternalStoragePath internal constructor(
             throw IllegalArgumentException("Malformed path: $uri")
         }
         if (uri.path.indexOf('/', 1) > uri.path.indexOf(':', 1)) {
+            throw IllegalArgumentException("Malformed path: $uri")
+        }
+        if (uri.fragment != null) {
+            throw IllegalArgumentException("Malformed path: $uri")
+        }
+        if (uri.query != null) {
             throw IllegalArgumentException("Malformed path: $uri")
         }
     }
