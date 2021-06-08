@@ -20,7 +20,6 @@ import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import com.google.modernstorage.filesystem.internal.AndroidContentContract
-import com.google.modernstorage.filesystem.internal.PlatformContract
 import java.net.URI
 import java.nio.file.FileSystem
 import java.nio.file.FileSystemNotFoundException

@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package com.google.modernstorage.filesystem.internal
+package com.google.modernstorage.filesystem
 
-import com.google.modernstorage.filesystem.ContentFileSystemProvider
-import com.google.modernstorage.filesystem.ContentPath
 import java.net.URI
 import java.nio.channels.SeekableByteChannel
 import java.nio.file.DirectoryStream

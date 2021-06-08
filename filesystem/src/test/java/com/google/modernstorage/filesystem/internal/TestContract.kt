@@ -17,6 +17,7 @@
 package com.google.modernstorage.filesystem.internal
 
 import com.google.modernstorage.filesystem.ContentPath
+import com.google.modernstorage.filesystem.PlatformContract
 import java.net.URI
 import java.nio.channels.SeekableByteChannel
 import java.nio.file.DirectoryStream

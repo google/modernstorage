@@ -21,9 +21,9 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.DocumentsContract
-import android.util.Log
 import com.google.modernstorage.filesystem.ContentPath
 import com.google.modernstorage.filesystem.DocumentBasicAttributes
+import com.google.modernstorage.filesystem.PlatformContract
 import com.google.modernstorage.filesystem.SequenceDocumentDirectoryStream
 import com.google.modernstorage.filesystem.toURI
 import com.google.modernstorage.filesystem.toUri
