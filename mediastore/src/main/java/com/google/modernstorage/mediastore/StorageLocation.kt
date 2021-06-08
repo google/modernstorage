@@ -15,7 +15,6 @@
  */
 package com.google.modernstorage.mediastore
 
-
 /**
  *  Represents a storage volume to be used as target when using [MediaStoreClient].
  */
