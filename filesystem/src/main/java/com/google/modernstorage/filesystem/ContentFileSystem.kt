@@ -23,7 +23,7 @@ import java.nio.file.PathMatcher
 import java.nio.file.WatchService
 import java.nio.file.attribute.UserPrincipalLookupService
 
-open class ContentFileSystem(
+open class ContentFileSystem internal constructor(
     private val provider: ContentFileSystemProvider,
 ) : FileSystem() {
 
@@ -47,9 +47,7 @@ open class ContentFileSystem(
         TODO("Not yet implemented")
     }
 
-    override fun supportedFileAttributeViews(): MutableSet<String> {
-        TODO("Not yet implemented")
-    }
+    override fun supportedFileAttributeViews() = setOf("basic")
 
     override fun getPath(first: String?, vararg more: String?): Path {
         TODO("Not yet implemented")

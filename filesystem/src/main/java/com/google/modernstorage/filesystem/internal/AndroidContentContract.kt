@@ -96,7 +96,6 @@ class AndroidContentContract(context: Context) : PlatformContract {
         ) ?: throw FileNotFoundException("No files found for path $rootUri")
 
         val cursorSequence = generateSequence {
-            Log.d("nicole", "running sequence...")
             if (cursor.moveToNext()) {
                 val documentId = cursor.getString(0)
                 val childUri = if (path.isTree) {
@@ -104,10 +103,8 @@ class AndroidContentContract(context: Context) : PlatformContract {
                 } else {
                     DocumentsContract.buildChildDocumentsUri(rootUri.authority, documentId)
                 }
-                Log.d("nicole", "yielding path: ${childUri.toURI()}")
                 path.fileSystem.provider().getPath(childUri.toURI())
             } else {
-                Log.d("nicole", "Cursor is empty")
                 cursor.close()
                 null
             }
@@ -137,7 +134,7 @@ class AndroidContentContract(context: Context) : PlatformContract {
         }
     }
 
-    private fun buildDocumentBasicAttributes(path: ContentPath): DocumentBasicAttributes {
+    private fun buildDocumentBasicAttributes(path: ContentPath): BasicFileAttributes {
         context.contentResolver.query(
             path.androidUri,
             arrayOf(
@@ -172,14 +169,14 @@ class AndroidContentContract(context: Context) : PlatformContract {
     }
 }
 
-/**
- * Useful extensions for [ContentPath]
- */
+/** @return [Uri] representation of this path. */
 internal val ContentPath.androidUri get() = Uri.parse(toUri().toString())
+
+/** @return `true` if the path is a "tree" content uri; `false` otherwise. */
 internal val ContentPath.isTree get() = DocumentsContract.isTreeUri(androidUri)
 
 /**
- * Uri that can be queried to get a list of child documents (if any).
+ * @return Uri that can be queried to get a list of child documents (if any).
  */
 private val ContentPath.childDocumentsUri
     get() = if (isTree) {
