@@ -23,6 +23,7 @@ import java.nio.file.Path
 import java.nio.file.WatchEvent
 import java.nio.file.WatchKey
 import java.nio.file.WatchService
+import java.util.Objects
 
 /**
  * Base class representing a generic `content://` scheme as a [Path]
@@ -143,4 +144,15 @@ open class ContentPath(private val fs: ContentFileSystem, protected val uri: URI
     override fun toFile(): File {
         throw UnsupportedOperationException()
     }
+
+    override fun equals(other: Any?): Boolean {
+        other as? ContentPath
+            ?: throw ClassCastException("Cannot compare to a non-ContentPath Path")
+        return compareTo(other) == 0
+    }
+
+    override fun hashCode() = Objects.hash(uri)
+
+    override fun toString() =
+        "${javaClass.simpleName}@${System.identityHashCode(this).toString(16)}($uri)"
 }

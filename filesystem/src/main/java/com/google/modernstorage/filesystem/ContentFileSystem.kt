@@ -16,6 +16,7 @@
 
 package com.google.modernstorage.filesystem
 
+import java.net.URI
 import java.nio.file.FileStore
 import java.nio.file.FileSystem
 import java.nio.file.Path
@@ -26,22 +27,21 @@ import java.nio.file.attribute.UserPrincipalLookupService
 open class ContentFileSystem internal constructor(
     private val provider: ContentFileSystemProvider,
 ) : FileSystem() {
+    private val rootUris = mutableListOf<URI>()
 
     override fun close() = Unit
 
     override fun provider() = provider
 
-    override fun isOpen(): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun isOpen() = true
 
     override fun isReadOnly() = false
 
     override fun getSeparator() = "/"
 
-    override fun getRootDirectories(): MutableIterable<Path> {
-        TODO("Not yet implemented")
-    }
+    override fun getRootDirectories() = rootUris.map { rootUri ->
+        provider.getPath(rootUri)
+    }.asIterable()
 
     override fun getFileStores(): MutableIterable<FileStore> {
         TODO("Not yet implemented")
@@ -63,5 +63,15 @@ open class ContentFileSystem internal constructor(
 
     override fun newWatchService(): WatchService {
         TODO("Not yet implemented")
+    }
+
+    /**
+     * Internal method to register a new root URI. At the moment there isn't any attempt to
+     * check whether one URI is a child of a previously registered root.
+     */
+    internal fun registerRoot(rootUri: URI) = synchronized(rootUri) {
+        if (!rootUris.contains(rootUri)) {
+            rootUris.add(rootUri)
+        }
     }
 }

@@ -16,7 +16,6 @@
 
 package com.google.modernstorage.filesystem
 
-import com.google.modernstorage.filesystem.internal.PlatformContract
 import java.net.URI
 import java.nio.channels.SeekableByteChannel
 import java.nio.file.AccessMode
@@ -61,7 +60,7 @@ class ContentFileSystemProvider(
             throw IllegalArgumentException("Only DocumentProvider URIs are currently supported")
         }
 
-        return getOrCreateFileSystem(uri.authority)
+        return getOrCreateFileSystem(uri, registerRoot = true)
     }
 
     override fun getFileSystem(uri: URI?): FileSystem {
@@ -70,10 +69,10 @@ class ContentFileSystemProvider(
     }
 
     override fun getPath(uri: URI?): Path {
-        val checkUri = uri ?: throw IllegalArgumentException("URI must not be null")
-        return if (checkUri.scheme == scheme) {
-            val authority = checkUri.authority
-            val fileSystem = getOrCreateFileSystem(authority)
+        uri ?: throw IllegalArgumentException("URI must not be null")
+        return if (uri.scheme == scheme) {
+            val authority = uri.authority
+            val fileSystem = getOrCreateFileSystem(uri)
 
             // Perform any transformations on the incoming URI that are necessary.
             val pathUri = contentContract.prepareUri(uri)
@@ -184,16 +183,22 @@ class ContentFileSystemProvider(
     private fun Set<OpenOption>.optionToMode(openOption: OpenOption, modeString: String) =
         if (contains(openOption)) modeString else ""
 
-    private fun getOrCreateFileSystem(authority: String): ContentFileSystem {
-        synchronized(fileSystemCache) {
+    private fun getOrCreateFileSystem(root: URI, registerRoot: Boolean = false): ContentFileSystem {
+        val authority = root.authority
+        val fileSystem = synchronized(fileSystemCache) {
             val inCache = fileSystemCache[authority]
             if (inCache is ContentFileSystem) {
-                return inCache
+                inCache
+            } else {
+                val newFileSystem = ContentFileSystem(this)
+                fileSystemCache[authority] = newFileSystem
+                return newFileSystem
             }
-
-            val newFileSystem = ContentFileSystem(this)
-            fileSystemCache[authority] = newFileSystem
-            return newFileSystem
         }
+
+        if (registerRoot) {
+            fileSystem.registerRoot(root)
+        }
+        return fileSystem
     }
 }
