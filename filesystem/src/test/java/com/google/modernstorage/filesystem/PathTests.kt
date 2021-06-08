@@ -59,7 +59,7 @@ class PathTests {
 
         val pathFromAndroidPaths = AndroidPaths.get(fallbackUri)
         val pathFromPaths = Paths.get(fallbackUri)
-        assert(pathFromAndroidPaths.equals(pathFromPaths))
+        assert(pathFromAndroidPaths == pathFromPaths)
     }
 
     @Test
