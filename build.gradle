@@ -34,6 +34,7 @@ buildscript {
 plugins {
     id "com.diffplug.spotless" version "5.12.5"
     id "org.jetbrains.dokka" version "1.4.32"
+    id "me.tylerbwong.gradle.metalava" version "0.1.7"  apply false
 }
 
 allprojects {
@@ -58,6 +59,15 @@ subprojects {
             greclipse().configFile(rootProject.file('spotless/greclipse.properties'))
             licenseHeaderFile rootProject.file('spotless/copyright.txt'),
                     '(buildscript|apply|import|plugins)'
+        }
+    }
+
+    if (project.hasProperty('POM_ARTIFACT_ID')) {
+        apply plugin: 'me.tylerbwong.gradle.metalava'
+
+        metalava {
+            filename = "api/current.api"
+            reportLintsAsErrors = true
         }
     }
 }
