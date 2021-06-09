@@ -1,0 +1,37 @@
+site_name: ModernStorage
+site_url: https://google.github.com/modernstorage/
+repo_name: google/modernstorage
+repo_url: https://github.com/google/modernstorage
+site_description: "An HTTP & HTTP/2 client for Android and Java applications"
+site_author: Google
+theme:
+  name: material
+  icon:
+    logo: material/folder-outline
+  favicon: images/favicon.png
+  palette:
+    primary: deep purple
+
+nav:
+  - 'Overview': index.md
+  - 'Getting Started': getting-started.md
+  - 'MediaStoreClient': mediaStoreClient.md
+  - 'MediaActivityResults': mediaActivityResults.md
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - footnotes
+  - toc:
+      permalink: true
+  - pymdownx.betterem
+  - pymdownx.superfences
+  - pymdownx.tabbed
+
+# Plugins
+plugins:
+  - search
+#  - minify:
+#      minify_html: true

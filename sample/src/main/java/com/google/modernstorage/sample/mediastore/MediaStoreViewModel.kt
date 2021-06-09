@@ -1,11 +1,11 @@
 /*
- * Copyright 2021 The Android Open Source Project
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.google.modernstorage.sample.mediastore
 
 import android.app.Application
@@ -23,10 +22,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.google.modernstorage.media.MediaResource
-import com.google.modernstorage.media.MediaStoreClient
-import com.google.modernstorage.media.SharedPrimary
-import com.google.modernstorage.media.canWriteOwnEntriesInMediaStore
+import com.google.modernstorage.mediastore.MediaResource
+import com.google.modernstorage.mediastore.MediaStoreClient
+import com.google.modernstorage.mediastore.SharedPrimary
+import com.google.modernstorage.mediastore.canWriteOwnEntriesInMediaStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -38,7 +37,7 @@ class MediaStoreViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application) {
     private val httpClient by lazy { OkHttpClient() }
-    private val mediaStore: MediaStoreClient by lazy { MediaStoreClient(application) }
+    private val mediaStore by lazy { MediaStoreClient(application) }
 
     val canWriteInMediaStore: Boolean
         get() = canWriteOwnEntriesInMediaStore(getApplication())
@@ -55,7 +54,7 @@ class MediaStoreViewModel(
 
     init {
         savedStateHandle.get<Uri>("currentMediaUri")?.let { uri ->
-            if(canWriteInMediaStore) {
+            if (canWriteInMediaStore) {
                 viewModelScope.launch {
                     _currentMedia.value = mediaStore.getResourceByUri(uri)
                 }

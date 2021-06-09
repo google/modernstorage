@@ -1,11 +1,11 @@
 /*
- * Copyright 2021 The Android Open Source Project
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.google.modernstorage.sample.mediastore
 
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -25,8 +24,8 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.google.modernstorage.media.CustomTakePicture
-import com.google.modernstorage.media.CustomTakeVideo
+import com.google.modernstorage.mediastore.CustomTakePicture
+import com.google.modernstorage.mediastore.CustomTakeVideo
 import com.google.modernstorage.sample.R
 import com.google.modernstorage.sample.databinding.FragmentMediastoreBinding
 
@@ -152,13 +151,12 @@ class MediaStoreFragment : Fragment() {
 
         Log.d(tag, "Image taken SUCCESS")
 
-        if(viewModel.temporaryCameraImageUri == null) {
+        if (viewModel.temporaryCameraImageUri == null) {
             Log.e(tag, "Can't find previously saved temporary Camera Image URI")
         } else {
             viewModel.setCurrentMedia(viewModel.temporaryCameraImageUri!!)
             viewModel.clearTemporaryCameraImageUri()
         }
-
     }
 
     private val actionTakeVideo = registerForActivityResult(CustomTakeVideo()) { uri ->

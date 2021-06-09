@@ -1,0 +1,98 @@
+// Signature format: 4.0
+package com.google.modernstorage.mediastore {
+
+  public final class CustomTakePicture extends androidx.activity.result.contract.ActivityResultContract<android.net.Uri,java.lang.Boolean> {
+    ctor public CustomTakePicture();
+    method public android.content.Intent createIntent(android.content.Context context, android.net.Uri input);
+    method public androidx.activity.result.contract.ActivityResultContract.SynchronousResult<java.lang.Boolean>? getSynchronousResult(android.content.Context context, android.net.Uri input);
+    method public Boolean parseResult(int resultCode, android.content.Intent? intent);
+  }
+
+  public final class CustomTakeVideo extends androidx.activity.result.contract.ActivityResultContract<android.net.Uri,android.net.Uri> {
+    ctor public CustomTakeVideo();
+    method public android.content.Intent createIntent(android.content.Context context, android.net.Uri input);
+    method public androidx.activity.result.contract.ActivityResultContract.SynchronousResult<android.net.Uri>? getSynchronousResult(android.content.Context context, android.net.Uri input);
+    method public android.net.Uri? parseResult(int resultCode, android.content.Intent? intent);
+  }
+
+  public final class Internal extends com.google.modernstorage.mediastore.StorageLocation {
+    field public static final com.google.modernstorage.mediastore.Internal INSTANCE;
+  }
+
+  public final class MediaCollectionKt {
+    method public static android.net.Uri? getImageCollection(com.google.modernstorage.mediastore.StorageLocation location);
+    method public static android.net.Uri? getVideoCollection(com.google.modernstorage.mediastore.StorageLocation location);
+  }
+
+  public final class MediaQueryKt {
+    method public static suspend Object? getMediaResourceById(android.content.Context context, android.net.Uri mediaUri, kotlin.coroutines.Continuation<? super com.google.modernstorage.mediastore.MediaResource> p);
+  }
+
+  public final class MediaResource {
+    ctor public MediaResource(android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.MediaType type, String mimeType);
+    method public android.net.Uri component1();
+    method public String component2();
+    method public long component3();
+    method public com.google.modernstorage.mediastore.MediaType component4();
+    method public String component5();
+    method public com.google.modernstorage.mediastore.MediaResource copy(android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.MediaType type, String mimeType);
+    method public String getFilename();
+    method public String getMimeType();
+    method public long getSize();
+    method public com.google.modernstorage.mediastore.MediaType getType();
+    method public android.net.Uri getUri();
+    property public final String filename;
+    property public final String mimeType;
+    property public final long size;
+    property public final com.google.modernstorage.mediastore.MediaType type;
+    property public final android.net.Uri uri;
+  }
+
+  public final class MediaStoreClient {
+    ctor public MediaStoreClient(android.content.Context context);
+    method public suspend Object? addImageFromStream(String filename, java.io.InputStream inputStream, com.google.modernstorage.mediastore.StorageLocation location, kotlin.coroutines.Continuation<? super android.net.Uri> p);
+    method public suspend Object? addVideoFromStream(String filename, java.io.InputStream inputStream, com.google.modernstorage.mediastore.StorageLocation location, kotlin.coroutines.Continuation<? super android.net.Uri> p);
+    method public suspend Object? createImageUri(String filename, com.google.modernstorage.mediastore.StorageLocation location, kotlin.coroutines.Continuation<? super android.net.Uri> p);
+    method public suspend Object? createVideoUri(String filename, com.google.modernstorage.mediastore.StorageLocation location, kotlin.coroutines.Continuation<? super android.net.Uri> p);
+    method public suspend Object? getResourceByUri(android.net.Uri uri, kotlin.coroutines.Continuation<? super com.google.modernstorage.mediastore.MediaResource> p);
+  }
+
+  public final class MediaStoreClientKt {
+    method public static Exception getUnaccessibleCollectionException();
+    method public static Exception getUnopenableOutputStreamException();
+    method public static Exception getUriNotCreatedException();
+  }
+
+  public enum MediaType {
+    method public final int getValue();
+    property public final int value;
+    enum_constant public static final com.google.modernstorage.mediastore.MediaType AUDIO;
+    enum_constant public static final com.google.modernstorage.mediastore.MediaType DOCUMENT;
+    enum_constant public static final com.google.modernstorage.mediastore.MediaType IMAGE;
+    enum_constant public static final com.google.modernstorage.mediastore.MediaType NONE;
+    enum_constant public static final com.google.modernstorage.mediastore.MediaType PLAYLIST;
+    enum_constant public static final com.google.modernstorage.mediastore.MediaType SUBTITLE;
+    enum_constant public static final com.google.modernstorage.mediastore.MediaType VIDEO;
+    field public static final com.google.modernstorage.mediastore.MediaType.Companion Companion;
+  }
+
+  public static final class MediaType.Companion {
+    method public com.google.modernstorage.mediastore.MediaType getEnum(int value);
+  }
+
+  public final class PermissionKt {
+    method public static boolean canReadOwnEntriesInMediaStore(android.content.Context context);
+    method public static boolean canReadSharedEntriesInMediaStore(android.content.Context context);
+    method public static boolean canWriteOwnEntriesInMediaStore(android.content.Context context);
+    method public static boolean canWriteSharedEntriesInMediaStore(android.content.Context context);
+  }
+
+  public final class SharedPrimary extends com.google.modernstorage.mediastore.StorageLocation {
+    field public static final com.google.modernstorage.mediastore.SharedPrimary INSTANCE;
+  }
+
+  public abstract sealed class StorageLocation {
+  }
+
+}
+
