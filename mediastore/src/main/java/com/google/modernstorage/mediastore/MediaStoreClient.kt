@@ -1,11 +1,11 @@
 /*
- * Copyright 2021 The Android Open Source Project
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.google.modernstorage.mediastore
 
 import android.content.ContentValues
@@ -28,9 +27,27 @@ val UnaccessibleCollectionException = Exception("Collection URI could not be use
 val UriNotCreatedException = Exception("URI could not be created")
 val UnopenableOutputStreamException = Exception("Output stream could not be opened")
 
+/**
+ * MediaStore client providing an easier way to interact with it.
+ *
+ * @constructor Creates a [MediaStoreClient] with a [Context]
+ */
 class MediaStoreClient(private val context: Context) {
+    /**
+     * Returns a [MediaResource] if it finds its content [Uri] in MediaStore otherwise returns `null`
+     *
+     * @param uri [Uri] representing the [MediaStore] entry.
+     */
     suspend fun getResourceByUri(uri: Uri) = getMediaResourceById(context, uri)
 
+    /**
+     * Create a [MediaStore] image [Uri] and returns it if successful otherwise returns `null`
+     *
+     * @param filename preferred filename for the image entry. System can add a suffix if there's
+     * already a file with the same name. Some devices can trim the filename when special characters
+     * are used.
+     * @param location storage volume where the image will be saved.
+     */
     suspend fun createImageUri(filename: String, location: StorageLocation): Uri? {
         return withContext(Dispatchers.IO) {
             val entry = ContentValues().apply {
@@ -42,6 +59,15 @@ class MediaStoreClient(private val context: Context) {
         }
     }
 
+    /**
+     * Add an image in [MediaStore] from an [InputStream] and returns its content [Uri]
+     *
+     * @param filename preferred filename for the image entry. System can add a suffix if there's
+     * already a file with the same name. Some devices can trim the filename when special characters
+     * are used.
+     * @param inputStream image content.
+     * @param location storage volume where the image will be saved.
+     */
     suspend fun addImageFromStream(
         filename: String,
         inputStream: InputStream,
@@ -66,6 +92,14 @@ class MediaStoreClient(private val context: Context) {
         }
     }
 
+    /**
+     * Create a [MediaStore] video [Uri] and returns it if successful otherwise returns `null`
+     *
+     * @param filename preferred filename for the video entry. System can add a suffix if there's
+     * already a file with the same name. Some devices can trim the filename when special characters
+     * are used.
+     * @param location storage volume where the image will be saved.
+     */
     suspend fun createVideoUri(filename: String, location: StorageLocation): Uri? {
         return withContext(Dispatchers.IO) {
             val entry = ContentValues().apply {
@@ -77,6 +111,15 @@ class MediaStoreClient(private val context: Context) {
         }
     }
 
+    /**
+     * Add a video in [MediaStore] from an [InputStream] and returns its content [Uri]
+     *
+     * @param filename preferred filename for the video entry. System can add a suffix if there's
+     * already a file with the same name. Some devices can trim the filename when special characters
+     * are used.
+     * @param inputStream video content.
+     * @param location storage volume where the video will be saved.
+     */
     suspend fun addVideoFromStream(
         filename: String,
         inputStream: InputStream,

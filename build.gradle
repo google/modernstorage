@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Android Open Source Project
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,18 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.0'
+        classpath 'com.android.tools.build:gradle:4.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
+}
+
+plugins {
+    id "com.diffplug.spotless" version "5.12.5"
+    id "org.jetbrains.dokka" version "1.4.32"
+    id "me.tylerbwong.gradle.metalava" version "0.1.7"  apply false
 }
 
 allprojects {
@@ -39,6 +45,29 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+subprojects {
+    apply plugin: 'com.diffplug.spotless'
+    spotless {
+        kotlin {
+            target "**/*.kt"
+            ktlint('0.41.0')
+            licenseHeaderFile rootProject.file('spotless/copyright.txt')
+        }
+
+        groovyGradle {
+            target '**/*.gradle'
+            greclipse().configFile(rootProject.file('spotless/greclipse.properties'))
+            licenseHeaderFile rootProject.file('spotless/copyright.txt'),
+                    '(buildscript|apply|import|plugins)'
+        }
+    }
+
+    if (project.hasProperty('POM_ARTIFACT_ID')) {
+        apply plugin: 'me.tylerbwong.gradle.metalava'
+
+        metalava {
+            filename = "api/current.api"
+            reportLintsAsErrors = true
+        }
+    }
 }

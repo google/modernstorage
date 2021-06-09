@@ -1,11 +1,11 @@
 /*
- * Copyright 2021 The Android Open Source Project
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.google.modernstorage.mediastore
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
@@ -23,6 +22,11 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat.checkSelfPermission
 
+/**
+ * Returns true if the provided [Context] can read MediaStore entries it created.
+ *
+ * @param context Context used to query MediaStore.
+ */
 fun canReadOwnEntriesInMediaStore(context: Context): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         true
@@ -37,6 +41,11 @@ fun canReadOwnEntriesInMediaStore(context: Context): Boolean {
     }
 }
 
+/**
+ * Returns true if the provided [Context] can create entries in MediaStore.
+ *
+ * @param context Context used to query MediaStore.
+ */
 fun canWriteOwnEntriesInMediaStore(context: Context): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         true
@@ -45,6 +54,11 @@ fun canWriteOwnEntriesInMediaStore(context: Context): Boolean {
     }
 }
 
+/**
+ * Returns true if the provided [Context] can read MediaStore entries created by other apps.
+ *
+ * @param context Context used to query MediaStore.
+ */
 fun canReadSharedEntriesInMediaStore(context: Context): Boolean {
     return checkSelfPermission(
         context,
@@ -55,6 +69,12 @@ fun canReadSharedEntriesInMediaStore(context: Context): Boolean {
     ) == PackageManager.PERMISSION_GRANTED
 }
 
+/**
+ * Returns true if the provided [Context] can edit or delete MediaStore entries created by other
+ * apps.
+ *
+ * @param context Context used to query MediaStore.
+ */
 fun canWriteSharedEntriesInMediaStore(context: Context): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         canReadSharedEntriesInMediaStore(context)
