@@ -17,5 +17,8 @@ jobs:
           java-version: 8
           distribution: 'adopt'
 
+      - name: Spotless checking
+        run: ./gradlew spotlessCheck
+
       - name: Build root project
         run: ./gradlew clean && ./gradlew build
