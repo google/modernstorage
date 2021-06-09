@@ -4,7 +4,7 @@
 ModernStorage is a group of libraries that provide an abstraction layer over storage on Android to
 simplify its interactions by apps developers. ModernStorage is:
 
-- **Easy to use**: ModernStorage focus on API simplicity. Rather than calling four separate methods with the Android Framework API, you should call only one with ModernStorage.
+- **Easy to use**: ModernStorage focuses on API simplicity. Rather than calling four separate methods with the Android Framework API, you only need to call one.
 - **Opinionated**: ModernStorage is written by the Android DevRel team in collaboration with the Android Storage team, taking in account all the feedback from the developer community to address common issues when dealing with storage on Android.
 
 ## Download
