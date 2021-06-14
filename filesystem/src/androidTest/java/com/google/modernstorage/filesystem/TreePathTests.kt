@@ -18,7 +18,6 @@ package com.google.modernstorage.filesystem
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.test.core.app.ApplicationProvider
 import com.google.modernstorage.filesystem.provider.TestDocumentProvider
 import com.google.modernstorage.filesystem.provider.document
@@ -76,9 +75,7 @@ class TreePathTests {
         val directoryStream = Files.walk(testPath)
         directoryStream.forEach { document ->
             val docUri = document.toUri().toString()
-            if (expectedDocuments.contains(docUri)) {
-                expectedDocuments.remove(docUri)
-            } else {
+            if (!expectedDocuments.remove(docUri)) {
                 Assert.fail("Unexpected URI: $docUri")
             }
         }
