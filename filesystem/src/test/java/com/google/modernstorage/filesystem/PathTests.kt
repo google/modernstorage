@@ -32,7 +32,7 @@ class PathTests {
 
     @Before
     fun setup() {
-        AndroidFileSystems.installContentFileSystem(TestContract())
+        AndroidFileSystems.initialize(TestContract())
     }
 
     @Test

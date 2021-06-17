@@ -46,7 +46,7 @@ object AndroidFileSystems {
      */
     @JvmStatic
     fun initialize(context: Context) {
-        installContentFileSystem(context.applicationContext)
+        initialize(AndroidContentContract(context))
     }
 
     /**
@@ -100,10 +100,6 @@ object AndroidFileSystems {
         return installedProviders[uri.scheme] ?: getSystemLoadedProvider(uri.scheme)
     }
 
-    private fun installContentFileSystem(context: Context) {
-        installContentFileSystem(AndroidContentContract(context))
-    }
-
     private fun ensureProvidersLoaded() {
         synchronized(installedProviders) {
             if (installedProviders.isEmpty() ||
@@ -124,13 +120,20 @@ object AndroidFileSystems {
     }
 
     /**
+     * Used to perform one-time initialization for the filesystem library with a custom
+     * [PlatformContract]. Used for testing.
+     */
+    internal fun initialize(contract: PlatformContract) {
+        installContentFileSystem(contract)
+    }
+
+    /**
      * Installs an implementation of a [ContentFileSystemProvider] backed by a platform specific
      * [PlatformContract].
-     * @hide
      */
-    internal fun installContentFileSystem(contract: PlatformContract) {
+    private fun installContentFileSystem(contract: PlatformContract) {
         synchronized(installedProviders) {
-            if (installedProviders[contract.scheme] == null) {
+            if (installedProviders[CONTENT_SCHEME] == null) {
                 installProvider(ContentFileSystemProvider(contract))
             }
         }

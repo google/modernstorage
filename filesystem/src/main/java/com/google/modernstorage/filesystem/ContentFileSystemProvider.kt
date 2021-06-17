@@ -23,6 +23,7 @@ import java.nio.file.CopyOption
 import java.nio.file.DirectoryStream
 import java.nio.file.FileStore
 import java.nio.file.FileSystem
+import java.nio.file.FileSystemAlreadyExistsException
 import java.nio.file.FileSystems
 import java.nio.file.LinkOption
 import java.nio.file.OpenOption
@@ -36,6 +37,8 @@ import java.nio.file.attribute.FileAttribute
 import java.nio.file.attribute.FileAttributeView
 import java.nio.file.spi.FileSystemProvider
 
+internal const val CONTENT_SCHEME = "content"
+
 /**
  * A [FileSystemProvider] for `content://` scheme Uris.
  *
@@ -45,13 +48,18 @@ import java.nio.file.spi.FileSystemProvider
  */
 class ContentFileSystemProvider(
     private val contentContract: PlatformContract
-) : FileSystemProvider() {
+) : FileSystemProvider(), PlatformContract by contentContract {
 
     companion object {
         private val fileSystemCache = mutableMapOf<String, ContentFileSystem>()
     }
 
-    override fun getScheme() = contentContract.scheme
+    init {
+        // Register provider specific FileSystem instances.
+        addFileSystem(ExternalStorageFileSystem(this))
+    }
+
+    override fun getScheme() = CONTENT_SCHEME
 
     override fun newFileSystem(uri: URI?, env: MutableMap<String, *>?): FileSystem {
         uri ?: throw IllegalArgumentException("URI must not be null")
@@ -76,11 +84,7 @@ class ContentFileSystemProvider(
 
             // Perform any transformations on the incoming URI that are necessary.
             val pathUri = contentContract.prepareUri(uri)
-
-            when (authority) {
-                EXTERNAL_STORAGE_PROVIDER_AUTHORITY -> ExternalStoragePath(fileSystem, pathUri)
-                else -> ContentPath(fileSystem, pathUri)
-            }
+            fileSystem.getPath(pathUri)
         } else {
             throw IllegalArgumentException("URI must be a content:// uri")
         }
@@ -190,14 +194,20 @@ class ContentFileSystemProvider(
             if (inCache is ContentFileSystem) {
                 inCache
             } else {
-                val newFileSystem = ContentFileSystem(this)
-                fileSystemCache[authority] = newFileSystem
-                return newFileSystem
+                return addFileSystem(ContentFileSystem(this, authority))
             }
         }
 
         if (registerRoot) {
             fileSystem.registerRoot(root)
+        }
+        return fileSystem
+    }
+
+    private fun addFileSystem(fileSystem: ContentFileSystem): ContentFileSystem {
+        val authority = fileSystem.authority
+        synchronized(fileSystemCache) {
+            fileSystemCache[authority] = fileSystem
         }
         return fileSystem
     }

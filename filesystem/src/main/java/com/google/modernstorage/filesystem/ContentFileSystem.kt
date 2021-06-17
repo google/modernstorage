@@ -26,6 +26,7 @@ import java.nio.file.attribute.UserPrincipalLookupService
 
 open class ContentFileSystem internal constructor(
     private val provider: ContentFileSystemProvider,
+    val authority: String
 ) : FileSystem() {
     private val rootUris = mutableListOf<URI>()
 
@@ -48,6 +49,8 @@ open class ContentFileSystem internal constructor(
     }
 
     override fun supportedFileAttributeViews() = setOf("basic")
+
+    open fun getPath(uri: URI) = ContentPath(this, uri)
 
     override fun getPath(first: String?, vararg more: String?): Path {
         TODO("Not yet implemented")

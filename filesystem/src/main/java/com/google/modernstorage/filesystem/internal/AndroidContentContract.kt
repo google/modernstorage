@@ -42,8 +42,6 @@ import java.nio.file.attribute.FileTime
 class AndroidContentContract(context: Context) : PlatformContract {
     private val context = context.applicationContext
 
-    override val scheme = ContentResolver.SCHEME_CONTENT
-
     override fun isSupportedUri(uri: URI) = DocumentsContract.isDocumentUri(context, uri.toUri())
 
     override fun prepareUri(incomingUri: URI): URI {
