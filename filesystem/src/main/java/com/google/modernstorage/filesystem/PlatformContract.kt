@@ -30,7 +30,6 @@ import java.nio.file.attribute.BasicFileAttributes
  * This interface is nominally implemented by [AndroidContentContract].
  */
 interface PlatformContract {
-    val scheme: String
 
     fun isSupportedUri(uri: URI): Boolean
 

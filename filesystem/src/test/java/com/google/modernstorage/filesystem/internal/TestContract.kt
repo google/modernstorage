@@ -16,6 +16,7 @@
 
 package com.google.modernstorage.filesystem.internal
 
+import com.google.modernstorage.filesystem.CONTENT_SCHEME
 import com.google.modernstorage.filesystem.ContentPath
 import com.google.modernstorage.filesystem.PlatformContract
 import java.net.URI
@@ -27,9 +28,8 @@ import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 
 class TestContract : PlatformContract {
-    override val scheme = "content"
 
-    override fun isSupportedUri(uri: URI) = uri.scheme == scheme
+    override fun isSupportedUri(uri: URI) = uri.scheme == CONTENT_SCHEME
 
     override fun prepareUri(incomingUri: URI) = incomingUri
 
