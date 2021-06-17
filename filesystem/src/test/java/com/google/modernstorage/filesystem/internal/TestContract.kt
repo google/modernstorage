@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,11 @@ import java.nio.file.LinkOption
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 
-class TestContract : PlatformContract {
+class TestContract(
+    val openByteChannel: (URI, String) -> SeekableByteChannel = TODO(),
+    val newDirectoryStream: (ContentPath, Filter<in Path>?) -> DirectoryStream<Path> = TODO(),
+    val readAttributes: (ContentPath, Class<out BasicFileAttributes>?, options: Array<out LinkOption>?) -> BasicFileAttributes = TODO()
+) : PlatformContract {
 
     override fun isSupportedUri(uri: URI) = uri.scheme == CONTENT_SCHEME
 
