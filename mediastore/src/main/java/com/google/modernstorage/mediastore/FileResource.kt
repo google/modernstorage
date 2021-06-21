@@ -16,7 +16,9 @@
 package com.google.modernstorage.mediastore
 
 import android.net.Uri
+import android.os.Parcelable
 import android.provider.MediaStore.Files.FileColumns
+import kotlinx.parcelize.Parcelize
 
 /**
  * Represents an [android.provider.MediaStore] entry.
@@ -27,18 +29,19 @@ import android.provider.MediaStore.Files.FileColumns
  * @property type The last name.
  * @property mimeType The last name.
  */
-data class MediaResource(
+@Parcelize
+data class FileResource(
     val uri: Uri,
     val filename: String,
     val size: Long,
-    val type: MediaType,
+    val type: FileType,
     val mimeType: String,
-)
+) : Parcelable
 
 /**
  *  Media type enum class representing the [FileColumns.MEDIA_TYPE] column
  */
-enum class MediaType(val value: Int) {
+enum class FileType(val value: Int) {
     /**
      * Representing [FileColumns.MEDIA_TYPE_NONE]
      */
@@ -76,11 +79,11 @@ enum class MediaType(val value: Int) {
 
     companion object {
         /**
-         * Returns the matching [MediaType] enum given an int value
+         * Returns the matching [FileType] enum given an int value
          *
-         * @param value int value of the [MediaType] as written in [FileColumns.MEDIA_TYPE] column
+         * @param value int value of the [FileType] as written in [FileColumns.MEDIA_TYPE] column
          */
-        fun getEnum(value: Int): MediaType {
+        fun getEnum(value: Int): FileType {
             return when (value) {
                 0 -> NONE
                 1 -> IMAGE

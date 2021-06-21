@@ -16,7 +16,7 @@
 package com.google.modernstorage.mediastore
 
 /**
- *  Represents a storage volume to be used as target when using [MediaStoreClient].
+ *  Represents a storage volume to be used as target when using [MediaStoreRepository].
  */
 sealed class StorageLocation
 
