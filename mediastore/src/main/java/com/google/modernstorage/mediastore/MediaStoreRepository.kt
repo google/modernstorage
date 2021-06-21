@@ -28,9 +28,10 @@ import android.provider.MediaStore.Files.FileColumns
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.InputStream
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -39,10 +40,10 @@ import kotlin.coroutines.suspendCoroutine
  *
  * @constructor Creates a [MediaStoreRepository] with a [Context]
  */
-class MediaStoreRepository(private val context: Context) {
+class MediaStoreRepository(private val appContext: Context) {
 
     private val contentResolver: ContentResolver
-        get() = context.contentResolver
+        get() = appContext.contentResolver
 
     /**
      * Returns true if the current [Context] can read MediaStore entries it created.
@@ -52,10 +53,10 @@ class MediaStoreRepository(private val context: Context) {
             true
         } else {
             ContextCompat.checkSelfPermission(
-                context,
+                appContext,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
-                context,
+                appContext,
                 Manifest.permission.READ_EXTERNAL_STORAGE
             ) == PackageManager.PERMISSION_GRANTED
         }
@@ -69,7 +70,7 @@ class MediaStoreRepository(private val context: Context) {
             true
         } else {
             ContextCompat.checkSelfPermission(
-                context,
+                appContext,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) == PackageManager.PERMISSION_GRANTED
         }
@@ -80,10 +81,10 @@ class MediaStoreRepository(private val context: Context) {
      */
     fun canReadSharedEntries(): Boolean {
         return ContextCompat.checkSelfPermission(
-            context,
+            appContext,
             Manifest.permission.READ_EXTERNAL_STORAGE
         ) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
-            context,
+            appContext,
             Manifest.permission.READ_EXTERNAL_STORAGE
         ) == PackageManager.PERMISSION_GRANTED
     }
@@ -97,7 +98,7 @@ class MediaStoreRepository(private val context: Context) {
             canReadSharedEntries()
         } else {
             ContextCompat.checkSelfPermission(
-                context,
+                appContext,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) == PackageManager.PERMISSION_GRANTED
         }
@@ -111,19 +112,20 @@ class MediaStoreRepository(private val context: Context) {
     }
 
     /**
-     * Create a [MediaStore] [Uri] and returns it if successful otherwise returns `null`.
+     * Create a [MediaStore] [Uri] and returns it if successful.
      *
      * @param filename preferred filename for the media entry. System can add a suffix if there's
      * already a file with the same name. Some devices can trim the filename when special characters
      * are used.
+     * @param type type of the media file to select the right collection.
      * @param location storage volume where the media file will be saved.
      */
     suspend fun createMediaUri(
         filename: String,
         type: FileType,
         location: StorageLocation,
-        scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-    ): Result<Uri> = scope.async {
+        context: CoroutineContext = Dispatchers.IO
+    ): Result<Uri> = withContext(context) {
         val entry = ContentValues().apply {
             put(getDisplayNameColumn(type), filename)
         }
@@ -133,36 +135,42 @@ class MediaStoreRepository(private val context: Context) {
             FileType.AUDIO -> getAudioCollection(location)
             FileType.VIDEO -> getVideoCollection(location)
             else -> {
-                return@async Result.failure(IllegalArgumentException("Unsupported kind: $type"))
+                return@withContext Result.failure(IllegalArgumentException("Unsupported kind: $type"))
             }
         }
 
         val uri = contentResolver.insert(collection, entry)
-            ?: return@async Result.failure(Exceptions.uriNotCreatedException(filename))
+            ?: return@withContext Result.failure(Exceptions.uriNotCreatedException(filename))
 
-        return@async Result.success(uri)
-    }.await()
+        return@withContext Result.success(uri)
+    }
 
     private suspend fun getPathByUri(
         uri: Uri,
-        scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-    ): Result<String> = scope.async {
-        val cursor = context.contentResolver.query(
+        context: CoroutineContext = Dispatchers.IO
+    ): Result<String> = withContext(context) {
+        val cursor = contentResolver.query(
             uri,
             arrayOf(FileColumns.DATA),
             null,
             null,
             null
-        ) ?: return@async Result.failure(Exceptions.uriNotFoundException(uri))
+        ) ?: return@withContext Result.failure(Exceptions.uriNotFoundException(uri))
 
         cursor.use {
             if (!cursor.moveToFirst()) {
-                return@async Result.failure(Exceptions.uriNotFoundException(uri))
+                return@withContext Result.failure(Exceptions.uriNotFoundException(uri))
             }
 
-            return@async Result.success(cursor.getString(cursor.getColumnIndexOrThrow(FileColumns.DATA)))
+            return@withContext Result.success(
+                cursor.getString(
+                    cursor.getColumnIndexOrThrow(
+                        FileColumns.DATA
+                    )
+                )
+            )
         }
-    }.await()
+    }
 
     /**
      * Add a media file in [MediaStore] from an [InputStream] and returns its content [Uri].
@@ -183,31 +191,36 @@ class MediaStoreRepository(private val context: Context) {
         mimeType: String,
         inputStream: InputStream,
         location: StorageLocation,
-        scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-    ): Result<Uri> = scope.async {
+        context: CoroutineContext = Dispatchers.IO
+    ): Result<Uri> = withContext(context) {
         val uri = createMediaUri(filename, type, location).getOrElse {
-            return@async Result.failure(it)
+            return@withContext Result.failure(it)
         }
 
         contentResolver.openOutputStream(uri, "w").use { outputStream ->
             if (outputStream == null) {
-                return@async Result.failure(Exceptions.unopenableOutputStreamException(uri))
+                return@withContext Result.failure(Exceptions.unopenableOutputStreamException(uri))
             } else {
                 inputStream.copyTo(outputStream)
             }
         }
 
-        val path = getPathByUri(uri).getOrNull() ?: return@async Result.success(uri)
-        scanFilePath(path = path, mimeType = mimeType, scope = scope)
+        val path = getPathByUri(uri).getOrNull() ?: return@withContext Result.success(uri)
+        scanFilePath(path = path, mimeType = mimeType)
 
-        return@async Result.success(uri)
-    }.await()
+        return@withContext Result.success(uri)
+    }
 
     /**
+     * Scan file path in [MediaStore] using [MediaScannerConnection]
+     *
      * When adding a file (using java.io or ContentResolver APIs), MediaStore might not be aware of
      * the new entry or doesn't have an updated version of it. That's why some entries have 0 bytes
      * size, even though the file is definitely not empty. MediaStore will eventually scan the file
      * but it's better to do it ourselves to have a fresher state whenever we can.
+     *
+     * @param path [String] representing the file path.
+     * @param mimeType mime type content.
      */
     private suspend fun scanFilePath(
         path: String,
@@ -217,7 +230,7 @@ class MediaStoreRepository(private val context: Context) {
         return suspendCoroutine { continuation ->
             scope.launch {
                 MediaScannerConnection.scanFile(
-                    context,
+                    appContext,
                     arrayOf(path),
                     arrayOf(mimeType)
                 ) { _, uri ->
@@ -228,10 +241,15 @@ class MediaStoreRepository(private val context: Context) {
     }
 
     /**
-     * When adding a file (using java.io or ContentResolver APIs), MediaStore might not be aware of
-     * the new entry or doesn't have an updated version of it. That's why some entries have 0 bytes
-     * size, even though the file is definitely not empty. MediaStore will eventually scan the file
-     * but it's better to do it ourselves to have a fresher state whenever we can.
+     * Scan [Uri] in [MediaStore] using [MediaScannerConnection]
+     *
+     * When modifying the content of a [MediaStore] entry, MediaStore might have an updated version
+     * of it. That's why some entries have 0 bytes size, even though the file is definitely not
+     * empty. MediaStore will eventually scan the file but it's better to do it ourselves to have a
+     * fresher state whenever we can.
+     *
+     * @param uri [Uri] representing the MediaStore entry
+     * @param mimeType mime type content.
      */
     suspend fun scanUri(
         uri: Uri,
@@ -240,7 +258,7 @@ class MediaStoreRepository(private val context: Context) {
     ): Result<Boolean> {
         return suspendCoroutine { continuation ->
             scope.launch {
-                val cursor = context.contentResolver.query(
+                val cursor = appContext.contentResolver.query(
                     uri,
                     arrayOf(FileColumns.DATA),
                     null,
@@ -269,7 +287,7 @@ class MediaStoreRepository(private val context: Context) {
                 }
 
                 MediaScannerConnection.scanFile(
-                    context,
+                    appContext,
                     arrayOf(path),
                     arrayOf(mimeType)
                 ) { _, scannedUri ->
@@ -290,8 +308,8 @@ class MediaStoreRepository(private val context: Context) {
      */
     suspend fun getResourceByUri(
         mediaUri: Uri,
-        scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-    ): Result<FileResource> = scope.async {
+        context: CoroutineContext = Dispatchers.IO
+    ): Result<FileResource> = withContext(context) {
         val projection = arrayOf(
             FileColumns.DISPLAY_NAME,
             FileColumns.SIZE,
@@ -305,11 +323,11 @@ class MediaStoreRepository(private val context: Context) {
             null,
             null,
             null
-        ) ?: return@async Result.failure(Exceptions.uriNotFoundException(mediaUri))
+        ) ?: return@withContext Result.failure(Exceptions.uriNotFoundException(mediaUri))
 
         cursor.use {
             if (!cursor.moveToFirst()) {
-                return@async Result.failure(Exceptions.uriNotFoundException(mediaUri))
+                return@withContext Result.failure(Exceptions.uriNotFoundException(mediaUri))
             }
 
             val displayNameColumn = cursor.getColumnIndexOrThrow(FileColumns.DISPLAY_NAME)
@@ -317,7 +335,7 @@ class MediaStoreRepository(private val context: Context) {
 //            val mediaTypeColumn = cursor.getColumnIndexOrThrow(FileColumns.MEDIA_TYPE)
             val mimeTypeColumn = cursor.getColumnIndexOrThrow(FileColumns.MIME_TYPE)
 
-            return@async Result.success(
+            return@withContext Result.success(
                 FileResource(
                     uri = mediaUri,
                     filename = cursor.getString(displayNameColumn),
@@ -328,7 +346,7 @@ class MediaStoreRepository(private val context: Context) {
                 )
             )
         }
-    }.await()
+    }
 
     companion object {
         /**

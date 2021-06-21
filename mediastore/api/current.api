@@ -57,14 +57,14 @@ package com.google.modernstorage.mediastore {
   }
 
   public final class MediaStoreRepository {
-    ctor public MediaStoreRepository(android.content.Context context);
-    method public suspend Object? addMediaFromStream-d1pmJ48(String filename, com.google.modernstorage.mediastore.FileType type, String mimeType, java.io.InputStream inputStream, com.google.modernstorage.mediastore.StorageLocation location, optional kotlinx.coroutines.CoroutineScope scope, optional kotlin.coroutines.Continuation<? super kotlin.Result<? extends android.net.Uri>> p);
+    ctor public MediaStoreRepository(android.content.Context appContext);
+    method public suspend Object? addMediaFromStream-d1pmJ48(String filename, com.google.modernstorage.mediastore.FileType type, String mimeType, java.io.InputStream inputStream, com.google.modernstorage.mediastore.StorageLocation location, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<? extends android.net.Uri>> p);
     method public boolean canReadOwnEntries();
     method public boolean canReadSharedEntries();
     method public boolean canWriteOwnEntries();
     method public boolean canWriteSharedEntries();
-    method public suspend Object? createMediaUri-d1pmJ48(String filename, com.google.modernstorage.mediastore.FileType type, com.google.modernstorage.mediastore.StorageLocation location, optional kotlinx.coroutines.CoroutineScope scope, optional kotlin.coroutines.Continuation<? super kotlin.Result<? extends android.net.Uri>> p);
-    method public suspend Object? getResourceByUri-d1pmJ48(android.net.Uri mediaUri, optional kotlinx.coroutines.CoroutineScope scope, optional kotlin.coroutines.Continuation<? super kotlin.Result<com.google.modernstorage.mediastore.FileResource>> p);
+    method public suspend Object? createMediaUri-d1pmJ48(String filename, com.google.modernstorage.mediastore.FileType type, com.google.modernstorage.mediastore.StorageLocation location, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<? extends android.net.Uri>> p);
+    method public suspend Object? getResourceByUri-d1pmJ48(android.net.Uri mediaUri, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<com.google.modernstorage.mediastore.FileResource>> p);
     method public suspend Object? scanUri-d1pmJ48(android.net.Uri uri, String mimeType, optional kotlinx.coroutines.CoroutineScope scope, optional kotlin.coroutines.Continuation<? super kotlin.Result<java.lang.Boolean>> p);
     field public static final com.google.modernstorage.mediastore.MediaStoreRepository.Companion Companion;
   }
