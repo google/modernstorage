@@ -58,100 +58,6 @@ class ExternalStoragePath internal constructor(
         return otherPath.compareTo(toUri().path, ignoreCase = true)
     }
 
-    override fun iterator(): MutableIterator<Path> {
-        TODO("Not yet implemented")
-    }
-
-    override fun register(
-        watcher: WatchService?,
-        events: Array<out WatchEvent.Kind<*>>?,
-        vararg modifiers: WatchEvent.Modifier?
-    ): WatchKey {
-        TODO("Not yet implemented")
-    }
-
-    override fun register(watcher: WatchService?, vararg events: WatchEvent.Kind<*>?): WatchKey {
-        TODO("Not yet implemented")
-    }
-
-    override fun isAbsolute(): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun getRoot(): Path {
-        TODO("Not yet implemented")
-    }
-
-    override fun getFileName(): Path {
-        TODO("Not yet implemented")
-    }
-
-    override fun getParent(): Path {
-        TODO("Not yet implemented")
-    }
-
-    override fun getNameCount(): Int {
-        TODO("Not yet implemented")
-    }
-
-    override fun getName(index: Int): Path {
-        TODO("Not yet implemented")
-    }
-
-    override fun subpath(beginIndex: Int, endIndex: Int): Path {
-        TODO("Not yet implemented")
-    }
-
-    override fun startsWith(other: Path?): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun startsWith(other: String?): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun endsWith(other: Path?): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun endsWith(other: String?): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun normalize(): ContentPath {
-        TODO("Not yet implemented")
-    }
-
-    override fun resolve(other: Path?): Path {
-        TODO("Not yet implemented")
-    }
-
-    override fun resolve(other: String?): Path {
-        TODO("Not yet implemented")
-    }
-
-    override fun resolveSibling(other: Path?): Path {
-        TODO("Not yet implemented")
-    }
-
-    override fun resolveSibling(other: String?): Path {
-        TODO("Not yet implemented")
-    }
-
-    override fun relativize(other: Path?): Path {
-        TODO("Not yet implemented")
-    }
-
-    override fun toUri(): URI = uri
-
-    override fun toAbsolutePath(): Path {
-        TODO("Not yet implemented")
-    }
-
-    override fun toRealPath(vararg options: LinkOption?): Path {
-        TODO("Not yet implemented")
-    }
-
     /**
      * Returns a `File` object representing this path.
      *
@@ -175,6 +81,17 @@ class ExternalStoragePath internal constructor(
         } else {
             throw SecurityException("${Process.myPid()} does not have access to $asFile")
         }
+    }
+
+    override fun elements(): List<String> {
+        val documentId = fileSystem.provider().getDocumentId(uri)!!
+        val rootSeparator = if (documentId.contains("%3A")) "%3A" else "%3a"
+        val pathSeparator = if (documentId.contains("%2F")) "%2F" else "%2f"
+
+        val buildElements = mutableListOf(documentId.substringBefore(rootSeparator))
+        val filePath = documentId.substringAfter(rootSeparator).split(pathSeparator)
+        buildElements.addAll(filePath)
+        return buildElements.toList()
     }
 
     private fun validateUri(uri: URI) {
