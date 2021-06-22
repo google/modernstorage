@@ -125,7 +125,7 @@ class MediaStoreViewModel(
             )
             MediaType.VIDEO -> mediaStore.createMediaUri(
                 generateFilename(MediaSource.CAMERA, "mp4"),
-                type = FileType.IMAGE,
+                type = FileType.VIDEO,
                 SharedPrimary
             )
         }
