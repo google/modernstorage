@@ -23,6 +23,7 @@ import java.io.IOException
 class UriNotCreatedException(message: String) : RemoteException(message)
 class UnopenableOutputStreamException(message: String) : IOException(message)
 class UriNotScannedException(message: String) : RemoteException(message)
+class FileNotScannedException(message: String) : RemoteException(message)
 
 internal object Exceptions {
     fun uriNotFoundException(uri: Uri) = FileNotFoundException("Uri $uri could not be found")
@@ -34,4 +35,7 @@ internal object Exceptions {
         UnopenableOutputStreamException("OutputStream of $uri could not be opened")
 
     fun uriNotScannedException(uri: Uri) = UriNotScannedException("Uri $uri could not be scanned")
+
+    fun fileNotScannedException(path: String) =
+        FileNotScannedException("File $path could not be scanned")
 }

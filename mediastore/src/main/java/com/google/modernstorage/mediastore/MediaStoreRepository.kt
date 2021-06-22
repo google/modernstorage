@@ -46,7 +46,7 @@ class MediaStoreRepository(private val appContext: Context) {
         get() = appContext.contentResolver
 
     /**
-     * Returns true if the current [Context] can read MediaStore entries it created.
+     * Check if the current [Context] can read MediaStore entries it created.
      */
     fun canReadOwnEntries(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -63,7 +63,7 @@ class MediaStoreRepository(private val appContext: Context) {
     }
 
     /**
-     * Returns true if the current [Context] can create entries in MediaStore.
+     * Check if the current [Context] can create entries in MediaStore.
      */
     fun canWriteOwnEntries(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -77,7 +77,7 @@ class MediaStoreRepository(private val appContext: Context) {
     }
 
     /**
-     * Returns true if the current [Context] can read MediaStore entries created by other apps.
+     * Check if the current [Context] can read MediaStore entries created by other apps.
      */
     fun canReadSharedEntries(): Boolean {
         return ContextCompat.checkSelfPermission(
@@ -90,8 +90,7 @@ class MediaStoreRepository(private val appContext: Context) {
     }
 
     /**
-     * Returns true if the current [Context] can edit or delete MediaStore entries created by other
-     * apps.
+     * Check if the current [Context] can edit or delete MediaStore entries created by other apps.
      */
     fun canWriteSharedEntries(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -104,6 +103,68 @@ class MediaStoreRepository(private val appContext: Context) {
         }
     }
 
+    /**
+     * Get the [MediaStore] Image collection based on the provided [StorageLocation].
+     *
+     * @param location Location representing a storage volume.
+     */
+    private fun getImageCollection(location: StorageLocation): Uri {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            when (location) {
+                Internal -> MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_INTERNAL)
+                SharedPrimary -> MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+            }
+        } else {
+            when (location) {
+                Internal -> MediaStore.Images.Media.INTERNAL_CONTENT_URI
+                SharedPrimary -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            }
+        }
+    }
+
+    /**
+     * Get the [MediaStore] Video collection based on the provided [StorageLocation].
+     *
+     * @param location Location representing a storage volume.
+     */
+    private fun getVideoCollection(location: StorageLocation): Uri {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            when (location) {
+                Internal -> MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_INTERNAL)
+                SharedPrimary -> MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+            }
+        } else {
+            when (location) {
+                Internal -> MediaStore.Video.Media.INTERNAL_CONTENT_URI
+                SharedPrimary -> MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+            }
+        }
+    }
+
+    /**
+     * Get the [MediaStore] Audio collection based on the provided [StorageLocation].
+     *
+     * @param location Location representing a storage volume.
+     */
+    private fun getAudioCollection(location: StorageLocation): Uri {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            when (location) {
+                Internal -> MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_INTERNAL)
+                SharedPrimary -> MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+            }
+        } else {
+            when (location) {
+                Internal -> MediaStore.Audio.Media.INTERNAL_CONTENT_URI
+                SharedPrimary -> MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+            }
+        }
+    }
+
+    /**
+     * Get display name column in [MediaStore] based on the provided [FileType].
+     *
+     * @param type type of the media file.
+     */
     private fun getDisplayNameColumn(type: FileType) = when (type) {
         FileType.IMAGE -> MediaStore.Images.ImageColumns.DISPLAY_NAME
         FileType.AUDIO -> MediaStore.Audio.AudioColumns.DISPLAY_NAME
@@ -119,6 +180,7 @@ class MediaStoreRepository(private val appContext: Context) {
      * are used.
      * @param type type of the media file to select the right collection.
      * @param location storage volume where the media file will be saved.
+     * @param context [CoroutineContext] where the method will run on, default to [Dispatchers.IO].
      */
     suspend fun createMediaUri(
         filename: String,
@@ -145,21 +207,27 @@ class MediaStoreRepository(private val appContext: Context) {
         return@withContext Result.success(uri)
     }
 
+    /**
+     * Get file path from a [MediaStore] [Uri].
+     *
+     * @param mediaUri [Uri] representing the MediaStore entry.
+     * @param context [CoroutineContext] where the method will run on, default to [Dispatchers.IO].
+     */
     private suspend fun getPathByUri(
-        uri: Uri,
+        mediaUri: Uri,
         context: CoroutineContext = Dispatchers.IO
     ): Result<String> = withContext(context) {
         val cursor = contentResolver.query(
-            uri,
+            mediaUri,
             arrayOf(FileColumns.DATA),
             null,
             null,
             null
-        ) ?: return@withContext Result.failure(Exceptions.uriNotFoundException(uri))
+        ) ?: return@withContext Result.failure(Exceptions.uriNotFoundException(mediaUri))
 
         cursor.use {
             if (!cursor.moveToFirst()) {
-                return@withContext Result.failure(Exceptions.uriNotFoundException(uri))
+                return@withContext Result.failure(Exceptions.uriNotFoundException(mediaUri))
             }
 
             return@withContext Result.success(
@@ -184,6 +252,7 @@ class MediaStoreRepository(private val appContext: Context) {
      * @param type media type content.
      * @param inputStream media content.
      * @param location storage volume where the image will be saved.
+     * @param context [CoroutineContext] where the method will run on, default to [Dispatchers.IO].
      */
     suspend fun addMediaFromStream(
         filename: String,
@@ -221,12 +290,14 @@ class MediaStoreRepository(private val appContext: Context) {
      *
      * @param path [String] representing the file path.
      * @param mimeType mime type content.
+     * @param scope [CoroutineScope] where the method will run on, default to [Dispatchers.IO].
+     * TODO: Use context across all methods
      */
     private suspend fun scanFilePath(
         path: String,
         mimeType: String,
         scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-    ): Uri {
+    ): Result<Uri> {
         return suspendCoroutine { continuation ->
             scope.launch {
                 MediaScannerConnection.scanFile(
@@ -234,7 +305,11 @@ class MediaStoreRepository(private val appContext: Context) {
                     arrayOf(path),
                     arrayOf(mimeType)
                 ) { _, uri ->
-                    continuation.resume(uri)
+                    if (uri != null) {
+                        continuation.resume(Result.success(uri))
+                    } else {
+                        continuation.resume(Result.failure(Exceptions.fileNotScannedException(path)))
+                    }
                 }
             }
         }
@@ -248,18 +323,20 @@ class MediaStoreRepository(private val appContext: Context) {
      * empty. MediaStore will eventually scan the file but it's better to do it ourselves to have a
      * fresher state whenever we can.
      *
-     * @param uri [Uri] representing the MediaStore entry
+     * @param mediaUri [Uri] representing the MediaStore entry
      * @param mimeType mime type content.
+     * @param scope [CoroutineScope] where the method will run on, default to [Dispatchers.IO].
+     * TODO: Use context across all methods
      */
     suspend fun scanUri(
-        uri: Uri,
+        mediaUri: Uri,
         mimeType: String,
         scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     ): Result<Boolean> {
         return suspendCoroutine { continuation ->
             scope.launch {
                 val cursor = appContext.contentResolver.query(
-                    uri,
+                    mediaUri,
                     arrayOf(FileColumns.DATA),
                     null,
                     null,
@@ -267,7 +344,7 @@ class MediaStoreRepository(private val appContext: Context) {
                 ) ?: return@launch continuation.resume(
                     Result.failure(
                         Exceptions.uriNotFoundException(
-                            uri
+                            mediaUri
                         )
                     )
                 )
@@ -277,7 +354,7 @@ class MediaStoreRepository(private val appContext: Context) {
                         return@launch continuation.resume(
                             Result.failure(
                                 Exceptions.uriNotFoundException(
-                                    uri
+                                    mediaUri
                                 )
                             )
                         )
@@ -286,17 +363,17 @@ class MediaStoreRepository(private val appContext: Context) {
                     return@use cursor.getString(cursor.getColumnIndexOrThrow(FileColumns.DATA))
                 }
 
-                MediaScannerConnection.scanFile(
-                    appContext,
-                    arrayOf(path),
-                    arrayOf(mimeType)
-                ) { _, scannedUri ->
-                    if (scannedUri != null) {
-                        continuation.resume(Result.success(true))
-                    } else {
-                        continuation.resume(Result.failure(Exceptions.uriNotScannedException(uri)))
+                scanFilePath(path, mimeType, scope)
+                    .onSuccess { continuation.resume(Result.success(true)) }
+                    .onFailure {
+                        continuation.resume(
+                            Result.failure(
+                                Exceptions.uriNotScannedException(
+                                    mediaUri
+                                )
+                            )
+                        )
                     }
-                }
             }
         }
     }
@@ -305,6 +382,7 @@ class MediaStoreRepository(private val appContext: Context) {
      * Returns a [FileResource] if it finds its [Uri] in MediaStore otherwise returns `null`.
      *
      * @param mediaUri [Uri] representing the MediaStore entry.
+     * @param context [CoroutineContext] where the method will run on, default to [Dispatchers.IO].
      */
     suspend fun getResourceByUri(
         mediaUri: Uri,
@@ -345,65 +423,6 @@ class MediaStoreRepository(private val appContext: Context) {
                     mimeType = cursor.getString(mimeTypeColumn),
                 )
             )
-        }
-    }
-
-    companion object {
-        /**
-         * Returns the [MediaStore] Image collection based on the provided [StorageLocation].
-         *
-         * @param location Location representing a storage volume.
-         */
-        fun getImageCollection(location: StorageLocation): Uri {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                when (location) {
-                    Internal -> MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_INTERNAL)
-                    SharedPrimary -> MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-                }
-            } else {
-                when (location) {
-                    Internal -> MediaStore.Images.Media.INTERNAL_CONTENT_URI
-                    SharedPrimary -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                }
-            }
-        }
-
-        /**
-         * Returns the [MediaStore] Video collection based on the provided [StorageLocation].
-         *
-         * @param location Location representing a storage volume.
-         */
-        fun getVideoCollection(location: StorageLocation): Uri {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                when (location) {
-                    Internal -> MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_INTERNAL)
-                    SharedPrimary -> MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-                }
-            } else {
-                when (location) {
-                    Internal -> MediaStore.Video.Media.INTERNAL_CONTENT_URI
-                    SharedPrimary -> MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-                }
-            }
-        }
-
-        /**
-         * Returns the [MediaStore] Audio collection based on the provided [StorageLocation].
-         *
-         * @param location Location representing a storage volume.
-         */
-        fun getAudioCollection(location: StorageLocation): Uri {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                when (location) {
-                    Internal -> MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_INTERNAL)
-                    SharedPrimary -> MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-                }
-            } else {
-                when (location) {
-                    Internal -> MediaStore.Audio.Media.INTERNAL_CONTENT_URI
-                    SharedPrimary -> MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-                }
-            }
         }
     }
 }

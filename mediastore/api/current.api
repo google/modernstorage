@@ -15,6 +15,10 @@ package com.google.modernstorage.mediastore {
     method public android.net.Uri? parseResult(int resultCode, android.content.Intent? intent);
   }
 
+  public final class FileNotScannedException extends android.os.RemoteException {
+    ctor public FileNotScannedException(String message);
+  }
+
   @kotlinx.parcelize.Parcelize public final class FileResource implements android.os.Parcelable {
     ctor public FileResource(android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.FileType type, String mimeType);
     method public android.net.Uri component1();
@@ -65,14 +69,7 @@ package com.google.modernstorage.mediastore {
     method public boolean canWriteSharedEntries();
     method public suspend Object? createMediaUri-d1pmJ48(String filename, com.google.modernstorage.mediastore.FileType type, com.google.modernstorage.mediastore.StorageLocation location, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<? extends android.net.Uri>> p);
     method public suspend Object? getResourceByUri-d1pmJ48(android.net.Uri mediaUri, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<com.google.modernstorage.mediastore.FileResource>> p);
-    method public suspend Object? scanUri-d1pmJ48(android.net.Uri uri, String mimeType, optional kotlinx.coroutines.CoroutineScope scope, optional kotlin.coroutines.Continuation<? super kotlin.Result<java.lang.Boolean>> p);
-    field public static final com.google.modernstorage.mediastore.MediaStoreRepository.Companion Companion;
-  }
-
-  public static final class MediaStoreRepository.Companion {
-    method public android.net.Uri getAudioCollection(com.google.modernstorage.mediastore.StorageLocation location);
-    method public android.net.Uri getImageCollection(com.google.modernstorage.mediastore.StorageLocation location);
-    method public android.net.Uri getVideoCollection(com.google.modernstorage.mediastore.StorageLocation location);
+    method public suspend Object? scanUri-d1pmJ48(android.net.Uri mediaUri, String mimeType, optional kotlinx.coroutines.CoroutineScope scope, optional kotlin.coroutines.Continuation<? super kotlin.Result<java.lang.Boolean>> p);
   }
 
   public final class SharedPrimary extends com.google.modernstorage.mediastore.StorageLocation {
