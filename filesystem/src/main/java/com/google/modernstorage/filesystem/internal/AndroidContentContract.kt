@@ -16,7 +16,6 @@
 
 package com.google.modernstorage.filesystem.internal
 
-import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.os.Build
@@ -44,6 +43,8 @@ class AndroidContentContract(context: Context) : PlatformContract {
 
     override fun isSupportedUri(uri: URI) = DocumentsContract.isDocumentUri(context, uri.toUri())
 
+    override fun isTreeUri(uri: URI) = DocumentsContract.isTreeUri(uri.toUri())
+
     override fun prepareUri(incomingUri: URI): URI {
         /*
          * Uris returned from `ACTION_OPEN_DOCUMENT_TREE` cannot be used directly (via
@@ -61,6 +62,21 @@ class AndroidContentContract(context: Context) : PlatformContract {
             incomingUri
         }
     }
+
+    override fun getDocumentId(documentUri: URI): String? {
+        return try {
+            DocumentsContract.getDocumentId(documentUri.toUri())
+        } catch (iae: IllegalArgumentException) {
+            null
+        }
+    }
+
+    override fun buildDocumentUri(authority: String, documentId: String, buildTree: Boolean) =
+        if (buildTree) {
+            DocumentsContract.buildTreeDocumentUri(authority, documentId).toURI()
+        } else {
+            DocumentsContract.buildDocumentUri(authority, documentId).toURI()
+        }
 
     override fun openByteChannel(uri: URI, mode: String): SeekableByteChannel {
         // Fix for https://issuetracker.google.com/180526528

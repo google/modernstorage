@@ -31,17 +31,56 @@ import java.nio.file.attribute.BasicFileAttributes
  */
 interface PlatformContract {
 
+    /**
+     * Checks if a [URI] is supported by the [ContentFileSystemProvider].
+     */
     fun isSupportedUri(uri: URI): Boolean
 
+    /**
+     * Checks if a provided [URI] refers to a "tree".
+     */
+    fun isTreeUri(uri: URI): Boolean
+
+    /**
+     * Performs any necessary transformations on a [URI] before it can be used to create a
+     * [ContentPath]. For example, building a "document" uri when provided a "tree" uri.
+     */
     fun prepareUri(incomingUri: URI): URI
 
+    /**
+     * Gets the document id from a DocumentsProvider backed [URI], or `null` if the
+     * URI is not backed by a DocumentsProvider (or is otherwise malformed).
+     */
+    fun getDocumentId(documentUri: URI): String?
+
+    /**
+     * Builds a document [URI] from the provided authority and document ID.
+     * @param authority The authority of the DocumentProvider.
+     * @param documentId The document ID of the document to build a URI for
+     * @param buildTree `true` to build a URI for a "tree", `false` to build it as a "document" URI.
+     */
+    fun buildDocumentUri(authority: String, documentId: String, buildTree: Boolean): URI
+
+    /**
+     * Opens a [SeekableByteChannel] given a [URI] and mode String. The mode matches the "mode"
+     * parameter of [android.content.ContentProvider.openAssetFile].
+     * @see [android.content.ContentProvider.openAssetFile]
+     */
     fun openByteChannel(uri: URI, mode: String): SeekableByteChannel
 
+    /**
+     * Builds a new [DirectoryStream] given a [ContentPath] and [DirectoryStream.Filter].
+     */
     fun newDirectoryStream(
         path: ContentPath,
         filter: DirectoryStream.Filter<in Path>?
     ): DirectoryStream<Path>
 
+    /**
+     * Reads the attributes of a [ContentPath]. Details of the method are described by
+     * [java.nio.file.Files.readAttributes].
+     * @see [java.nio.file.Files.readAttributes]
+     */
     fun <A : BasicFileAttributes?> readAttributes(
         path: ContentPath,
         type: Class<A>?,

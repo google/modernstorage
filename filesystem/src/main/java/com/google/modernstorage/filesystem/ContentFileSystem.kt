@@ -19,6 +19,7 @@ package com.google.modernstorage.filesystem
 import java.net.URI
 import java.nio.file.FileStore
 import java.nio.file.FileSystem
+import java.nio.file.InvalidPathException
 import java.nio.file.Path
 import java.nio.file.PathMatcher
 import java.nio.file.WatchService
@@ -53,7 +54,12 @@ open class ContentFileSystem internal constructor(
     open fun getPath(uri: URI) = ContentPath(this, uri)
 
     override fun getPath(first: String?, vararg more: String?): Path {
-        TODO("Not yet implemented")
+        val pathUri = when (first) {
+            "document" -> provider.buildDocumentUri(authority, more[0]!!, false)
+            "tree" -> provider.buildDocumentUri(authority, more[0]!!, true)
+            else -> throw InvalidPathException(first, "Unknown path type: $first")
+        }
+        return getPath(pathUri)
     }
 
     override fun getPathMatcher(syntaxAndPattern: String?): PathMatcher {

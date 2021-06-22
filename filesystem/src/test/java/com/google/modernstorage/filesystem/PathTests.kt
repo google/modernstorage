@@ -84,4 +84,21 @@ class PathTests {
         val externalPath = AndroidPaths.get(URI(externalUri))
         Assert.assertFalse(primaryPath.compareTo(externalPath) == 0)
     }
+
+    @Test
+    fun pathGetParent_validParent() {
+        AndroidFileSystems.initialize(TestContract(
+            getDocumentIdImpl = { uri ->
+                uri.toString().substringAfter("/document/")
+            }
+        ))
+        val childUri =
+            URI("content://com.android.externalstorage.documents/tree/primary/document/primary%3ADownload%2Ftest-3.txt")
+        val childPath = AndroidPaths.get(childUri)
+
+        val expectedParent = AndroidPaths.get(
+            URI("content://com.android.externalstorage.documents/tree/primary/document/primary%3ADownload%2F")
+        )
+        Assert.assertEquals(expectedParent, childPath.parent)
+    }
 }

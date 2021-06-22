@@ -66,8 +66,16 @@ open class ContentPath(private val fs: ContentFileSystem, protected val uri: URI
         TODO("Not yet implemented")
     }
 
-    override fun getParent(): Path {
-        TODO("Not yet implemented")
+    // Because a content provider doesn't have a well defined uri structure, and because this
+    // method is not allowed to work with the filesystem itself, there's no way to implement
+    // this method generally.
+    override fun getParent(): Path? {
+        val elements = elements()
+        return if (elements.size > 1) {
+            subpath(0, elements.size - 1)
+        } else {
+            null
+        }
     }
 
     override fun getNameCount(): Int {
@@ -79,7 +87,18 @@ open class ContentPath(private val fs: ContentFileSystem, protected val uri: URI
     }
 
     override fun subpath(beginIndex: Int, endIndex: Int): Path {
-        TODO("Not yet implemented")
+        val elements = elements()
+
+        require(beginIndex >= 0)
+        require(beginIndex < elements.size)
+        require(beginIndex < endIndex)
+        require(endIndex <= elements.size)
+
+        val treeOrDocument = if (fileSystem.provider().isTreeUri(uri)) "tree" else "document"
+        return fileSystem.getPath(
+            treeOrDocument,
+            *elements.subList(beginIndex, endIndex).toTypedArray()
+        )
     }
 
     override fun startsWith(other: Path?): Boolean {
@@ -144,6 +163,15 @@ open class ContentPath(private val fs: ContentFileSystem, protected val uri: URI
     override fun toFile(): File {
         throw UnsupportedOperationException()
     }
+
+    /**
+     * Returns a list of the elements that make up this path.
+     * By default, this is a list containing only a single element: the entire 'path' of the
+     * path's backing [URI].
+     * The elements returned by this must be able to be passed to [ContentFileSystem.getPath] to
+     * build this same path.
+     */
+    protected open fun elements(): List<String> = listOf(fileSystem.provider().getDocumentId(uri)!!)
 
     override fun equals(other: Any?): Boolean {
         other as? ContentPath

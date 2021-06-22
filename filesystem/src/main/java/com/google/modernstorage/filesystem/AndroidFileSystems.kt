@@ -124,6 +124,9 @@ object AndroidFileSystems {
      * [PlatformContract]. Used for testing.
      */
     internal fun initialize(contract: PlatformContract) {
+        synchronized(installedProviders) {
+            installedProviders.remove(CONTENT_SCHEME)
+        }
         installContentFileSystem(contract)
     }
 
