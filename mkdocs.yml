@@ -2,7 +2,7 @@ site_name: ModernStorage
 site_url: https://google.github.com/modernstorage/
 repo_name: google/modernstorage
 repo_url: https://github.com/google/modernstorage
-site_description: "An HTTP & HTTP/2 client for Android and Java applications"
+site_description: "ModernStorage is a group of libraries that provide an abstraction layer over storage on Android to simplify its interactions"
 site_author: Google
 theme:
   name: material
@@ -14,9 +14,7 @@ theme:
 
 nav:
   - 'Overview': index.md
-  - 'Getting Started': getting-started.md
-  - 'MediaStoreClient': mediaStoreClient.md
-  - 'MediaActivityResults': mediaActivityResults.md
+  - 'MediaStore': mediastore.md
 
 # Extensions
 markdown_extensions:
@@ -29,9 +27,13 @@ markdown_extensions:
   - pymdownx.betterem
   - pymdownx.superfences
   - pymdownx.tabbed
+  - pymdownx.tasklist:
+      custom_checkbox: true
 
 # Plugins
 plugins:
   - search
-#  - minify:
-#      minify_html: true
+  - macros
+
+extra:
+  lib_version: "1.0.0-alpha01"
