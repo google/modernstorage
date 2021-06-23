@@ -29,7 +29,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.lang.Exception
 
 const val CURRENT_MEDIA_KEY = "currentMedia"
 const val TEMPORARY_CAMERA_IMAGE_URI_KEY = "temporaryCameraImageUri"
