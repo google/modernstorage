@@ -69,7 +69,7 @@ package com.google.modernstorage.mediastore {
     method public boolean canWriteSharedEntries();
     method public suspend Object? createMediaUri-d1pmJ48(String filename, com.google.modernstorage.mediastore.FileType type, com.google.modernstorage.mediastore.StorageLocation location, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<? extends android.net.Uri>> p);
     method public suspend Object? getResourceByUri-d1pmJ48(android.net.Uri mediaUri, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<com.google.modernstorage.mediastore.FileResource>> p);
-    method public suspend Object? scanUri-d1pmJ48(android.net.Uri mediaUri, String mimeType, optional kotlinx.coroutines.CoroutineScope scope, optional kotlin.coroutines.Continuation<? super kotlin.Result<java.lang.Boolean>> p);
+    method public suspend Object? scanUri-d1pmJ48(android.net.Uri mediaUri, String mimeType, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<java.lang.String>> p);
   }
 
   public final class SharedPrimary extends com.google.modernstorage.mediastore.StorageLocation {
