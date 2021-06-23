@@ -13,7 +13,7 @@ ModernStorage is available on `mavenCentral()`.
 
 ```kotlin
 // For MediaStore interactions
-implementation("com.google.modernstorage:mediastore:1.0.0-alpha01")
+implementation("com.google.modernstorage:modernstorage-mediastore:1.0.0-alpha01")
 ```
 
 ## Quick Start
