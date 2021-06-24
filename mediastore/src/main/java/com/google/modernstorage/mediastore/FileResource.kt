@@ -19,6 +19,7 @@ import android.net.Uri
 import android.os.Parcelable
 import android.provider.MediaStore.Files.FileColumns
 import kotlinx.parcelize.Parcelize
+import java.io.File
 
 /**
  * Represents an [android.provider.MediaStore] entry.
@@ -36,7 +37,20 @@ data class FileResource(
     val size: Long,
     val type: FileType,
     val mimeType: String,
-) : Parcelable
+    val path: String?,
+) : Parcelable {
+
+    /**
+     * Returns a [File] if the [FileResource] path property isn't null.
+     */
+    fun getFile(): File? {
+        if (path !== null) {
+            return File(path)
+        }
+
+        return null
+    }
+}
 
 /**
  *  Media type enum class representing the [FileColumns.MEDIA_TYPE] column

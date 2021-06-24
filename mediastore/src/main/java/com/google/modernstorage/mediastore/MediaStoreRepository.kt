@@ -228,13 +228,7 @@ class MediaStoreRepository(private val appContext: Context) {
                 return@withContext Result.failure(Exceptions.uriNotFoundException(mediaUri))
             }
 
-            return@withContext Result.success(
-                cursor.getString(
-                    cursor.getColumnIndexOrThrow(
-                        FileColumns.DATA
-                    )
-                )
-            )
+            Result.success(cursor.getString(cursor.getColumnIndexOrThrow(FileColumns.DATA)))
         }
     }
 
@@ -299,9 +293,9 @@ class MediaStoreRepository(private val appContext: Context) {
                 appContext,
                 arrayOf(path),
                 arrayOf(mimeType)
-            ) { _, uri ->
-                if (uri != null) {
-                    continuation.resume(Result.success(uri))
+            ) { _, scannedUri ->
+                if (scannedUri != null) {
+                    continuation.resume(Result.success(scannedUri))
                 } else {
                     continuation.resume(Result.failure(Exceptions.fileNotScannedException(path)))
                 }
@@ -317,24 +311,24 @@ class MediaStoreRepository(private val appContext: Context) {
      * empty. MediaStore will eventually scan the file but it's better to do it ourselves to have a
      * fresher state whenever we can.
      *
-     * @param mediaUri [Uri] representing the MediaStore entry
+     * @param uri [Uri] representing the MediaStore entry
      * @param mimeType mime type content.
      * @param context [CoroutineContext] where the method will run on, default to [Dispatchers.IO].
      */
     suspend fun scanUri(
-        mediaUri: Uri,
+        uri: Uri,
         mimeType: String,
         context: CoroutineContext = Dispatchers.IO
     ): Result<String> = withContext(context) {
         val cursor = appContext.contentResolver.query(
-            mediaUri,
+            uri,
             arrayOf(FileColumns.DATA),
             null,
             null,
             null
         ) ?: return@withContext Result.failure(
             Exceptions.uriNotFoundException(
-                mediaUri
+                uri
             )
         )
 
@@ -342,12 +336,12 @@ class MediaStoreRepository(private val appContext: Context) {
             if (!cursor.moveToFirst()) {
                 return@withContext Result.failure(
                     Exceptions.uriNotFoundException(
-                        mediaUri
+                        uri
                     )
                 )
             }
 
-            return@use cursor.getString(cursor.getColumnIndexOrThrow(FileColumns.DATA))
+            cursor.getString(cursor.getColumnIndexOrThrow(FileColumns.DATA))
         }
 
         val scanResult = scanFilePath(path, mimeType)
@@ -355,18 +349,18 @@ class MediaStoreRepository(private val appContext: Context) {
         if (scanResult.isSuccess) {
             Result.success(path)
         } else {
-            Result.failure(Exceptions.uriNotScannedException(mediaUri))
+            Result.failure(Exceptions.uriNotScannedException(uri))
         }
     }
 
     /**
      * Returns a [FileResource] if it finds its [Uri] in MediaStore otherwise returns `null`.
      *
-     * @param mediaUri [Uri] representing the MediaStore entry.
+     * @param uri [Uri] representing the MediaStore entry.
      * @param context [CoroutineContext] where the method will run on, default to [Dispatchers.IO].
      */
     suspend fun getResourceByUri(
-        mediaUri: Uri,
+        uri: Uri,
         context: CoroutineContext = Dispatchers.IO
     ): Result<FileResource> = withContext(context) {
         val projection = arrayOf(
@@ -374,35 +368,38 @@ class MediaStoreRepository(private val appContext: Context) {
             FileColumns.SIZE,
             FileColumns.MEDIA_TYPE,
             FileColumns.MIME_TYPE,
+            FileColumns.DATA,
         )
 
         val cursor = contentResolver.query(
-            mediaUri,
+            uri,
             projection,
             null,
             null,
             null
-        ) ?: return@withContext Result.failure(Exceptions.uriNotFoundException(mediaUri))
+        ) ?: return@withContext Result.failure(Exceptions.uriNotFoundException(uri))
 
         cursor.use {
             if (!cursor.moveToFirst()) {
-                return@withContext Result.failure(Exceptions.uriNotFoundException(mediaUri))
+                return@withContext Result.failure(Exceptions.uriNotFoundException(uri))
             }
 
             val displayNameColumn = cursor.getColumnIndexOrThrow(FileColumns.DISPLAY_NAME)
             val sizeColumn = cursor.getColumnIndexOrThrow(FileColumns.SIZE)
             val mediaTypeColumn = cursor.getColumnIndexOrThrow(FileColumns.MEDIA_TYPE)
             val mimeTypeColumn = cursor.getColumnIndexOrThrow(FileColumns.MIME_TYPE)
+            val dataColumn = cursor.getColumnIndexOrThrow(FileColumns.DATA)
 
-            return@withContext Result.success(
+            Result.success(
                 FileResource(
-                    uri = mediaUri,
+                    uri = uri,
                     filename = cursor.getString(displayNameColumn),
                     size = cursor.getLong(sizeColumn),
                     type = FileType.getEnum(cursor.getInt(mediaTypeColumn)),
 //                    type = FileType.IMAGE,
                     // FIXME: Figure out why getting this column doesn't work
                     mimeType = cursor.getString(mimeTypeColumn),
+                    path = cursor.getString(dataColumn),
                 )
             )
         }

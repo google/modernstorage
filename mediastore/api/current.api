@@ -20,20 +20,24 @@ package com.google.modernstorage.mediastore {
   }
 
   @kotlinx.parcelize.Parcelize public final class FileResource implements android.os.Parcelable {
-    ctor public FileResource(android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.FileType type, String mimeType);
+    ctor public FileResource(android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.FileType type, String mimeType, String? path);
     method public android.net.Uri component1();
     method public String component2();
     method public long component3();
     method public com.google.modernstorage.mediastore.FileType component4();
     method public String component5();
-    method @kotlinx.parcelize.Parcelize public com.google.modernstorage.mediastore.FileResource copy(android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.FileType type, String mimeType);
+    method public String? component6();
+    method @kotlinx.parcelize.Parcelize public com.google.modernstorage.mediastore.FileResource copy(android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.FileType type, String mimeType, String? path);
+    method public java.io.File? getFile();
     method public String getFilename();
     method public String getMimeType();
+    method public String? getPath();
     method public long getSize();
     method public com.google.modernstorage.mediastore.FileType getType();
     method public android.net.Uri getUri();
     property public final String filename;
     property public final String mimeType;
+    property public final String? path;
     property public final long size;
     property public final com.google.modernstorage.mediastore.FileType type;
     property public final android.net.Uri uri;
@@ -68,8 +72,8 @@ package com.google.modernstorage.mediastore {
     method public boolean canWriteOwnEntries();
     method public boolean canWriteSharedEntries();
     method public suspend Object? createMediaUri-d1pmJ48(String filename, com.google.modernstorage.mediastore.FileType type, com.google.modernstorage.mediastore.StorageLocation location, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<? extends android.net.Uri>> p);
-    method public suspend Object? getResourceByUri-d1pmJ48(android.net.Uri mediaUri, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<com.google.modernstorage.mediastore.FileResource>> p);
-    method public suspend Object? scanUri-d1pmJ48(android.net.Uri mediaUri, String mimeType, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<java.lang.String>> p);
+    method public suspend Object? getResourceByUri-d1pmJ48(android.net.Uri uri, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<com.google.modernstorage.mediastore.FileResource>> p);
+    method public suspend Object? scanUri-d1pmJ48(android.net.Uri uri, String mimeType, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<java.lang.String>> p);
   }
 
   public final class SharedPrimary extends com.google.modernstorage.mediastore.StorageLocation {
