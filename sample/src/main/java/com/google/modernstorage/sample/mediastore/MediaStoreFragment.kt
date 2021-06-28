@@ -17,27 +17,35 @@ package com.google.modernstorage.sample.mediastore
 
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.google.modernstorage.mediastore.CustomTakePicture
 import com.google.modernstorage.mediastore.CustomTakeVideo
 import com.google.modernstorage.mediastore.FileType
 import com.google.modernstorage.sample.R
 import com.google.modernstorage.sample.databinding.FragmentMediastoreBinding
-import kotlinx.coroutines.launch
 
 class MediaStoreFragment : Fragment() {
     private var _binding: FragmentMediastoreBinding? = null
     private val binding get() = _binding!!
-
     private val viewModel: MediaStoreViewModel by viewModels()
+
+    private val actionRequestPermission = registerForActivityResult(RequestPermission()) {
+        handlePermissionSectionVisibility()
+    }
+
+    private val actionTakeImage = registerForActivityResult(CustomTakePicture()) { success ->
+        viewModel.onPhotoCapture(success)
+    }
+
+    private val actionTakeVideo = registerForActivityResult(CustomTakeVideo()) { uri ->
+        viewModel.onVideoCapture(uri)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,6 +63,25 @@ class MediaStoreFragment : Fragment() {
         viewModel.currentFile.observe(viewLifecycleOwner) { currentMedia ->
             currentMedia ?: return@observe
             binding.details.text = currentMedia.toString()
+        }
+
+        viewModel.snackbarNotification.observe(viewLifecycleOwner) { text ->
+            text ?: return@observe
+            Snackbar.make(binding.root, text, Snackbar.LENGTH_SHORT).show()
+            viewModel.clearSnackbarNotificationState()
+        }
+
+        viewModel.captureMediaIntent.observe(viewLifecycleOwner) { request ->
+            request ?: return@observe
+
+            when (request.type) {
+                FileType.IMAGE -> {
+                    viewModel.saveTemporaryCameraImageUri(request.uri)
+                    actionTakeImage.launch(request.uri)
+                }
+                FileType.VIDEO -> actionTakeVideo.launch(request.uri)
+                else -> throw IllegalArgumentException("Unsupported type: ${request.type}")
+            }
         }
 
         return binding.root
@@ -81,10 +108,6 @@ class MediaStoreFragment : Fragment() {
     }
 
     private fun setupButtonListeners() {
-        binding.requestPermissionButton.setOnClickListener {
-            actionRequestPermission.launch(WRITE_EXTERNAL_STORAGE)
-        }
-
         binding.mediastoreType.clearChecked()
         binding.mediastoreSource.clearChecked()
 
@@ -94,96 +117,26 @@ class MediaStoreFragment : Fragment() {
         binding.mediastoreType.check(R.id.type_image)
         binding.mediastoreSource.check(R.id.source_internet)
 
-        binding.addMedia.setOnClickListener { view ->
-            val type = when (binding.mediastoreType.checkedButtonId) {
-                R.id.type_image -> MediaType.IMAGE
-                R.id.type_video -> MediaType.VIDEO
-                else -> throw Exception("This is not supposed to happen")
-            }
+        binding.requestPermissionButton.setOnClickListener {
+            actionRequestPermission.launch(WRITE_EXTERNAL_STORAGE)
+        }
 
-            when (binding.mediastoreSource.checkedButtonId) {
-                R.id.source_internet -> downloadMedia(view, type)
-                R.id.source_camera -> captureMedia(view, type)
-                else -> throw IllegalArgumentException("Unsupported type: $type")
-            }
+        binding.addMedia.setOnClickListener {
+            onAddMediaClickListener()
         }
     }
 
-    private fun downloadMedia(view: View, type: MediaType) =
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.setLoadingStatus(true)
-
-            when (type) {
-                MediaType.IMAGE -> {
-                    viewModel.saveRandomMediaFromInternet(type = FileType.IMAGE).onFailure {
-                        viewModel.setLoadingStatus(false)
-                        Snackbar.make(view, it.toString(), Snackbar.LENGTH_SHORT).show()
-                    }
-                }
-                MediaType.VIDEO -> {
-                    viewModel.saveRandomMediaFromInternet(type = FileType.VIDEO).onFailure {
-                        viewModel.setLoadingStatus(false)
-                        Snackbar.make(view, it.toString(), Snackbar.LENGTH_SHORT).show()
-                    }
-                }
-            }
+    private fun onAddMediaClickListener() {
+        val mediaType = when (binding.mediastoreType.checkedButtonId) {
+            R.id.type_image -> FileType.IMAGE
+            R.id.type_video -> FileType.VIDEO
+            else -> throw Exception("This is not supposed to happen")
         }
 
-    private fun captureMedia(view: View, type: MediaType) =
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.setLoadingStatus(true)
-
-            viewModel.createMediaUriForCamera(type)
-                .onSuccess { uri ->
-                    when (type) {
-                        MediaType.IMAGE -> {
-                            viewModel.saveTemporaryCameraImageUri(uri)
-                            actionTakeImage.launch(uri)
-                        }
-                        MediaType.VIDEO -> actionTakeVideo.launch(uri)
-                    }
-                }
-                .onFailure {
-                    viewModel.setLoadingStatus(false)
-                    Snackbar.make(view, it.toString(), Snackbar.LENGTH_SHORT).show()
-                }
-        }
-
-    private val actionRequestPermission = registerForActivityResult(RequestPermission()) {
-        handlePermissionSectionVisibility()
-    }
-
-    private val actionTakeImage = registerForActivityResult(CustomTakePicture()) { success ->
-        viewModel.setLoadingStatus(false)
-
-        if (!success) {
-            Log.e(tag, "Image taken FAIL")
-            return@registerForActivityResult
-        }
-
-        Log.d(tag, "Image taken SUCCESS")
-
-        if (viewModel.temporaryCameraImageUri == null) {
-            Log.e(tag, "Can't find previously saved temporary Camera Image URI")
-        } else {
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.setCurrentMedia(viewModel.temporaryCameraImageUri!!)
-                viewModel.clearTemporaryCameraImageUri()
-            }
-        }
-    }
-
-    private val actionTakeVideo = registerForActivityResult(CustomTakeVideo()) { uri ->
-        viewModel.setLoadingStatus(false)
-
-        if (uri == null) {
-            Log.e(tag, "Video taken FAIL")
-            return@registerForActivityResult
-        }
-
-        Log.d(tag, "Video taken SUCCESS")
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.setCurrentMedia(uri)
+        when (binding.mediastoreSource.checkedButtonId) {
+            R.id.source_internet -> viewModel.saveRandomMediaFromInternet(mediaType)
+            R.id.source_camera -> viewModel.captureMedia(mediaType)
+            else -> throw IllegalArgumentException("Unsupported type: $mediaType")
         }
     }
 }

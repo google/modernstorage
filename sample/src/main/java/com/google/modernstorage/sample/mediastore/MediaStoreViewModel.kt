@@ -21,11 +21,13 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.google.modernstorage.mediastore.FileResource
 import com.google.modernstorage.mediastore.FileType
 import com.google.modernstorage.mediastore.MediaStoreRepository
 import com.google.modernstorage.mediastore.SharedPrimary
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -50,24 +52,50 @@ class MediaStoreViewModel(
         _isLoading.postValue(isLoading)
     }
 
+    private val _snackbarNotification: MutableLiveData<String> = MutableLiveData()
+    val snackbarNotification: LiveData<String> get() = _snackbarNotification
+
+    fun clearSnackbarNotificationState() {
+        _snackbarNotification.postValue(null)
+    }
+
+    data class CaptureMediaIntentRequest(val type: FileType, val uri: Uri)
+
+    private val _captureMediaIntent: MutableLiveData<CaptureMediaIntentRequest> = MutableLiveData()
+    val captureMediaIntent: LiveData<CaptureMediaIntentRequest> get() = _captureMediaIntent
+
+    private fun setCaptureMediaIntentRequest(type: FileType, uri: Uri) {
+        savedStateHandle.set(CURRENT_MEDIA_KEY, CaptureMediaIntentRequest(type, uri))
+    }
+
+    fun clearCaptureMediaIntentRequest() {
+        _captureMediaIntent.postValue(null)
+    }
+
     val currentFile: LiveData<FileResource> = savedStateHandle.getLiveData(CURRENT_MEDIA_KEY)
 
-    suspend fun setCurrentMedia(uri: Uri) {
+    private suspend fun setCurrentMedia(uri: Uri) {
         savedStateHandle.set(CURRENT_MEDIA_KEY, mediaStore.getResourceByUri(uri).getOrNull())
     }
 
-    val temporaryCameraImageUri: Uri?
+    private val temporaryCameraImageUri: Uri?
         get() = savedStateHandle.get(TEMPORARY_CAMERA_IMAGE_URI_KEY)
 
     fun saveTemporaryCameraImageUri(uri: Uri) {
         savedStateHandle.set(TEMPORARY_CAMERA_IMAGE_URI_KEY, uri)
     }
 
-    fun clearTemporaryCameraImageUri() {
+    private fun clearTemporaryCameraImageUri() {
         savedStateHandle.remove<Uri>(TEMPORARY_CAMERA_IMAGE_URI_KEY)
     }
 
-    suspend fun saveRandomMediaFromInternet(type: FileType): Result<FileResource> {
+    enum class MediaSource {
+        CAMERA, INTERNET
+    }
+
+    fun saveRandomMediaFromInternet(type: FileType) {
+        setLoadingStatus(true)
+
         val url: String
         val extension: String
         val mimeType: String
@@ -86,62 +114,117 @@ class MediaStoreViewModel(
             else -> throw IllegalArgumentException("Unsupported type: $type")
         }
 
-        val request = Request.Builder().url(url).build()
+        viewModelScope.launch {
+            val request = Request.Builder().url(url).build()
 
-        return withContext(Dispatchers.IO) {
-            val response = httpClient.newCall(request).execute()
+            val mediaUri = withContext(Dispatchers.IO) {
+                val response = httpClient.newCall(request).execute()
 
-            val mediaUri = response.body?.use { responseBody ->
-                val filename = generateFilename(MediaSource.INTERNET, extension)
+                response.body?.use { responseBody ->
+                    val filename = generateFilename(MediaSource.INTERNET, extension)
 
-                return@use mediaStore.addMediaFromStream(
-                    filename = filename,
-                    type = type,
-                    mimeType = mimeType,
-                    inputStream = responseBody.byteStream(),
-                    location = SharedPrimary
-                ).getOrElse {
-                    return@withContext Result.failure(it)
-                }
-            } ?: return@withContext Result.failure(Exception("Could not download this media"))
+                    return@withContext mediaStore.addMediaFromStream(
+                        filename = filename,
+                        type = type,
+                        mimeType = mimeType,
+                        inputStream = responseBody.byteStream(),
+                        location = SharedPrimary
+                    )
+                } ?: return@withContext Result.failure(Exception("Could not download this media"))
+            }.getOrElse {
+                setLoadingStatus(false)
+                return@launch _snackbarNotification.postValue(it.message)
+            }
 
             mediaStore.getResourceByUri(mediaUri)
-                .apply {
-                    savedStateHandle.set(CURRENT_MEDIA_KEY, this.getOrNull())
+                .onSuccess {
+                    savedStateHandle.set(CURRENT_MEDIA_KEY, it)
                     setLoadingStatus(false)
                 }
-                .onSuccess { return@withContext Result.success(it) }
-                .onFailure { return@withContext Result.failure(it) }
+                .onFailure {
+                    savedStateHandle.set(CURRENT_MEDIA_KEY, null)
+                    setLoadingStatus(false)
+                    return@launch _snackbarNotification.postValue(it.message)
+                }
         }
     }
 
-    suspend fun createMediaUriForCamera(type: MediaType): Result<Uri> {
+    fun captureMedia(mediaType: FileType) {
+        viewModelScope.launch {
+            val uri = createMediaUriForCamera(mediaType).getOrElse {
+                return@launch _snackbarNotification.postValue(it.message)
+            }
+
+            createMediaUriForCamera(mediaType)
+                .onSuccess {
+                    when (mediaType) {
+                        FileType.IMAGE -> {
+                            savedStateHandle.set(TEMPORARY_CAMERA_IMAGE_URI_KEY, uri)
+                            setCaptureMediaIntentRequest(FileType.IMAGE, uri)
+                        }
+                        FileType.VIDEO -> {
+                            setCaptureMediaIntentRequest(FileType.VIDEO, uri)
+                        }
+                        else -> throw IllegalArgumentException("Unsupported type: $mediaType")
+                    }
+                }
+                .onFailure {
+                    return@launch _snackbarNotification.postValue(it.message)
+                }
+        }
+    }
+
+    private fun generateFilename(source: MediaSource, extension: String): String {
+        return when (source) {
+            MediaSource.CAMERA -> "camera-${System.currentTimeMillis()}.$extension"
+            MediaSource.INTERNET -> "internet-${System.currentTimeMillis()}.$extension"
+        }
+    }
+
+    private suspend fun createMediaUriForCamera(type: FileType): Result<Uri> {
         return when (type) {
-            MediaType.IMAGE -> mediaStore.createMediaUri(
+            FileType.IMAGE -> mediaStore.createMediaUri(
                 filename = generateFilename(MediaSource.CAMERA, "jpg"),
                 type = FileType.IMAGE,
                 location = SharedPrimary
             )
-            MediaType.VIDEO -> mediaStore.createMediaUri(
+            FileType.VIDEO -> mediaStore.createMediaUri(
                 generateFilename(MediaSource.CAMERA, "mp4"),
                 type = FileType.VIDEO,
                 SharedPrimary
             )
+            else -> throw IllegalArgumentException("Unsupported type: $type")
         }
     }
-}
 
-enum class MediaType {
-    IMAGE, VIDEO
-}
+    fun onPhotoCapture(success: Boolean) {
+        setLoadingStatus(false)
 
-enum class MediaSource {
-    CAMERA, INTERNET
-}
+        if (!success) {
+            _snackbarNotification.postValue("Image capture failed")
+            return
+        }
 
-private fun generateFilename(source: MediaSource, extension: String): String {
-    return when (source) {
-        MediaSource.CAMERA -> "camera-${System.currentTimeMillis()}.$extension"
-        MediaSource.INTERNET -> "internet-${System.currentTimeMillis()}.$extension"
+        if (temporaryCameraImageUri == null) {
+            _snackbarNotification.postValue("Can't find previously saved temporary Camera Image URI")
+        } else {
+            viewModelScope.launch {
+                setCurrentMedia(temporaryCameraImageUri!!)
+                clearTemporaryCameraImageUri()
+            }
+        }
+    }
+
+    fun onVideoCapture(uri: Uri?) {
+        setLoadingStatus(false)
+
+        if (uri == null) {
+            _snackbarNotification.postValue("Video capture failed")
+            return
+        }
+
+        viewModelScope.launch {
+            setCurrentMedia(uri)
+        }
     }
 }
