@@ -369,9 +369,10 @@ class MediaStoreRepository(private val appContext: Context) {
         }
 
         val projection = arrayOf(
+            FileColumns._ID,
             FileColumns.DISPLAY_NAME,
             FileColumns.SIZE,
-            FileColumns.MEDIA_TYPE,
+//            FileColumns.MEDIA_TYPE,
             FileColumns.MIME_TYPE,
             FileColumns.DATA,
         )
@@ -389,19 +390,21 @@ class MediaStoreRepository(private val appContext: Context) {
                 return@withContext Result.failure(Exceptions.UriNotFoundException(uri))
             }
 
+            val idColumn = cursor.getColumnIndexOrThrow(FileColumns._ID)
             val displayNameColumn = cursor.getColumnIndexOrThrow(FileColumns.DISPLAY_NAME)
             val sizeColumn = cursor.getColumnIndexOrThrow(FileColumns.SIZE)
-            val mediaTypeColumn = cursor.getColumnIndexOrThrow(FileColumns.MEDIA_TYPE)
+//            val mediaTypeColumn = cursor.getColumnIndexOrThrow(FileColumns.MEDIA_TYPE)
             val mimeTypeColumn = cursor.getColumnIndexOrThrow(FileColumns.MIME_TYPE)
             val dataColumn = cursor.getColumnIndexOrThrow(FileColumns.DATA)
 
             Result.success(
                 FileResource(
+                    id = cursor.getInt(idColumn),
                     uri = uri,
                     filename = cursor.getString(displayNameColumn),
                     size = cursor.getLong(sizeColumn),
-                    type = FileType.getEnum(cursor.getInt(mediaTypeColumn)),
-//                    type = FileType.IMAGE,
+//                    type = FileType.getEnum(cursor.getInt(mediaTypeColumn)),
+                    type = FileType.NONE,
                     // FIXME: Figure out why getting this column doesn't work
                     mimeType = cursor.getString(mimeTypeColumn),
                     path = cursor.getString(dataColumn),

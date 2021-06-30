@@ -24,14 +24,16 @@ import java.io.File
 /**
  * Represents an [android.provider.MediaStore] entry.
  *
- * @property uri The first name.
+ * @property id Entry MediaStore id.
+ * @property uri Entry MediaStore uri.
  * @property filename File name with extension.
  * @property size Size of the file in bytes.
- * @property type The last name.
- * @property mimeType The last name.
+ * @property type Entry file type.
+ * @property mimeType Mime type of the file.
  */
 @Parcelize
 data class FileResource(
+    val id: Int,
     val uri: Uri,
     val filename: String,
     val size: Long,

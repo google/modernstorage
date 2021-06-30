@@ -15,27 +15,26 @@ package com.google.modernstorage.mediastore {
     method public android.net.Uri? parseResult(int resultCode, android.content.Intent? intent);
   }
 
-  public final class FileNotScannedException extends android.os.RemoteException {
-    ctor public FileNotScannedException(String message);
-  }
-
   @kotlinx.parcelize.Parcelize public final class FileResource implements android.os.Parcelable {
-    ctor public FileResource(android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.FileType type, String mimeType, String? path);
-    method public android.net.Uri component1();
-    method public String component2();
-    method public long component3();
-    method public com.google.modernstorage.mediastore.FileType component4();
-    method public String component5();
-    method public String? component6();
-    method @kotlinx.parcelize.Parcelize public com.google.modernstorage.mediastore.FileResource copy(android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.FileType type, String mimeType, String? path);
+    ctor public FileResource(int id, android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.FileType type, String mimeType, String? path);
+    method public int component1();
+    method public android.net.Uri component2();
+    method public String component3();
+    method public long component4();
+    method public com.google.modernstorage.mediastore.FileType component5();
+    method public String component6();
+    method public String? component7();
+    method @kotlinx.parcelize.Parcelize public com.google.modernstorage.mediastore.FileResource copy(int id, android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.FileType type, String mimeType, String? path);
     method public java.io.File? getFile();
     method public String getFilename();
+    method public int getId();
     method public String getMimeType();
     method public String? getPath();
     method public long getSize();
     method public com.google.modernstorage.mediastore.FileType getType();
     method public android.net.Uri getUri();
     property public final String filename;
+    property public final int id;
     property public final String mimeType;
     property public final String? path;
     property public final long size;
@@ -81,18 +80,6 @@ package com.google.modernstorage.mediastore {
   }
 
   public abstract sealed class StorageLocation {
-  }
-
-  public final class UnopenableOutputStreamException extends java.io.IOException {
-    ctor public UnopenableOutputStreamException(String message);
-  }
-
-  public final class UriNotCreatedException extends android.os.RemoteException {
-    ctor public UriNotCreatedException(String message);
-  }
-
-  public final class UriNotScannedException extends android.os.RemoteException {
-    ctor public UriNotScannedException(String message);
   }
 
 }
