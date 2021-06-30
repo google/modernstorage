@@ -342,6 +342,28 @@ class MediaStoreRepository(private val appContext: Context) {
     }
 
     /**
+     * Convert a media [Uri] to a content [Uri] to be used when requesting [FileColumns] values.
+     *
+     * Some columns are only available on the [MediaStore.Files] collection and this method converts
+     * [Uri] from other MediaStore collections (e.g. [MediaStore.Images])
+     *
+     * @param uri [Uri] representing the MediaStore entry.
+     */
+    fun convertMediaUriToContentUri(uri: Uri): Uri {
+        if (uri.authority != MediaStore.AUTHORITY) {
+            throw Exceptions.UnsupportedMediaUriException(uri)
+        }
+
+        val entryId = uri.lastPathSegment ?: throw Exceptions.UnsupportedMediaUriException(uri)
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            MediaStore.Files.getContentUri(MediaStore.getVolumeName(uri), entryId.toLong())
+        } else {
+            MediaStore.Files.getContentUri(uri.pathSegments[0], entryId.toLong())
+        }
+    }
+
+    /**
      * Returns a [FileResource] if it finds its [Uri] in MediaStore otherwise returns `null`.
      *
      * @param uri [Uri] representing the MediaStore entry.
@@ -357,8 +379,7 @@ class MediaStoreRepository(private val appContext: Context) {
         }
 
         // Convert generic media uri to content uri to get FileColumns.MEDIA_TYPE value
-        val contentUri =
-            MediaStore.Files.getContentUri(uri.pathSegments[0], uri.lastPathSegment!!.toLong())
+        val contentUri = convertMediaUriToContentUri(uri)
 
         val projection = arrayOf(
             FileColumns._ID,
