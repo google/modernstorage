@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.google.modernstorage.filesystem
 
 import android.os.Environment
@@ -21,11 +20,7 @@ import android.os.Process
 import android.provider.DocumentsContract
 import java.io.File
 import java.net.URI
-import java.nio.file.LinkOption
 import java.nio.file.Path
-import java.nio.file.WatchEvent
-import java.nio.file.WatchKey
-import java.nio.file.WatchService
 
 /**
  * The authority for `ExternalStorageProvider`. This is a constant in [DocumentsContract],
@@ -38,7 +33,8 @@ internal const val EXTERNAL_STORAGE_PROVIDER_AUTHORITY = "com.android.externalst
  * `com.android.externalstorage.ExternalStorageProvider`.
  */
 class ExternalStoragePath internal constructor(
-    fileSystem: ContentFileSystem, uri: URI
+    fileSystem: ContentFileSystem,
+    uri: URI
 ) : ContentPath(fileSystem, uri) {
 
     private val mountRoot: String
@@ -115,4 +111,3 @@ class ExternalStoragePath internal constructor(
         }
     }
 }
-

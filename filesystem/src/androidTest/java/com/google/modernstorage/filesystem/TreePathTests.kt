@@ -13,27 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.google.modernstorage.filesystem
 
-import android.app.UiAutomation
 import android.content.Context
 import android.net.Uri
-import android.os.Build
-import android.provider.DocumentsContract
-import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.filters.SdkSuppress
-import androidx.test.platform.app.InstrumentationRegistry
 import com.google.modernstorage.filesystem.provider.TestDocumentProvider
 import com.google.modernstorage.filesystem.provider.document
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import java.io.FileReader
-import java.net.URI
 import java.nio.file.Files
 
 private const val TAG = "TreePathTests"

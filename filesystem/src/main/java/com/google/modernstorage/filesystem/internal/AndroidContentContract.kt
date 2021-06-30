@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.google.modernstorage.filesystem.internal
 
 import android.content.Context
@@ -165,7 +164,7 @@ class AndroidContentContract(context: Context) : PlatformContract {
                 val mimeType = cursor.getString(1)
                 val size = cursor.getLong(2)
                 val isFolder = mimeType == DocumentsContract.Document.MIME_TYPE_DIR ||
-                        mimeType == DocumentsContract.Root.MIME_TYPE_ITEM
+                    mimeType == DocumentsContract.Root.MIME_TYPE_ITEM
                 return DocumentBasicAttributes(
                     lastModifiedTime,
                     mimeType,
@@ -204,4 +203,3 @@ private val ContentPath.childDocumentsUri
             DocumentsContract.getDocumentId(androidUri)
         )
     }
-
