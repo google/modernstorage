@@ -5,35 +5,35 @@ repo_url: https://github.com/google/modernstorage
 site_description: "ModernStorage is a group of libraries that provide an abstraction layer over storage on Android to simplify its interactions"
 site_author: Google
 theme:
-  name: material
-  icon:
-    logo: material/folder-outline
-  favicon: images/favicon.png
-  palette:
-    primary: deep purple
+    name: material
+    icon:
+        logo: material/folder-outline
+    favicon: images/favicon.png
+    palette:
+        primary: deep purple
 
 nav:
-  - 'Overview': index.md
-  - 'MediaStore': mediastore.md
+    -   'Overview': index.md
+    -   'MediaStore': mediastore.md
 
 # Extensions
 markdown_extensions:
-  - admonition
-  - codehilite:
-      guess_lang: false
-  - footnotes
-  - toc:
-      permalink: true
-  - pymdownx.betterem
-  - pymdownx.superfences
-  - pymdownx.tabbed
-  - pymdownx.tasklist:
-      custom_checkbox: true
+    - admonition
+    -   codehilite:
+            guess_lang: false
+    - footnotes
+    -   toc:
+            permalink: true
+    - pymdownx.betterem
+    - pymdownx.superfences
+    - pymdownx.tabbed
+    -   pymdownx.tasklist:
+            custom_checkbox: true
 
 # Plugins
 plugins:
-  - search
-  - macros
+    - search
+    - macros
 
 extra:
-  lib_version: "1.0.0-alpha01"
+    lib_version: "1.0.0-alpha02"
