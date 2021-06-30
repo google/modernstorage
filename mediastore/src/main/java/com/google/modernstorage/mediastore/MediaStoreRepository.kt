@@ -352,12 +352,12 @@ class MediaStoreRepository(private val appContext: Context) {
         context: CoroutineContext = Dispatchers.IO
     ): Result<FileResource> = withContext(context) {
 
-        if (uri.authority != MediaStore.AUTHORITY || uri.lastPathSegment != null) {
+        if (uri.authority != MediaStore.AUTHORITY && uri.lastPathSegment != null) {
             return@withContext Result.failure(Exceptions.UnsupportedMediaUriException(uri))
         }
 
-        // Convert generic media uri to media file uri to get FileColumns.MEDIA_TYPE value
-        val fileUri =
+        // Convert generic media uri to content uri to get FileColumns.MEDIA_TYPE value
+        val contentUri =
             MediaStore.Files.getContentUri(uri.pathSegments[0], uri.lastPathSegment!!.toLong())
 
         val projection = arrayOf(
@@ -370,7 +370,7 @@ class MediaStoreRepository(private val appContext: Context) {
         )
 
         val cursor = contentResolver.query(
-            fileUri,
+            contentUri,
             projection,
             null,
             null,
@@ -392,7 +392,7 @@ class MediaStoreRepository(private val appContext: Context) {
             Result.success(
                 FileResource(
                     id = cursor.getInt(idColumn),
-                    uri = uri,
+                    uri = contentUri,
                     filename = cursor.getString(displayNameColumn),
                     size = cursor.getLong(sizeColumn),
                     type = FileType.getEnum(cursor.getInt(mediaTypeColumn)),

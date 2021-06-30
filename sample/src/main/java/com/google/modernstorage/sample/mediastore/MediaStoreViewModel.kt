@@ -48,7 +48,7 @@ class MediaStoreViewModel(
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
 
-    fun setLoadingStatus(isLoading: Boolean) {
+    private fun setLoadingStatus(isLoading: Boolean) {
         _isLoading.postValue(isLoading)
     }
 

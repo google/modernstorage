@@ -57,6 +57,7 @@ data class FileResource(
 /**
  *  Media type enum class representing the [FileColumns.MEDIA_TYPE] column
  */
+
 enum class FileType(val value: Int) {
     /**
      * Representing [FileColumns.MEDIA_TYPE_NONE]
@@ -99,17 +100,8 @@ enum class FileType(val value: Int) {
          *
          * @param value int value of the [FileType] as written in [FileColumns.MEDIA_TYPE] column
          */
-        fun getEnum(value: Int): FileType {
-            return when (value) {
-                0 -> NONE
-                1 -> IMAGE
-                2 -> AUDIO
-                3 -> VIDEO
-                4 -> PLAYLIST
-                5 -> SUBTITLE
-                6 -> DOCUMENT
-                else -> throw Exception("Unknown MediaStoreType value")
-            }
-        }
+        fun getEnum(value: Int) = values().find {
+            it.value == value
+        } ?: throw IllegalArgumentException("Unknown MediaStoreType value")
     }
 }
