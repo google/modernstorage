@@ -349,7 +349,7 @@ class MediaStoreRepository(private val appContext: Context) {
      *
      * @param uri [Uri] representing the MediaStore entry.
      */
-    private fun convertMediaUriToContentUri(uri: Uri): Uri {
+    fun convertMediaUriToContentUri(uri: Uri): Uri {
         if (uri.authority != MediaStore.AUTHORITY) {
             throw Exceptions.UnsupportedMediaUriException(uri)
         }
