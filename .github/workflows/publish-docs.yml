@@ -2,8 +2,10 @@ name: Publish docs
 
 on:
     push:
-        tags:
-            - v*
+        # Sequence of patterns matched against refs/heads
+        branches:
+            # Push events on main branch
+            - main
 
 jobs:
     deploy_docs:
