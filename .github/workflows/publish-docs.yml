@@ -1,0 +1,57 @@
+name: Publish docs
+
+on:
+    push:
+        tags:
+            - v*
+
+jobs:
+    deploy_docs:
+runs-on: ubuntu -latest
+        env:
+            TERM: dumb
+
+        steps:
+            -   uses: actions/checkout@v2
+
+            -   name: Copy CI gradle.properties
+                run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
+
+            -   name: set up JDK
+                uses: actions/setup-java@v1
+                with:
+                    java-version: 11
+
+            -   name: Generate cache key
+                run: ./checksum.sh checksum.txt
+
+            -   uses: actions/cache@v2
+                with:
+                    path: |
+                        ~/.gradle/caches/modules-*
+                        ~/.gradle/caches/jars-*
+                        ~/.gradle/caches/build-cache-*
+                    key: gradle-${{ hashFiles('checksum.txt') }}
+
+            -   name: Setup Python
+                uses: actions/setup-python@v2
+                with:
+                    python-version: '3.x'
+
+            -   name: Install dependencies
+                run: |
+                    python3 -m pip install --upgrade pip
+                    python3 -m pip install mkdocs
+                    python3 -m pip install mkdocs-material
+                    python3 -m pip install mkdocs-macros-plugin
+            -   name: Generate docs
+                run: ./generate_docs.sh
+
+            -   name: Build site
+                run: mkdocs build
+
+            -   name: Deploy
+                uses: peaceiris/actions-gh-pages@v3
+                with:
+                    github_token: ${{ secrets.GITHUB_TOKEN }}
+                    publish_dir: ./site
