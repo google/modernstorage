@@ -20,22 +20,27 @@ import android.os.RemoteException
 import java.io.FileNotFoundException
 import java.io.IOException
 
-class UriNotCreatedException(message: String) : RemoteException(message)
-class UnopenableOutputStreamException(message: String) : IOException(message)
-class UriNotScannedException(message: String) : RemoteException(message)
-class FileNotScannedException(message: String) : RemoteException(message)
-
 internal object Exceptions {
-    fun uriNotFoundException(uri: Uri) = FileNotFoundException("Uri $uri could not be found")
+    class UriNotFoundException(uri: Uri) : FileNotFoundException() {
+        override val message = "Uri $uri could not be found"
+    }
 
-    fun uriNotCreatedException(displayName: String) =
-        UriNotCreatedException("URI of the entry $displayName not be created")
+    class UriNotCreatedException(displayName: String) : RemoteException() {
+        override val message = "URI of the entry $displayName not be created"
+    }
 
-    fun unopenableOutputStreamException(uri: Uri) =
-        UnopenableOutputStreamException("OutputStream of $uri could not be opened")
+    class UnopenableOutputStreamException(uri: Uri) : IOException() {
+        override val message = "Uri $uri is not a Media Uri"
+    }
+    class UriNotScannedException(uri: Uri) : RemoteException() {
+        override val message = "Uri $uri could not be scanned"
+    }
 
-    fun uriNotScannedException(uri: Uri) = UriNotScannedException("Uri $uri could not be scanned")
+    class FileNotScannedException(path: String) : RemoteException() {
+        override val message = "File $path could not be scanned"
+    }
 
-    fun fileNotScannedException(path: String) =
-        FileNotScannedException("File $path could not be scanned")
+    class UnsupportedMediaUriException(uri: Uri) : UnsupportedOperationException() {
+        override val message = "Uri $uri is not a Media Uri"
+    }
 }

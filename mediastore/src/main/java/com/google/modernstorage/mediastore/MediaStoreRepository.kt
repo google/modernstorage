@@ -200,7 +200,7 @@ class MediaStoreRepository(private val appContext: Context) {
         }
 
         val uri = contentResolver.insert(collection, entry)
-            ?: return@withContext Result.failure(Exceptions.uriNotCreatedException(filename))
+            ?: return@withContext Result.failure(Exceptions.UriNotCreatedException(filename))
 
         Result.success(uri)
     }
@@ -221,11 +221,11 @@ class MediaStoreRepository(private val appContext: Context) {
             null,
             null,
             null
-        ) ?: return@withContext Result.failure(Exceptions.uriNotFoundException(mediaUri))
+        ) ?: return@withContext Result.failure(Exceptions.UriNotFoundException(mediaUri))
 
         cursor.use {
             if (!cursor.moveToFirst()) {
-                return@withContext Result.failure(Exceptions.uriNotFoundException(mediaUri))
+                return@withContext Result.failure(Exceptions.UriNotFoundException(mediaUri))
             }
 
             Result.success(cursor.getString(cursor.getColumnIndexOrThrow(FileColumns.DATA)))
@@ -260,7 +260,7 @@ class MediaStoreRepository(private val appContext: Context) {
 
         contentResolver.openOutputStream(uri, "w").use { outputStream ->
             if (outputStream == null) {
-                return@withContext Result.failure(Exceptions.unopenableOutputStreamException(uri))
+                return@withContext Result.failure(Exceptions.UnopenableOutputStreamException(uri))
             } else {
                 inputStream.copyTo(outputStream)
             }
@@ -297,7 +297,7 @@ class MediaStoreRepository(private val appContext: Context) {
                 if (scannedUri != null) {
                     continuation.resume(Result.success(scannedUri))
                 } else {
-                    continuation.resume(Result.failure(Exceptions.fileNotScannedException(path)))
+                    continuation.resume(Result.failure(Exceptions.FileNotScannedException(path)))
                 }
             }
         }
@@ -327,7 +327,7 @@ class MediaStoreRepository(private val appContext: Context) {
             null,
             null
         ) ?: return@withContext Result.failure(
-            Exceptions.uriNotFoundException(
+            Exceptions.UriNotFoundException(
                 uri
             )
         )
@@ -335,7 +335,7 @@ class MediaStoreRepository(private val appContext: Context) {
         val path = cursor.use {
             if (!cursor.moveToFirst()) {
                 return@withContext Result.failure(
-                    Exceptions.uriNotFoundException(
+                    Exceptions.UriNotFoundException(
                         uri
                     )
                 )
@@ -349,7 +349,7 @@ class MediaStoreRepository(private val appContext: Context) {
         if (scanResult.isSuccess) {
             Result.success(path)
         } else {
-            Result.failure(Exceptions.uriNotScannedException(uri))
+            Result.failure(Exceptions.UriNotScannedException(uri))
         }
     }
 
@@ -363,6 +363,11 @@ class MediaStoreRepository(private val appContext: Context) {
         uri: Uri,
         context: CoroutineContext = Dispatchers.IO
     ): Result<FileResource> = withContext(context) {
+
+        if (uri.authority != MediaStore.AUTHORITY) {
+            return@withContext Result.failure(Exceptions.UnsupportedMediaUriException(uri))
+        }
+
         val projection = arrayOf(
             FileColumns.DISPLAY_NAME,
             FileColumns.SIZE,
@@ -377,11 +382,11 @@ class MediaStoreRepository(private val appContext: Context) {
             null,
             null,
             null
-        ) ?: return@withContext Result.failure(Exceptions.uriNotFoundException(uri))
+        ) ?: return@withContext Result.failure(Exceptions.UriNotFoundException(uri))
 
         cursor.use {
             if (!cursor.moveToFirst()) {
-                return@withContext Result.failure(Exceptions.uriNotFoundException(uri))
+                return@withContext Result.failure(Exceptions.UriNotFoundException(uri))
             }
 
             val displayNameColumn = cursor.getColumnIndexOrThrow(FileColumns.DISPLAY_NAME)
