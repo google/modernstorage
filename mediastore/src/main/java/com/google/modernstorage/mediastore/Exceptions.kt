@@ -40,7 +40,7 @@ internal object Exceptions {
         override val message = "File $path could not be scanned"
     }
 
-    class UnsupportedMediaUriException(uri: Uri) : UnsupportedOperationException() {
+    class UnsupportedMediaUriException(uri: Uri) : IllegalArgumentException() {
         override val message = "Uri $uri is not a Media Uri"
     }
 }

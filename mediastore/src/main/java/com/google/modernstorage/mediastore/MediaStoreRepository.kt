@@ -159,18 +159,6 @@ class MediaStoreRepository(private val appContext: Context) {
     }
 
     /**
-     * Get display name column in [MediaStore] based on the provided [FileType].
-     *
-     * @param type type of the media file.
-     */
-    private fun getDisplayNameColumn(type: FileType) = when (type) {
-        FileType.IMAGE -> MediaStore.Images.ImageColumns.DISPLAY_NAME
-        FileType.AUDIO -> MediaStore.Audio.AudioColumns.DISPLAY_NAME
-        FileType.VIDEO -> MediaStore.Video.VideoColumns.DISPLAY_NAME
-        else -> throw IllegalArgumentException("Unsupported kind: $type")
-    }
-
-    /**
      * Create a [MediaStore] [Uri] and returns it if successful.
      *
      * @param filename preferred filename for the media entry. System can add a suffix if there's
@@ -187,7 +175,7 @@ class MediaStoreRepository(private val appContext: Context) {
         context: CoroutineContext = Dispatchers.IO
     ): Result<Uri> = withContext(context) {
         val entry = ContentValues().apply {
-            put(getDisplayNameColumn(type), filename)
+            put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
         }
 
         val collection = when (type) {
