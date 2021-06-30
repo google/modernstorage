@@ -364,21 +364,25 @@ class MediaStoreRepository(private val appContext: Context) {
         context: CoroutineContext = Dispatchers.IO
     ): Result<FileResource> = withContext(context) {
 
-        if (uri.authority != MediaStore.AUTHORITY) {
+        if (uri.authority != MediaStore.AUTHORITY || uri.lastPathSegment != null) {
             return@withContext Result.failure(Exceptions.UnsupportedMediaUriException(uri))
         }
+
+        // Convert generic media uri to media file uri to get FileColumns.MEDIA_TYPE value
+        val fileUri =
+            MediaStore.Files.getContentUri(uri.pathSegments[0], uri.lastPathSegment!!.toLong())
 
         val projection = arrayOf(
             FileColumns._ID,
             FileColumns.DISPLAY_NAME,
             FileColumns.SIZE,
-//            FileColumns.MEDIA_TYPE,
+            FileColumns.MEDIA_TYPE,
             FileColumns.MIME_TYPE,
             FileColumns.DATA,
         )
 
         val cursor = contentResolver.query(
-            uri,
+            fileUri,
             projection,
             null,
             null,
@@ -393,7 +397,7 @@ class MediaStoreRepository(private val appContext: Context) {
             val idColumn = cursor.getColumnIndexOrThrow(FileColumns._ID)
             val displayNameColumn = cursor.getColumnIndexOrThrow(FileColumns.DISPLAY_NAME)
             val sizeColumn = cursor.getColumnIndexOrThrow(FileColumns.SIZE)
-//            val mediaTypeColumn = cursor.getColumnIndexOrThrow(FileColumns.MEDIA_TYPE)
+            val mediaTypeColumn = cursor.getColumnIndexOrThrow(FileColumns.MEDIA_TYPE)
             val mimeTypeColumn = cursor.getColumnIndexOrThrow(FileColumns.MIME_TYPE)
             val dataColumn = cursor.getColumnIndexOrThrow(FileColumns.DATA)
 
@@ -403,9 +407,7 @@ class MediaStoreRepository(private val appContext: Context) {
                     uri = uri,
                     filename = cursor.getString(displayNameColumn),
                     size = cursor.getLong(sizeColumn),
-//                    type = FileType.getEnum(cursor.getInt(mediaTypeColumn)),
-                    type = FileType.NONE,
-                    // FIXME: Figure out why getting this column doesn't work
+                    type = FileType.getEnum(cursor.getInt(mediaTypeColumn)),
                     mimeType = cursor.getString(mimeTypeColumn),
                     path = cursor.getString(dataColumn),
                 )
