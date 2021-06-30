@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.google.modernstorage.filesystem.internal
 
 import com.google.modernstorage.filesystem.CONTENT_SCHEME
 import com.google.modernstorage.filesystem.ContentPath
 import com.google.modernstorage.filesystem.PlatformContract
-import java.lang.ClassCastException
-import java.lang.IllegalArgumentException
 import java.net.URI
 import java.nio.channels.SeekableByteChannel
 import java.nio.file.DirectoryStream

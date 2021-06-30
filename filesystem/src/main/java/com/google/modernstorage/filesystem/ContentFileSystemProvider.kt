@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.google.modernstorage.filesystem
 
 import java.net.URI
@@ -23,7 +22,6 @@ import java.nio.file.CopyOption
 import java.nio.file.DirectoryStream
 import java.nio.file.FileStore
 import java.nio.file.FileSystem
-import java.nio.file.FileSystemAlreadyExistsException
 import java.nio.file.FileSystems
 import java.nio.file.LinkOption
 import java.nio.file.OpenOption
@@ -102,7 +100,7 @@ class ContentFileSystemProvider(
             "r"
         } else {
             options.optionToMode(READ, "r") + options.optionToMode(WRITE, "w") +
-                    options.optionToMode(APPEND, "a") + options.optionToMode(TRUNCATE_EXISTING, "t")
+                options.optionToMode(APPEND, "a") + options.optionToMode(TRUNCATE_EXISTING, "t")
         }
 
         // TODO: Support providing attributes.
