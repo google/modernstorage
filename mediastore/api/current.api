@@ -15,76 +15,65 @@ package com.google.modernstorage.mediastore {
     method public android.net.Uri? parseResult(int resultCode, android.content.Intent? intent);
   }
 
+  @kotlinx.parcelize.Parcelize public final class FileResource implements android.os.Parcelable {
+    ctor public FileResource(int id, android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.FileType type, String mimeType, String? path);
+    method public int component1();
+    method public android.net.Uri component2();
+    method public String component3();
+    method public long component4();
+    method public com.google.modernstorage.mediastore.FileType component5();
+    method public String component6();
+    method public String? component7();
+    method @kotlinx.parcelize.Parcelize public com.google.modernstorage.mediastore.FileResource copy(int id, android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.FileType type, String mimeType, String? path);
+    method public java.io.File? getFile();
+    method public String getFilename();
+    method public int getId();
+    method public String getMimeType();
+    method public String? getPath();
+    method public long getSize();
+    method public com.google.modernstorage.mediastore.FileType getType();
+    method public android.net.Uri getUri();
+    property public final String filename;
+    property public final int id;
+    property public final String mimeType;
+    property public final String? path;
+    property public final long size;
+    property public final com.google.modernstorage.mediastore.FileType type;
+    property public final android.net.Uri uri;
+  }
+
+  public enum FileType {
+    method public final int getValue();
+    property public final int value;
+    enum_constant public static final com.google.modernstorage.mediastore.FileType AUDIO;
+    enum_constant public static final com.google.modernstorage.mediastore.FileType DOCUMENT;
+    enum_constant public static final com.google.modernstorage.mediastore.FileType IMAGE;
+    enum_constant public static final com.google.modernstorage.mediastore.FileType NONE;
+    enum_constant public static final com.google.modernstorage.mediastore.FileType PLAYLIST;
+    enum_constant public static final com.google.modernstorage.mediastore.FileType SUBTITLE;
+    enum_constant public static final com.google.modernstorage.mediastore.FileType VIDEO;
+    field public static final com.google.modernstorage.mediastore.FileType.Companion Companion;
+  }
+
+  public static final class FileType.Companion {
+    method public com.google.modernstorage.mediastore.FileType getEnum(int value);
+  }
+
   public final class Internal extends com.google.modernstorage.mediastore.StorageLocation {
     field public static final com.google.modernstorage.mediastore.Internal INSTANCE;
   }
 
-  public final class MediaCollectionKt {
-    method public static android.net.Uri? getImageCollection(com.google.modernstorage.mediastore.StorageLocation location);
-    method public static android.net.Uri? getVideoCollection(com.google.modernstorage.mediastore.StorageLocation location);
-  }
-
-  public final class MediaQueryKt {
-    method public static suspend Object? getMediaResourceById(android.content.Context context, android.net.Uri mediaUri, kotlin.coroutines.Continuation<? super com.google.modernstorage.mediastore.MediaResource> p);
-  }
-
-  public final class MediaResource {
-    ctor public MediaResource(android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.MediaType type, String mimeType);
-    method public android.net.Uri component1();
-    method public String component2();
-    method public long component3();
-    method public com.google.modernstorage.mediastore.MediaType component4();
-    method public String component5();
-    method public com.google.modernstorage.mediastore.MediaResource copy(android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.MediaType type, String mimeType);
-    method public String getFilename();
-    method public String getMimeType();
-    method public long getSize();
-    method public com.google.modernstorage.mediastore.MediaType getType();
-    method public android.net.Uri getUri();
-    property public final String filename;
-    property public final String mimeType;
-    property public final long size;
-    property public final com.google.modernstorage.mediastore.MediaType type;
-    property public final android.net.Uri uri;
-  }
-
-  public final class MediaStoreClient {
-    ctor public MediaStoreClient(android.content.Context context);
-    method public suspend Object? addImageFromStream(String filename, java.io.InputStream inputStream, com.google.modernstorage.mediastore.StorageLocation location, kotlin.coroutines.Continuation<? super android.net.Uri> p);
-    method public suspend Object? addVideoFromStream(String filename, java.io.InputStream inputStream, com.google.modernstorage.mediastore.StorageLocation location, kotlin.coroutines.Continuation<? super android.net.Uri> p);
-    method public suspend Object? createImageUri(String filename, com.google.modernstorage.mediastore.StorageLocation location, kotlin.coroutines.Continuation<? super android.net.Uri> p);
-    method public suspend Object? createVideoUri(String filename, com.google.modernstorage.mediastore.StorageLocation location, kotlin.coroutines.Continuation<? super android.net.Uri> p);
-    method public suspend Object? getResourceByUri(android.net.Uri uri, kotlin.coroutines.Continuation<? super com.google.modernstorage.mediastore.MediaResource> p);
-  }
-
-  public final class MediaStoreClientKt {
-    method public static Exception getUnaccessibleCollectionException();
-    method public static Exception getUnopenableOutputStreamException();
-    method public static Exception getUriNotCreatedException();
-  }
-
-  public enum MediaType {
-    method public final int getValue();
-    property public final int value;
-    enum_constant public static final com.google.modernstorage.mediastore.MediaType AUDIO;
-    enum_constant public static final com.google.modernstorage.mediastore.MediaType DOCUMENT;
-    enum_constant public static final com.google.modernstorage.mediastore.MediaType IMAGE;
-    enum_constant public static final com.google.modernstorage.mediastore.MediaType NONE;
-    enum_constant public static final com.google.modernstorage.mediastore.MediaType PLAYLIST;
-    enum_constant public static final com.google.modernstorage.mediastore.MediaType SUBTITLE;
-    enum_constant public static final com.google.modernstorage.mediastore.MediaType VIDEO;
-    field public static final com.google.modernstorage.mediastore.MediaType.Companion Companion;
-  }
-
-  public static final class MediaType.Companion {
-    method public com.google.modernstorage.mediastore.MediaType getEnum(int value);
-  }
-
-  public final class PermissionKt {
-    method public static boolean canReadOwnEntriesInMediaStore(android.content.Context context);
-    method public static boolean canReadSharedEntriesInMediaStore(android.content.Context context);
-    method public static boolean canWriteOwnEntriesInMediaStore(android.content.Context context);
-    method public static boolean canWriteSharedEntriesInMediaStore(android.content.Context context);
+  public final class MediaStoreRepository {
+    ctor public MediaStoreRepository(android.content.Context appContext);
+    method public suspend Object? addMediaFromStream-d1pmJ48(String filename, com.google.modernstorage.mediastore.FileType type, String mimeType, java.io.InputStream inputStream, com.google.modernstorage.mediastore.StorageLocation location, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<? extends android.net.Uri>> p);
+    method public boolean canReadOwnEntries();
+    method public boolean canReadSharedEntries();
+    method public boolean canWriteOwnEntries();
+    method public boolean canWriteSharedEntries();
+    method public android.net.Uri convertMediaUriToContentUri(android.net.Uri uri);
+    method public suspend Object? createMediaUri-d1pmJ48(String filename, com.google.modernstorage.mediastore.FileType type, com.google.modernstorage.mediastore.StorageLocation location, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<? extends android.net.Uri>> p);
+    method public suspend Object? getResourceByUri-d1pmJ48(android.net.Uri uri, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<com.google.modernstorage.mediastore.FileResource>> p);
+    method public suspend Object? scanUri-d1pmJ48(android.net.Uri uri, String mimeType, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<java.lang.String>> p);
   }
 
   public final class SharedPrimary extends com.google.modernstorage.mediastore.StorageLocation {

@@ -16,29 +16,49 @@
 package com.google.modernstorage.mediastore
 
 import android.net.Uri
+import android.os.Parcelable
 import android.provider.MediaStore.Files.FileColumns
+import kotlinx.parcelize.Parcelize
+import java.io.File
 
 /**
  * Represents an [android.provider.MediaStore] entry.
  *
- * @property uri The first name.
+ * @property id Entry MediaStore id.
+ * @property uri Entry MediaStore uri.
  * @property filename File name with extension.
  * @property size Size of the file in bytes.
- * @property type The last name.
- * @property mimeType The last name.
+ * @property type Entry file type.
+ * @property mimeType Mime type of the file.
  */
-data class MediaResource(
+@Parcelize
+data class FileResource(
+    val id: Int,
     val uri: Uri,
     val filename: String,
     val size: Long,
-    val type: MediaType,
+    val type: FileType,
     val mimeType: String,
-)
+    val path: String?,
+) : Parcelable {
+
+    /**
+     * Returns a [File] if the [FileResource] path property isn't null.
+     */
+    fun getFile(): File? {
+        if (path !== null) {
+            return File(path)
+        }
+
+        return null
+    }
+}
 
 /**
  *  Media type enum class representing the [FileColumns.MEDIA_TYPE] column
  */
-enum class MediaType(val value: Int) {
+
+enum class FileType(val value: Int) {
     /**
      * Representing [FileColumns.MEDIA_TYPE_NONE]
      */
@@ -76,21 +96,12 @@ enum class MediaType(val value: Int) {
 
     companion object {
         /**
-         * Returns the matching [MediaType] enum given an int value
+         * Returns the matching [FileType] enum given an int value
          *
-         * @param value int value of the [MediaType] as written in [FileColumns.MEDIA_TYPE] column
+         * @param value int value of the [FileType] as written in [FileColumns.MEDIA_TYPE] column
          */
-        fun getEnum(value: Int): MediaType {
-            return when (value) {
-                0 -> NONE
-                1 -> IMAGE
-                2 -> AUDIO
-                3 -> VIDEO
-                4 -> PLAYLIST
-                5 -> SUBTITLE
-                6 -> DOCUMENT
-                else -> throw Exception("Unknown MediaStoreType value")
-            }
-        }
+        fun getEnum(value: Int) = values().find {
+            it.value == value
+        } ?: throw IllegalArgumentException("Unknown MediaStoreType value")
     }
 }

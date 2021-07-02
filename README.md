@@ -13,16 +13,13 @@ ModernStorage is available on `mavenCentral()`.
 
 ```kotlin
 // For MediaStore interactions
-implementation("com.google.modernstorage:modernstorage-mediastore:1.0.0-alpha01")
+implementation("com.google.modernstorage:modernstorage-mediastore:1.0.0-alpha02")
 ```
 
 ## Quick Start
 
 * For MediaStore interactions, check out the [sample app](/sample/src/main/java/com/google/modernstorage/sample/mediastore/)
 * For non-media files on shared storage & SAF interactions, stay tuned for the upcoming **filesystem** package
-
-## Is it ready?
-Not yet! We've just started uploading our work but we will have proper documentation, tests and releases really soon!
 
 ## Contributions
 
