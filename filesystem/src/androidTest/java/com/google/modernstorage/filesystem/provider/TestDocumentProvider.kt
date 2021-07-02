@@ -101,7 +101,7 @@ class TestDocumentProvider : DocumentsProvider() {
     override fun queryDocument(documentId: String?, projection: Array<out String>?): Cursor {
         val document = docIdsToDoc[documentId] ?: throw FileNotFoundException()
 
-        val useProjection = projection ?: defaultRootProjection
+        val useProjection = projection ?: defaultDocumentProjection
         val cursor = MatrixCursor(useProjection)
         cursor.newRow().apply {
             add(Document.COLUMN_DOCUMENT_ID, document.docId)

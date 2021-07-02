@@ -32,6 +32,19 @@ class ExternalStorageFileSystem internal constructor(
         if (more.isNullOrEmpty()) {
             throw NullPointerException("Cannot build a path with a null document ID")
         }
+
+        /*
+         * This assumes the docId format is root:path/to/file
+         * (Based on the comment in AOSP's ExternalStorageProvider.java)
+         *
+         * Because of this, the first element of "more" is "root", and the remaining
+         * elements would be the directories (path, to, file).
+         * %3A and %2F are just URL escaped versions of ":" and "/", respectively.
+         *
+         * Example:
+         * input: first="tree", more=["primary", "Documents", "MyApp", "Doc.txt"]
+         * output: "primary%3ADocuments%2FMyApp%2FDoc.txt"
+         */
         val documentId = more.fold("") { acc, part ->
             if (acc.isEmpty()) {
                 "$part%3A"

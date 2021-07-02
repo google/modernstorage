@@ -90,22 +90,37 @@ class ExternalStoragePath internal constructor(
         return buildElements.toList()
     }
 
+    /**
+     * Validates a URI to ensure it actually matches the format of an ExternalStorageProvider
+     * URI.
+     *
+     * Example valid URIs:
+     * "content://com.android.externalstorage.documents/tree/primary%3ATest/document/primary%3ATest%2FTest.txt"
+     * "content://com.android.externalstorage.documents/document/primary%3ATest%2FTest.txt"
+     */
     private fun validateUri(uri: URI) {
+        // "authority" has to be "com.android.externalstorage.documents"
         if (uri.authority != EXTERNAL_STORAGE_PROVIDER_AUTHORITY) {
             throw IllegalArgumentException("Bad authority: $uri")
         }
+        // Both "tree" and "document" URIs have at least 3 characters
         if (uri.path.length < 2) {
             throw IllegalArgumentException("Malformed path: $uri")
         }
+        // The URIs should have at least one '/' -- i.e.: document/... or tree/.../document/...
         if (uri.path.indexOf('/', 1) == -1) {
             throw IllegalArgumentException("Malformed path: $uri")
         }
+        // Because the format of the docIds have a ':' in them (%3A), it has to be _before_
+        // the / since the / characters divide 'tree' and 'document' parts.
         if (uri.path.indexOf('/', 1) > uri.path.indexOf(':', 1)) {
             throw IllegalArgumentException("Malformed path: $uri")
         }
+        // DocumentProvider URIs never have fragments
         if (uri.fragment != null) {
             throw IllegalArgumentException("Malformed path: $uri")
         }
+        // DocumentProvider URIs never have query parameters
         if (uri.query != null) {
             throw IllegalArgumentException("Malformed path: $uri")
         }
