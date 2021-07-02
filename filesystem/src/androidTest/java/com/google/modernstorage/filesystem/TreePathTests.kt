@@ -26,8 +26,6 @@ import org.junit.Before
 import org.junit.Test
 import java.nio.file.Files
 
-private const val TAG = "TreePathTests"
-
 class TreePathTests {
     private val context = ApplicationProvider.getApplicationContext<Context>()
     private val testUri =

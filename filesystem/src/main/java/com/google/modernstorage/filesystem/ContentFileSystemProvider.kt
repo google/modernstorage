@@ -77,7 +77,6 @@ class ContentFileSystemProvider(
     override fun getPath(uri: URI?): Path {
         uri ?: throw IllegalArgumentException("URI must not be null")
         return if (uri.scheme == scheme) {
-            val authority = uri.authority
             val fileSystem = getOrCreateFileSystem(uri)
 
             // Perform any transformations on the incoming URI that are necessary.

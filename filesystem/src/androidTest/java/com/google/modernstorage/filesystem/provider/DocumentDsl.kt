@@ -24,6 +24,12 @@ class TestDocument(
     val content: String?,
     val children: List<TestDocument>?
 ) {
+    init {
+        if (content != null && children != null) {
+            throw IllegalArgumentException("A document can not contain content and children at the same")
+        }
+    }
+
     val mimeType
         get() = when {
             children?.isNotEmpty() == true -> {
@@ -85,14 +91,3 @@ fun document(docId: String, block: TestDocumentBuilder.() -> Unit = { }) =
     TestDocumentBuilder(docId).apply {
         block()
     }.build()
-
-private fun test() {
-    document("root") {
-        displayName = "Root"
-        children {
-            document("test.txt") {
-                content { "This is the test document" }
-            }
-        }
-    }
-}
