@@ -40,10 +40,6 @@ import java.nio.file.attribute.FileTime
 class AndroidContentContract(context: Context) : PlatformContract {
     private val context = context.applicationContext
 
-    override fun isSupportedUri(uri: URI) = DocumentsContract.isDocumentUri(context, uri.toUri())
-
-    override fun isTreeUri(uri: URI) = DocumentsContract.isTreeUri(uri.toUri())
-
     override fun prepareUri(incomingUri: URI): URI {
         /*
          * Uris returned from `ACTION_OPEN_DOCUMENT_TREE` cannot be used directly (via
@@ -62,20 +58,68 @@ class AndroidContentContract(context: Context) : PlatformContract {
         }
     }
 
+    override fun buildDocumentUri(authority: String, documentId: String) =
+        DocumentsContract.buildDocumentUri(authority, documentId).toURI()
+
+    override fun buildDocumentUriUsingTree(treeUri: URI, documentId: String) =
+        DocumentsContract.buildDocumentUriUsingTree(treeUri.toUri(), documentId).toURI()
+
+    override fun buildTreeDocumentUri(authority: String, documentId: String) =
+        DocumentsContract.buildTreeDocumentUri(authority, documentId).toURI()
+
+    override fun buildChildDocumentsUri(authority: String, parentDocumentId: String) =
+        DocumentsContract.buildChildDocumentsUri(authority, parentDocumentId).toURI()
+
+    override fun buildChildDocumentsUriUsingTree(treeUri: URI, parentDocumentId: String) =
+        DocumentsContract.buildChildDocumentsUriUsingTree(treeUri.toUri(), parentDocumentId).toURI()
+
+    override fun createDocument(parentDocumentUri: URI, mimeType: String, displayName: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun copyDocument(sourceDocumentUri: URI, targetParentDocumentUri: URI) {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteDocument(documentUri: URI) {
+        TODO("Not yet implemented")
+    }
+
     override fun getDocumentId(documentUri: URI): String? {
         return try {
             DocumentsContract.getDocumentId(documentUri.toUri())
-        } catch (iae: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             null
         }
     }
 
-    override fun buildDocumentUri(authority: String, documentId: String, buildTree: Boolean) =
-        if (buildTree) {
-            DocumentsContract.buildTreeDocumentUri(authority, documentId).toURI()
-        } else {
-            DocumentsContract.buildDocumentUri(authority, documentId).toURI()
+    override fun getTreeDocumentId(documentUri: URI): String? {
+        return try {
+            DocumentsContract.getTreeDocumentId(documentUri.toUri())
+        } catch (_: IllegalArgumentException) {
+            null
         }
+    }
+
+    override fun isDocumentUri(uri: URI) = DocumentsContract.isDocumentUri(context, uri.toUri())
+
+    override fun isTreeUri(uri: URI) = DocumentsContract.isTreeUri(uri.toUri())
+
+    override fun moveDocument(
+        sourceDocumentUri: URI,
+        sourceParentDocumentUri: URI,
+        targetParentDocumentUri: URI
+    ): URI? {
+        TODO("Not yet implemented")
+    }
+
+    override fun removeDocument(documentUri: URI, parentDocumentUri: URI): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun renameDocument(documentUri: URI, displayName: String): URI? {
+        TODO("Not yet implemented")
+    }
 
     override fun openByteChannel(uri: URI, mode: String): SeekableByteChannel {
         // Fix for https://issuetracker.google.com/180526528

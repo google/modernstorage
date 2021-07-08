@@ -15,7 +15,6 @@
  */
 package com.google.modernstorage.filesystem.internal
 
-import com.google.modernstorage.filesystem.CONTENT_SCHEME
 import com.google.modernstorage.filesystem.ContentPath
 import com.google.modernstorage.filesystem.PlatformContract
 import java.net.URI
@@ -30,28 +29,89 @@ import java.nio.file.attribute.BasicFileAttributes
  * Implementation of a [PlatformContract] for host side tests.
  */
 class TestContract(
-    val getDocumentIdImpl: (URI) -> String? = { _ -> TODO() },
-    val openByteChannelImpl: (URI, String) -> SeekableByteChannel = { _, _ -> TODO() },
-    val newDirectoryStreamImpl: (ContentPath, Filter<in Path>?) -> DirectoryStream<Path> = { _, _ -> TODO() },
-    val readAttributesImpl: (ContentPath, options: Array<out LinkOption?>) -> BasicFileAttributes = { _, _ -> TODO() },
+    var openByteChannelImpl: (URI, String) -> SeekableByteChannel = { _, _ -> TODO() },
+    var newDirectoryStreamImpl: (ContentPath, Filter<in Path>?) -> DirectoryStream<Path> = { _, _ -> TODO() },
+    var readAttributesImpl: (ContentPath, options: Array<out LinkOption?>) -> BasicFileAttributes = { _, _ -> TODO() },
 ) : PlatformContract {
-
-    override fun isSupportedUri(uri: URI) = uri.scheme == CONTENT_SCHEME
-
-    override fun isTreeUri(uri: URI): Boolean = uri.path.contains("/tree/")
 
     override fun prepareUri(incomingUri: URI) = incomingUri
 
-    override fun getDocumentId(documentUri: URI) = getDocumentIdImpl(documentUri)
+    override fun buildChildDocumentsUri(authority: String, parentDocumentId: String): URI {
+        TODO("Not yet implemented")
+    }
 
-    override fun buildDocumentUri(authority: String, documentId: String, buildTree: Boolean): URI {
-        val uriString = if (buildTree) {
-            val rootId = documentId.substringBefore("%3A")
-            "content://$authority/tree/$rootId/document/$documentId"
+    override fun buildChildDocumentsUriUsingTree(treeUri: URI, parentDocumentId: String): URI {
+        TODO("Not yet implemented")
+    }
+
+    override fun buildDocumentUri(authority: String, documentId: String): URI {
+        return URI("content://$authority/document/$documentId")
+    }
+
+    override fun buildDocumentUriUsingTree(treeUri: URI, documentId: String): URI {
+        val authority = treeUri.authority
+        val treeDocumentId = getTreeDocumentId(treeUri)
+        return URI("content://$authority/tree/$treeDocumentId/document/$documentId")
+    }
+
+    override fun buildTreeDocumentUri(authority: String, documentId: String): URI {
+        return URI("content://$authority/tree/$documentId")
+    }
+
+    override fun copyDocument(sourceDocumentUri: URI, targetParentDocumentUri: URI) {
+        TODO("Not yet implemented")
+    }
+
+    override fun createDocument(parentDocumentUri: URI, mimeType: String, displayName: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteDocument(documentUri: URI) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getDocumentId(documentUri: URI): String {
+        val path = documentUri.path.substring(1).split('/', limit = 4)
+        return if (path.size >= 2 && path[0] == "tree") {
+            path[3]
+        } else if (path.size == 2) {
+            path[1]
         } else {
-            "content://$authority/document/$documentId"
+            throw IllegalArgumentException("Invalid URI")
         }
-        return URI(uriString)
+    }
+
+    override fun getTreeDocumentId(documentUri: URI): String {
+        val path = documentUri.path.substring(1).split('/')
+        return if (path.size >= 2 && path[0] == "tree") {
+            println("In: $documentUri, ID: ${path[1]}")
+            path[1]
+        } else {
+            throw IllegalArgumentException("Invalid URI")
+        }
+    }
+
+    override fun isDocumentUri(uri: URI): Boolean {
+        val path = uri.path.substring(1).split('/')
+        return path.size >= 2 && (path[0] == "tree" || path[0] == "document")
+    }
+
+    override fun isTreeUri(uri: URI): Boolean = uri.path.contains("/tree/")
+
+    override fun moveDocument(
+        sourceDocumentUri: URI,
+        sourceParentDocumentUri: URI,
+        targetParentDocumentUri: URI
+    ): URI? {
+        TODO("Not yet implemented")
+    }
+
+    override fun renameDocument(documentUri: URI, displayName: String): URI? {
+        TODO("Not yet implemented")
+    }
+
+    override fun removeDocument(documentUri: URI, parentDocumentUri: URI): Boolean {
+        TODO("Not yet implemented")
     }
 
     override fun openByteChannel(uri: URI, mode: String) = openByteChannelImpl(uri, mode)

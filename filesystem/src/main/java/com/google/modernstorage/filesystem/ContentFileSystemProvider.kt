@@ -62,7 +62,7 @@ class ContentFileSystemProvider(
     override fun newFileSystem(uri: URI?, env: MutableMap<String, *>?): FileSystem {
         uri ?: throw IllegalArgumentException("URI must not be null")
 
-        if (!contentContract.isSupportedUri(uri)) {
+        if (!contentContract.isDocumentUri(uri)) {
             throw IllegalArgumentException("Only DocumentProvider URIs are currently supported")
         }
 

@@ -79,17 +79,6 @@ class ExternalStoragePath internal constructor(
         }
     }
 
-    override fun elements(): List<String> {
-        val documentId = fileSystem.provider().getDocumentId(uri)!!
-        val rootSeparator = if (documentId.contains("%3A")) "%3A" else "%3a"
-        val pathSeparator = if (documentId.contains("%2F")) "%2F" else "%2f"
-
-        val buildElements = mutableListOf(documentId.substringBefore(rootSeparator))
-        val filePath = documentId.substringAfter(rootSeparator).split(pathSeparator)
-        buildElements.addAll(filePath)
-        return buildElements.toList()
-    }
-
     /**
      * Validates a URI to ensure it actually matches the format of an ExternalStorageProvider
      * URI.
