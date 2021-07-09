@@ -17,6 +17,7 @@ package com.google.modernstorage.filesystem
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.test.core.app.ApplicationProvider
 import com.google.modernstorage.filesystem.provider.TestDocumentProvider
 import com.google.modernstorage.filesystem.provider.document
@@ -27,7 +28,7 @@ import org.junit.Test
 import java.io.FileNotFoundException
 import java.nio.file.Files
 
-class DocumentPathTests {
+class ContentPathTests {
     private val context = ApplicationProvider.getApplicationContext<Context>()
     private val testUri =
         Uri.parse("content://${context.packageName}.documents/document/test.txt")
@@ -67,7 +68,7 @@ class DocumentPathTests {
     fun readSingleDocument_documentDoesNotExist() {
         val testPath = AndroidPaths.get(testNonExistingUri)
         try {
-            val lines = Files.readAllLines(testPath)
+            Files.readAllLines(testPath).forEach { Log.d("TAG", it) }
             Assert.fail("Opened non-existing file?")
         } catch (fileNotFound: FileNotFoundException) {
             // Test pass

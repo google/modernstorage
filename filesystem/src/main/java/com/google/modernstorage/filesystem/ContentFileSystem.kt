@@ -15,7 +15,6 @@
  */
 package com.google.modernstorage.filesystem
 
-import java.net.URI
 import java.nio.file.FileStore
 import java.nio.file.FileSystem
 import java.nio.file.Path
@@ -27,7 +26,7 @@ open class ContentFileSystem internal constructor(
     private val provider: ContentFileSystemProvider,
     val authority: String
 ) : FileSystem() {
-    private val rootUris = mutableListOf<URI>()
+    private val roots = mutableSetOf<Path>()
 
     override fun close() = Unit
 
@@ -39,9 +38,7 @@ open class ContentFileSystem internal constructor(
 
     override fun getSeparator() = "/"
 
-    override fun getRootDirectories() = rootUris.map { rootUri ->
-        provider.getPath(rootUri)
-    }.asIterable()
+    override fun getRootDirectories() = roots.toMutableList().asIterable()
 
     override fun getFileStores(): MutableIterable<FileStore> {
         TODO("Not yet implemented")
@@ -49,10 +46,14 @@ open class ContentFileSystem internal constructor(
 
     override fun supportedFileAttributeViews() = setOf("basic")
 
-    open fun getPath(uri: URI) = ContentPath(this, uri)
-
-    override fun getPath(first: String?, vararg more: String?): Path {
-        TODO("Not yet implemented")
+    override fun getPath(first: String?, vararg more: String): Path {
+        val path = DocumentPath(this, first, *more)
+        path.root?.let { root ->
+            synchronized(roots) {
+                roots.add(root)
+            }
+        }
+        return path
     }
 
     override fun getPathMatcher(syntaxAndPattern: String?): PathMatcher {
@@ -65,15 +66,5 @@ open class ContentFileSystem internal constructor(
 
     override fun newWatchService(): WatchService {
         TODO("Not yet implemented")
-    }
-
-    /**
-     * Internal method to register a new root URI. At the moment there isn't any attempt to
-     * check whether one URI is a child of a previously registered root.
-     */
-    internal fun registerRoot(rootUri: URI) = synchronized(rootUri) {
-        if (!rootUris.contains(rootUri)) {
-            rootUris.add(rootUri)
-        }
     }
 }

@@ -15,6 +15,7 @@
  */
 package com.google.modernstorage.filesystem
 
+import com.google.modernstorage.filesystem.internal.AndroidContentContract
 import java.net.URI
 import java.nio.channels.SeekableByteChannel
 import java.nio.file.DirectoryStream
@@ -32,7 +33,7 @@ interface PlatformContract {
 
     /**
      * Performs any necessary transformations on a [URI] before it can be used to create a
-     * [ContentPath]. For example, building a "document" uri when provided a "tree" uri.
+     * [DocumentPath]. For example, building a "document" uri when provided a "tree" uri.
      */
     fun prepareUri(incomingUri: URI): URI
 
@@ -86,6 +87,11 @@ interface PlatformContract {
      * Delete the given document.
      */
     fun deleteDocument(documentUri: URI)
+
+    /**
+     * Finds the canonical path from the top of the document tree.
+     */
+    fun findDocumentPath(treePath: DocumentPath): List<String>
 
     /**
      * Gets the document id from a DocumentsProvider backed [URI], or `null` if the
@@ -142,20 +148,20 @@ interface PlatformContract {
     fun openByteChannel(uri: URI, mode: String): SeekableByteChannel
 
     /**
-     * Builds a new [DirectoryStream] given a [ContentPath] and [DirectoryStream.Filter].
+     * Builds a new [DirectoryStream] given a [DocumentPath] and [DirectoryStream.Filter].
      */
     fun newDirectoryStream(
-        path: ContentPath,
+        path: DocumentPath,
         filter: DirectoryStream.Filter<in Path>?
     ): DirectoryStream<Path>
 
     /**
-     * Reads the attributes of a [ContentPath]. Details of the method are described by
+     * Reads the attributes of a [DocumentPath]. Details of the method are described by
      * [java.nio.file.Files.readAttributes].
      * @see [java.nio.file.Files.readAttributes]
      */
     fun <A : BasicFileAttributes?> readAttributes(
-        path: ContentPath,
+        path: DocumentPath,
         type: Class<A>?,
         vararg options: LinkOption?
     ): A

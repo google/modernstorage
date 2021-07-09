@@ -26,29 +26,33 @@ import java.net.URI
  * Unit tests for [ContentFileSystemProvider], and [ContentFileSystem].
  */
 class ContentFileSystemTests {
+    private lateinit var fileSystem: ContentFileSystem
 
     @Before
     fun setup() {
         AndroidFileSystems.initialize(TestContract())
+        val testUri = URI("content://unit.test/tree/root")
+        fileSystem = AndroidFileSystems.getFileSystem(testUri) as ContentFileSystem
     }
 
     @Test
     fun testGetRootDirectories_registeredUris() {
         val roots = listOf(
-            "content://com.android.externalstorage.documents/tree/primary%3ATest",
-            "content://com.android.externalstorage.documents/tree/primary%3ADocuments/One",
-            "content://com.android.externalstorage.documents/tree/primary%3ADocuments/Two",
-        ).map { URI(it) }
+            DocumentPath(fileSystem, "primary"),
+            DocumentPath(fileSystem, "secondary")
+        )
 
-        val expectedRoots = roots.map { root ->
-            // Register each root
-            AndroidFileSystems.getFileSystem(root)
-            // Get a ContentPath representation (to check later)
-            AndroidPaths.get(root)
-        }.toMutableSet()
+        // Request a series of paths
+        listOf(
+            listOf("primary", "FolderA"),
+            listOf("primary", "FolderB"),
+            listOf("primary", "FolderB", "Document"),
+            listOf("secondary", "Document")
+        ).forEach { pathData ->
+            fileSystem.getPath(pathData[0], *pathData.subList(1, pathData.size).toTypedArray())
+        }
 
-        // Get the ContentFileSystem for the provider
-        val fileSystem = AndroidFileSystems.getFileSystem(roots[0])
+        val expectedRoots = roots.toMutableSet()
 
         // Check all roots are registered
         fileSystem.rootDirectories.forEach { rootPath ->
@@ -56,7 +60,6 @@ class ContentFileSystemTests {
                 fail("Root found that wasn't registered: ${rootPath.toUri()}")
             }
         }
-        expectedRoots.forEach { root -> println("Root remains: $root") }
         assertTrue("Not all roots enumerated", expectedRoots.isEmpty())
     }
 }

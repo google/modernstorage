@@ -23,8 +23,7 @@ package com.google.modernstorage.filesystem {
     method public void close();
     method public final String getAuthority();
     method public Iterable<java.nio.file.FileStore> getFileStores();
-    method public com.google.modernstorage.filesystem.ContentPath getPath(java.net.URI uri);
-    method public java.nio.file.Path getPath(String? first, java.lang.String?... more);
+    method public java.nio.file.Path getPath(String? first, java.lang.String... more);
     method public java.nio.file.PathMatcher getPathMatcher(String? syntaxAndPattern);
     method public Iterable<java.nio.file.Path> getRootDirectories();
     method public String getSeparator();
@@ -66,38 +65,6 @@ package com.google.modernstorage.filesystem {
   public final class ContentFileSystemProviderKt {
   }
 
-  public class ContentPath implements java.nio.file.Path {
-    ctor public ContentPath(com.google.modernstorage.filesystem.ContentFileSystem fs, java.net.URI uri);
-    method public int compareTo(java.nio.file.Path? other);
-    method public boolean endsWith(java.nio.file.Path? other);
-    method public boolean endsWith(String? other);
-    method public java.nio.file.Path getFileName();
-    method public com.google.modernstorage.filesystem.ContentFileSystem getFileSystem();
-    method public java.nio.file.Path getName(int index);
-    method public int getNameCount();
-    method public java.nio.file.Path? getParent();
-    method public java.nio.file.Path getRoot();
-    method protected final java.net.URI getUri();
-    method public boolean isAbsolute();
-    method public java.util.Iterator<java.nio.file.Path> iterator();
-    method public com.google.modernstorage.filesystem.ContentPath normalize();
-    method public java.nio.file.WatchKey register(java.nio.file.WatchService? watcher, java.nio.file.WatchEvent.Kind<?>![]? events, java.nio.file.WatchEvent.Modifier?... modifiers);
-    method public java.nio.file.WatchKey register(java.nio.file.WatchService? watcher, java.nio.file.WatchEvent.Kind<?>?... events);
-    method public java.nio.file.Path relativize(java.nio.file.Path? other);
-    method public java.nio.file.Path resolve(java.nio.file.Path? other);
-    method public java.nio.file.Path resolve(String? other);
-    method public java.nio.file.Path resolveSibling(java.nio.file.Path? other);
-    method public java.nio.file.Path resolveSibling(String? other);
-    method public boolean startsWith(java.nio.file.Path? other);
-    method public boolean startsWith(String? other);
-    method public java.nio.file.Path subpath(int beginIndex, int endIndex);
-    method public java.nio.file.Path toAbsolutePath();
-    method public java.io.File toFile();
-    method public java.nio.file.Path toRealPath(java.nio.file.LinkOption?... options);
-    method public java.net.URI toUri();
-    property protected final java.net.URI uri;
-  }
-
   public final class DocumentBasicAttributes implements java.nio.file.attribute.BasicFileAttributes {
     method public java.nio.file.attribute.FileTime creationTime();
     method public Void? fileKey();
@@ -112,15 +79,40 @@ package com.google.modernstorage.filesystem {
     property public final String mimeType;
   }
 
-  public final class ExternalStorageFileSystem extends com.google.modernstorage.filesystem.ContentFileSystem {
-    method public com.google.modernstorage.filesystem.ExternalStoragePath getPath(java.net.URI uri);
-  }
-
-  public final class ExternalStoragePath extends com.google.modernstorage.filesystem.ContentPath {
-    method @kotlin.jvm.Throws(exceptionClasses={UnsupportedOperationException::class, SecurityException::class}) public java.io.File toFile() throws java.lang.SecurityException, java.lang.UnsupportedOperationException;
-  }
-
-  public final class ExternalStoragePathKt {
+  public final class DocumentPath implements java.nio.file.Path {
+    ctor public DocumentPath(com.google.modernstorage.filesystem.ContentFileSystem fileSystem, String? treeId, java.lang.String... elements);
+    method public int compareTo(java.nio.file.Path? other);
+    method public boolean endsWith(java.nio.file.Path? other);
+    method public boolean endsWith(String? other);
+    method public String! getDocId();
+    method public java.nio.file.Path? getFileName();
+    method public com.google.modernstorage.filesystem.ContentFileSystem getFileSystem();
+    method public java.nio.file.Path getName(int index);
+    method public int getNameCount();
+    method public java.nio.file.Path? getParent();
+    method public java.util.List<java.lang.String> getPath();
+    method public java.nio.file.Path? getRoot();
+    method public String? getTreeId();
+    method public boolean isAbsolute();
+    method public java.util.Iterator<java.nio.file.Path> iterator();
+    method public java.nio.file.Path normalize();
+    method public java.nio.file.WatchKey register(java.nio.file.WatchService? watcher, java.nio.file.WatchEvent.Kind<?>![]? events, java.nio.file.WatchEvent.Modifier?... modifiers);
+    method public java.nio.file.WatchKey register(java.nio.file.WatchService? watcher, java.nio.file.WatchEvent.Kind<?>?... events);
+    method public java.nio.file.Path relativize(java.nio.file.Path? other);
+    method public java.nio.file.Path resolve(java.nio.file.Path? other);
+    method public java.nio.file.Path resolve(String? other);
+    method public java.nio.file.Path resolveSibling(java.nio.file.Path? other);
+    method public java.nio.file.Path resolveSibling(String? other);
+    method public boolean startsWith(java.nio.file.Path? other);
+    method public boolean startsWith(String? other);
+    method public java.nio.file.Path subpath(int beginIndex, int endIndex);
+    method public java.nio.file.Path toAbsolutePath();
+    method public java.io.File toFile();
+    method public java.nio.file.Path toRealPath(java.nio.file.LinkOption?... options);
+    method public java.net.URI toUri();
+    property public final String! docId;
+    property public final java.util.List<java.lang.String> path;
+    property public final String? treeId;
   }
 
   public interface PlatformContract {
@@ -132,15 +124,16 @@ package com.google.modernstorage.filesystem {
     method public void copyDocument(java.net.URI sourceDocumentUri, java.net.URI targetParentDocumentUri);
     method public void createDocument(java.net.URI parentDocumentUri, String mimeType, String displayName);
     method public void deleteDocument(java.net.URI documentUri);
+    method public java.util.List<java.lang.String> findDocumentPath(com.google.modernstorage.filesystem.DocumentPath treePath);
     method public String? getDocumentId(java.net.URI documentUri);
     method public String? getTreeDocumentId(java.net.URI documentUri);
     method public boolean isDocumentUri(java.net.URI uri);
     method public boolean isTreeUri(java.net.URI uri);
     method public java.net.URI? moveDocument(java.net.URI sourceDocumentUri, java.net.URI sourceParentDocumentUri, java.net.URI targetParentDocumentUri);
-    method public java.nio.file.DirectoryStream<java.nio.file.Path> newDirectoryStream(com.google.modernstorage.filesystem.ContentPath path, java.nio.file.DirectoryStream.Filter<? super java.nio.file.Path>? filter);
+    method public java.nio.file.DirectoryStream<java.nio.file.Path> newDirectoryStream(com.google.modernstorage.filesystem.DocumentPath path, java.nio.file.DirectoryStream.Filter<? super java.nio.file.Path>? filter);
     method public java.nio.channels.SeekableByteChannel openByteChannel(java.net.URI uri, String mode);
     method public java.net.URI prepareUri(java.net.URI incomingUri);
-    method public <A extends java.nio.file.attribute.BasicFileAttributes> A! readAttributes(com.google.modernstorage.filesystem.ContentPath path, Class<A>? type, java.nio.file.LinkOption?... options);
+    method public <A extends java.nio.file.attribute.BasicFileAttributes> A! readAttributes(com.google.modernstorage.filesystem.DocumentPath path, Class<A>? type, java.nio.file.LinkOption?... options);
     method public boolean removeDocument(java.net.URI documentUri, java.net.URI parentDocumentUri);
     method public java.net.URI? renameDocument(java.net.URI documentUri, String displayName);
   }
@@ -164,15 +157,16 @@ package com.google.modernstorage.filesystem.internal {
     method public void copyDocument(java.net.URI sourceDocumentUri, java.net.URI targetParentDocumentUri);
     method public void createDocument(java.net.URI parentDocumentUri, String mimeType, String displayName);
     method public void deleteDocument(java.net.URI documentUri);
+    method public java.util.List<java.lang.String> findDocumentPath(com.google.modernstorage.filesystem.DocumentPath treePath);
     method public String? getDocumentId(java.net.URI documentUri);
     method public String? getTreeDocumentId(java.net.URI documentUri);
     method public boolean isDocumentUri(java.net.URI uri);
     method public boolean isTreeUri(java.net.URI uri);
     method public java.net.URI? moveDocument(java.net.URI sourceDocumentUri, java.net.URI sourceParentDocumentUri, java.net.URI targetParentDocumentUri);
-    method public java.nio.file.DirectoryStream<java.nio.file.Path> newDirectoryStream(com.google.modernstorage.filesystem.ContentPath path, java.nio.file.DirectoryStream.Filter<? super java.nio.file.Path>? filter);
+    method public java.nio.file.DirectoryStream<java.nio.file.Path> newDirectoryStream(com.google.modernstorage.filesystem.DocumentPath path, java.nio.file.DirectoryStream.Filter<? super java.nio.file.Path>? filter);
     method public java.nio.channels.SeekableByteChannel openByteChannel(java.net.URI uri, String mode);
     method public java.net.URI prepareUri(java.net.URI incomingUri);
-    method public <A extends java.nio.file.attribute.BasicFileAttributes> A! readAttributes(com.google.modernstorage.filesystem.ContentPath path, Class<A>? type, java.nio.file.LinkOption?... options);
+    method public <A extends java.nio.file.attribute.BasicFileAttributes> A! readAttributes(com.google.modernstorage.filesystem.DocumentPath path, Class<A>? type, java.nio.file.LinkOption?... options);
     method public boolean removeDocument(java.net.URI documentUri, java.net.URI parentDocumentUri);
     method public java.net.URI? renameDocument(java.net.URI documentUri, String displayName);
   }

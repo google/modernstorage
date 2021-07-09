@@ -24,6 +24,7 @@ import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import java.net.URI
 import java.nio.file.Files
 
 class TreePathTests {
@@ -49,7 +50,10 @@ class TreePathTests {
     @Before
     fun setup() {
         AndroidFileSystems.initialize(context)
+
+        // Setup test root and support `findDocumentPath` by default.
         TestDocumentProvider.addRoot(testRoot)
+        TestDocumentProvider.supportFindDocumentPath = true
     }
 
     @After
@@ -81,5 +85,51 @@ class TreePathTests {
 
         // If we visited each document, then the set should be empty now
         Assert.assertTrue("Didn't visit all documents", expectedDocuments.isEmpty())
+    }
+
+    @Test
+    fun testPath_absolutePath() {
+        val uri =
+            URI("content://${context.packageName}.documents/tree/root/document/root%2Fsubdir%2Fchild1.txt")
+
+        val fileSystem = AndroidFileSystems.getFileSystem(uri) as ContentFileSystem
+        val expectedParts = listOf(
+            DocumentPath(fileSystem, "root"),
+            DocumentPath(fileSystem, "root", "root"),
+            DocumentPath(fileSystem, "root", "root", "root/subdir"),
+            DocumentPath(fileSystem, "root", "root", "root/subdir", "root/subdir/child1.txt")
+        )
+
+        val path = AndroidPaths.get(uri)
+        val absolutePath = path.toAbsolutePath()
+        val pathParts = absolutePath.toList()
+        pathParts.forEachIndexed { index, part ->
+            Assert.assertEquals(expectedParts[index], part)
+        }
+    }
+
+    @Test
+    fun testPath_absolutePathAlreadyAbsolute() {
+        val uri =
+            URI("content://${context.packageName}.documents/tree/root/document/root%2Fsubdir%2Fchild1.txt")
+
+        val fileSystem = AndroidFileSystems.getFileSystem(uri) as ContentFileSystem
+        val expected =
+            DocumentPath(fileSystem, "root", "root", "root/subdir", "root/subdir/child1.txt")
+        Assert.assertSame(expected, expected.toAbsolutePath())
+    }
+
+    @Test
+    fun testPath_absolutePathFindPathUnsupportedReturnsSelf() {
+        val uri =
+            URI("content://${context.packageName}.documents/tree/root/document/root%2Fsubdir%2Fchild1.txt")
+
+        // Tell our DocumentsProvider not to support `findDocumentPath`
+        TestDocumentProvider.supportFindDocumentPath = false
+
+        val fileSystem = AndroidFileSystems.getFileSystem(uri) as ContentFileSystem
+        val expected =
+            DocumentPath(fileSystem, "root", "root", "root/subdir", "root/subdir/child1.txt")
+        Assert.assertSame(expected, expected.toAbsolutePath())
     }
 }

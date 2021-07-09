@@ -52,21 +52,17 @@ class ContentFileSystemProvider(
         private val fileSystemCache = mutableMapOf<String, ContentFileSystem>()
     }
 
-    init {
-        // Register provider specific FileSystem instances.
-        addFileSystem(ExternalStorageFileSystem(this))
-    }
-
     override fun getScheme() = CONTENT_SCHEME
 
     override fun newFileSystem(uri: URI?, env: MutableMap<String, *>?): FileSystem {
         uri ?: throw IllegalArgumentException("URI must not be null")
 
-        if (!contentContract.isDocumentUri(uri)) {
+        val supported = contentContract.isDocumentUri(uri) || contentContract.isTreeUri(uri)
+        if (!supported) {
             throw IllegalArgumentException("Only DocumentProvider URIs are currently supported")
         }
 
-        return getOrCreateFileSystem(uri, registerRoot = true)
+        return getOrCreateFileSystem(uri)
     }
 
     override fun getFileSystem(uri: URI?): FileSystem {
@@ -81,7 +77,10 @@ class ContentFileSystemProvider(
 
             // Perform any transformations on the incoming URI that are necessary.
             val pathUri = contentContract.prepareUri(uri)
-            fileSystem.getPath(pathUri)
+            val treeId = contentContract.getTreeDocumentId(pathUri)
+            val docId = contentContract.getDocumentId(pathUri)
+                ?: throw IllegalArgumentException("URI must contain a document ID")
+            fileSystem.getPath(treeId, docId)
         } else {
             throw IllegalArgumentException("URI must be a content:// uri")
         }
@@ -93,7 +92,7 @@ class ContentFileSystemProvider(
         vararg attrs: FileAttribute<*>?
     ): SeekableByteChannel {
         val contentPath =
-            path as? ContentPath ?: throw IllegalArgumentException("path must be a ContentPath")
+            path as? DocumentPath ?: throw IllegalArgumentException("path must be a DocumentPath")
         val mode = if (options.isNullOrEmpty()) {
             // By default, open for reading only
             "r"
@@ -111,7 +110,7 @@ class ContentFileSystemProvider(
         path: Path?,
         filter: DirectoryStream.Filter<in Path>?
     ): DirectoryStream<Path> {
-        path as? ContentPath ?: throw IllegalArgumentException("path must be a ContentPath")
+        path as? DocumentPath ?: throw IllegalArgumentException("path must be a ContentPath")
         return contentContract.newDirectoryStream(path, filter)
     }
 
@@ -160,7 +159,7 @@ class ContentFileSystemProvider(
         type: Class<A>?,
         vararg options: LinkOption?
     ): A {
-        path as? ContentPath ?: throw IllegalArgumentException("path must be a ContentPath")
+        path as? DocumentPath ?: throw IllegalArgumentException("path must be a ContentPath")
         return contentContract.readAttributes(path, type, *options)
     }
 
@@ -184,9 +183,9 @@ class ContentFileSystemProvider(
     private fun Set<OpenOption>.optionToMode(openOption: OpenOption, modeString: String) =
         if (contains(openOption)) modeString else ""
 
-    private fun getOrCreateFileSystem(root: URI, registerRoot: Boolean = false): ContentFileSystem {
+    private fun getOrCreateFileSystem(root: URI): ContentFileSystem {
         val authority = root.authority
-        val fileSystem = synchronized(fileSystemCache) {
+        return synchronized(fileSystemCache) {
             val inCache = fileSystemCache[authority]
             if (inCache is ContentFileSystem) {
                 inCache
@@ -194,11 +193,6 @@ class ContentFileSystemProvider(
                 return addFileSystem(ContentFileSystem(this, authority))
             }
         }
-
-        if (registerRoot) {
-            fileSystem.registerRoot(root)
-        }
-        return fileSystem
     }
 
     private fun addFileSystem(fileSystem: ContentFileSystem): ContentFileSystem {

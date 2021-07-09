@@ -19,8 +19,8 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.DocumentsContract
-import com.google.modernstorage.filesystem.ContentPath
 import com.google.modernstorage.filesystem.DocumentBasicAttributes
+import com.google.modernstorage.filesystem.DocumentPath
 import com.google.modernstorage.filesystem.PlatformContract
 import com.google.modernstorage.filesystem.SequenceDocumentDirectoryStream
 import com.google.modernstorage.filesystem.toURI
@@ -85,6 +85,14 @@ class AndroidContentContract(context: Context) : PlatformContract {
         TODO("Not yet implemented")
     }
 
+    override fun findDocumentPath(treePath: DocumentPath): List<String> = try {
+        DocumentsContract.findDocumentPath(
+            context.contentResolver, treePath.androidUri
+        )?.path ?: emptyList()
+    } catch (_: UnsupportedOperationException) {
+        emptyList()
+    }
+
     override fun getDocumentId(documentUri: URI): String? {
         return try {
             DocumentsContract.getDocumentId(documentUri.toUri())
@@ -136,7 +144,7 @@ class AndroidContentContract(context: Context) : PlatformContract {
     }
 
     override fun newDirectoryStream(
-        path: ContentPath,
+        path: DocumentPath,
         filter: Filter<in Path>?
     ): DirectoryStream<Path> {
         val rootUri = path.androidUri
@@ -154,13 +162,7 @@ class AndroidContentContract(context: Context) : PlatformContract {
 
         val cursorSequence = generateSequence {
             if (cursor.moveToNext()) {
-                val documentId = cursor.getString(0)
-                val childUri = if (path.isTree) {
-                    DocumentsContract.buildDocumentUriUsingTree(rootUri, documentId)
-                } else {
-                    DocumentsContract.buildChildDocumentsUri(rootUri.authority, documentId)
-                }
-                path.fileSystem.provider().getPath(childUri.toURI())
+                path.resolve(cursor.getString(0))
             } else {
                 cursor.close()
                 null
@@ -170,7 +172,7 @@ class AndroidContentContract(context: Context) : PlatformContract {
     }
 
     override fun <A : BasicFileAttributes?> readAttributes(
-        path: ContentPath,
+        path: DocumentPath,
         type: Class<A>?,
         vararg options: LinkOption?
     ): A {
@@ -191,7 +193,7 @@ class AndroidContentContract(context: Context) : PlatformContract {
         }
     }
 
-    private fun buildDocumentBasicAttributes(path: ContentPath): BasicFileAttributes {
+    private fun buildDocumentBasicAttributes(path: DocumentPath): BasicFileAttributes {
         context.contentResolver.query(
             path.androidUri,
             arrayOf(
@@ -227,23 +229,35 @@ class AndroidContentContract(context: Context) : PlatformContract {
 }
 
 /** @return [Uri] representation of this path. */
-internal val ContentPath.androidUri get() = Uri.parse(toUri().toString())
-
-/** @return `true` if the path is a "tree" content uri; `false` otherwise. */
-internal val ContentPath.isTree get() = DocumentsContract.isTreeUri(androidUri)
+internal val DocumentPath.androidUri: Uri
+    get() {
+        val authority = fileSystem.authority
+        val documentId = docId
+        return if (treeId != null) {
+            val treeUri = DocumentsContract.buildTreeDocumentUri(authority, treeId)
+            if (documentId != null) {
+                DocumentsContract.buildDocumentUriUsingTree(treeUri, documentId)
+            } else {
+                treeUri
+            }
+        } else {
+            DocumentsContract.buildDocumentUri(authority, documentId!!)
+        }
+    }
 
 /**
  * @return Uri that can be queried to get a list of child documents (if any).
  */
-private val ContentPath.childDocumentsUri
-    get() = if (isTree) {
-        DocumentsContract.buildChildDocumentsUriUsingTree(
-            androidUri,
-            DocumentsContract.getDocumentId(androidUri)
-        )
-    } else {
-        DocumentsContract.buildChildDocumentsUri(
-            androidUri.authority,
-            DocumentsContract.getDocumentId(androidUri)
-        )
+internal val DocumentPath.childDocumentsUri: Uri
+    get() {
+        val uri = androidUri
+        return if (treeId != null) {
+            DocumentsContract.buildChildDocumentsUriUsingTree(
+                uri, DocumentsContract.getDocumentId(uri)
+            )
+        } else {
+            DocumentsContract.buildChildDocumentsUri(
+                uri.authority, DocumentsContract.getDocumentId(uri)
+            )
+        }
     }

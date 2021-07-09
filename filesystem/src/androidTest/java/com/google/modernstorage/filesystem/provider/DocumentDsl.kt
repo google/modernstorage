@@ -20,6 +20,7 @@ import android.webkit.MimeTypeMap
 
 class TestDocument(
     val docId: String,
+    val parentDocId: String?,
     val displayName: String = docId,
     val content: String?,
     val children: List<TestDocument>?
@@ -46,13 +47,14 @@ class TestDocument(
     val size get() = content?.length ?: 0
 }
 
-class TestDocumentBuilder(private val docId: String) {
+class TestDocumentBuilder(private val docId: String, private val parentDocId: String? = null) {
     var displayName: String? = null
     private var content: String? = null
     private val children = mutableMapOf<String, TestDocument>()
+    private val fullDocId get() = if (parentDocId == null) docId else "$parentDocId/$docId"
 
     fun children(block: ChildBuilder.() -> Unit) {
-        val childDocuments = ChildBuilder().apply(block).build()
+        val childDocuments = ChildBuilder(fullDocId).apply(block).build()
         childDocuments.forEach { child ->
             if (children[child.docId] == null) {
                 children[child.docId] = child
@@ -65,18 +67,19 @@ class TestDocumentBuilder(private val docId: String) {
     }
 
     fun build() = TestDocument(
-        docId,
+        fullDocId,
+        parentDocId,
         displayName ?: docId,
         content,
         if (children.isEmpty()) null else children.values.toList()
     )
 }
 
-class ChildBuilder() {
+class ChildBuilder(private val parentDocId: String) {
     private val children = mutableMapOf<String, TestDocument>()
 
     fun document(docId: String, block: TestDocumentBuilder.() -> Unit = { }) {
-        val childDocument = TestDocumentBuilder(docId).apply {
+        val childDocument = TestDocumentBuilder(docId, parentDocId).apply {
             block()
         }.build()
         if (children[childDocument.docId] == null) {

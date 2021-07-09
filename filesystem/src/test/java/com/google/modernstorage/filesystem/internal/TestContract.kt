@@ -15,7 +15,7 @@
  */
 package com.google.modernstorage.filesystem.internal
 
-import com.google.modernstorage.filesystem.ContentPath
+import com.google.modernstorage.filesystem.DocumentPath
 import com.google.modernstorage.filesystem.PlatformContract
 import java.net.URI
 import java.nio.channels.SeekableByteChannel
@@ -30,8 +30,8 @@ import java.nio.file.attribute.BasicFileAttributes
  */
 class TestContract(
     var openByteChannelImpl: (URI, String) -> SeekableByteChannel = { _, _ -> TODO() },
-    var newDirectoryStreamImpl: (ContentPath, Filter<in Path>?) -> DirectoryStream<Path> = { _, _ -> TODO() },
-    var readAttributesImpl: (ContentPath, options: Array<out LinkOption?>) -> BasicFileAttributes = { _, _ -> TODO() },
+    var newDirectoryStreamImpl: (DocumentPath, Filter<in Path>?) -> DirectoryStream<Path> = { _, _ -> TODO() },
+    var readAttributesImpl: (DocumentPath, options: Array<out LinkOption?>) -> BasicFileAttributes = { _, _ -> TODO() },
 ) : PlatformContract {
 
     override fun prepareUri(incomingUri: URI) = incomingUri
@@ -70,9 +70,13 @@ class TestContract(
         TODO("Not yet implemented")
     }
 
+    override fun findDocumentPath(treePath: DocumentPath): List<String> {
+        TODO("Not yet implemented")
+    }
+
     override fun getDocumentId(documentUri: URI): String {
         val path = documentUri.path.substring(1).split('/', limit = 4)
-        return if (path.size >= 2 && path[0] == "tree") {
+        return if (path.size > 2 && path[0] == "tree") {
             path[3]
         } else if (path.size == 2) {
             path[1]
@@ -84,7 +88,6 @@ class TestContract(
     override fun getTreeDocumentId(documentUri: URI): String {
         val path = documentUri.path.substring(1).split('/')
         return if (path.size >= 2 && path[0] == "tree") {
-            println("In: $documentUri, ID: ${path[1]}")
             path[1]
         } else {
             throw IllegalArgumentException("Invalid URI")
@@ -117,12 +120,12 @@ class TestContract(
     override fun openByteChannel(uri: URI, mode: String) = openByteChannelImpl(uri, mode)
 
     override fun newDirectoryStream(
-        path: ContentPath,
+        path: DocumentPath,
         filter: Filter<in Path>?
     ) = newDirectoryStreamImpl(path, filter)
 
     override fun <A : BasicFileAttributes?> readAttributes(
-        path: ContentPath,
+        path: DocumentPath,
         type: Class<A>?,
         vararg options: LinkOption?
     ): A {
