@@ -16,11 +16,17 @@
 package com.google.modernstorage.sample.filesystem
 
 import android.os.Bundle
+import android.text.format.Formatter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.google.android.material.snackbar.Snackbar
+import com.google.modernstorage.sample.R
 import com.google.modernstorage.sample.databinding.FragmentFilesystemBinding
 
 class FileSystemFragment : Fragment() {
@@ -36,15 +42,58 @@ class FileSystemFragment : Fragment() {
     ): View {
         _binding = FragmentFilesystemBinding.inflate(inflater, container, false)
 
-        return binding.root
-    }
+        setupLayout()
 
-    override fun onResume() {
-        super.onResume()
+        viewModel.currentFile.observe(viewLifecycleOwner) { currentFile ->
+            binding.fileSizeAndMimeType.text = getString(
+                R.string.filesystem_size,
+                Formatter.formatShortFileSize(context, currentFile.size)
+            )
+            binding.fileUri.text = currentFile.uri.toString()
+        }
+
+        viewModel.currentFileContent.observe(viewLifecycleOwner) { fileContent ->
+            val contentView = when (fileContent) {
+                is TextContent -> TextView(context).apply {
+                    text = fileContent.value
+                }
+                is BitmapContent -> ImageView(context).apply {
+                    this.setImageBitmap(fileContent.value)
+                }
+            }
+
+            binding.filePreview.removeAllViews()
+            binding.filePreview.addView(contentView)
+        }
+
+        return binding.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun setupLayout() {
+        binding.openTextFile.setOnClickListener {
+            actionOpenTextFile.launch(arrayOf("text/*"))
+        }
+
+        binding.createTextFile.setOnClickListener { button ->
+            Snackbar.make(button, R.string.filesystem_not_available_yet, Snackbar.LENGTH_SHORT)
+                .show()
+        }
+
+        binding.openImageFile.setOnClickListener {
+            actionOpenImageFile.launch(arrayOf("image/png", "image/jpg", "image/webp"))
+        }
+    }
+
+    private val actionOpenTextFile = registerForActivityResult(OpenDocument()) { uri ->
+        viewModel.onFileSelect(uri, FileType.TEXT)
+    }
+
+    private val actionOpenImageFile = registerForActivityResult(OpenDocument()) { uri ->
+        viewModel.onFileSelect(uri, FileType.IMAGE)
     }
 }

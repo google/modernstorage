@@ -16,10 +16,95 @@
 package com.google.modernstorage.sample.filesystem
 
 import android.app.Application
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.os.Parcelable
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
+import com.google.modernstorage.filesystem.AndroidFileSystems
+import com.google.modernstorage.filesystem.AndroidPaths
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.parcelize.Parcelize
+import java.nio.file.Files
+import java.nio.file.Path
+import java.util.stream.Collectors
+
+const val CURRENT_DOCUMENT_KEY = "currentDocument"
 
 class FileSystemViewModel(
     application: Application,
     private val savedStateHandle: SavedStateHandle
-) : AndroidViewModel(application)
+) : AndroidViewModel(application) {
+    private val context: Context
+        get() = getApplication()
+
+    val currentFile: LiveData<FileResource> = savedStateHandle.getLiveData(CURRENT_DOCUMENT_KEY)
+    private val _currentFileContent = MutableLiveData<FileContent>()
+    val currentFileContent: LiveData<FileContent> = _currentFileContent
+
+    init {
+        AndroidFileSystems.initialize(application)
+    }
+
+    @Suppress("BlockingMethodInNonBlockingContext")
+    fun onFileSelect(uri: Uri, type: FileType) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val path = AndroidPaths.get(uri)
+                val file = FileResource(uri, Files.size(path), FileType.TEXT)
+
+                withContext(Dispatchers.Main) {
+                    savedStateHandle.set(CURRENT_DOCUMENT_KEY, file)
+                }
+
+                when (type) {
+                    FileType.TEXT -> loadTextContent(path)
+                    FileType.IMAGE -> loadImageContent(path)
+                }
+            }
+        }
+    }
+
+    @Suppress("BlockingMethodInNonBlockingContext")
+    private suspend fun loadTextContent(path: Path) {
+        withContext(Dispatchers.IO) {
+            val reader = Files.newBufferedReader(path)
+            val text = reader.lines().collect(Collectors.joining("\n"))
+            reader.close()
+
+            _currentFileContent.postValue(TextContent(text))
+        }
+    }
+
+    @Suppress("BlockingMethodInNonBlockingContext")
+    private suspend fun loadImageContent(path: Path) {
+        withContext(Dispatchers.IO) {
+            val inputStream = Files.newInputStream(path)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+
+            _currentFileContent.postValue(BitmapContent(bitmap))
+        }
+    }
+}
+
+@Parcelize
+data class FileResource(
+    val uri: Uri,
+    val size: Long,
+    val type: FileType
+) : Parcelable
+
+enum class FileType {
+    TEXT, IMAGE
+}
+
+sealed class FileContent
+class TextContent(val value: String) : FileContent()
+class BitmapContent(val value: Bitmap) : FileContent()
