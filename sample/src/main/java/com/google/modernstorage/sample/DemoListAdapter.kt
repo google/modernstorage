@@ -26,6 +26,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.modernstorage.sample.databinding.DemoListItemBinding
 
+/**
+ * Contains details about a demo and required minSdk to work properly
+ *
+ * A snackBar is shown instead of navigating to the demo if the device has a lower sdk
+ */
 data class Demo(
     @DrawableRes val iconRes: Int,
     @StringRes val nameRes: Int,
@@ -33,6 +38,9 @@ data class Demo(
     val minSdk: Int
 )
 
+/**
+ * RecyclerView list adapter for demo
+ */
 class DemoListAdapter(private val dataSet: Array<Demo>) :
     RecyclerView.Adapter<DemoListAdapter.ViewHolder>() {
 

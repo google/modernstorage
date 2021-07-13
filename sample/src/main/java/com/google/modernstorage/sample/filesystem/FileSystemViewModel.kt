@@ -35,7 +35,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.stream.Collectors
 
 const val CURRENT_DOCUMENT_KEY = "currentDocument"
 
@@ -74,9 +73,7 @@ class FileSystemViewModel(
     @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun loadTextContent(path: Path) {
         withContext(Dispatchers.IO) {
-            val reader = Files.newBufferedReader(path)
-            val text = reader.lines().collect(Collectors.joining("\n"))
-            reader.close()
+            val text = Files.readAllLines(path).joinToString(separator = "\n")
 
             _currentFileContent.postValue(TextContent(text))
         }

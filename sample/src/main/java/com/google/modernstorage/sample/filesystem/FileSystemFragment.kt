@@ -93,10 +93,10 @@ class FileSystemFragment : Fragment() {
     }
 
     private val actionOpenTextFile = registerForActivityResult(OpenDocument()) { uri ->
-        viewModel.onFileSelect(uri, FileType.TEXT)
+        uri?.let { viewModel.onFileSelect(it, FileType.TEXT) }
     }
 
     private val actionOpenImageFile = registerForActivityResult(OpenDocument()) { uri ->
-        viewModel.onFileSelect(uri, FileType.IMAGE)
+        uri?.let { viewModel.onFileSelect(it, FileType.IMAGE) }
     }
 }
