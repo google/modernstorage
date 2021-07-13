@@ -23,6 +23,7 @@
     <string name="fragment_main_label">ModernStorage Demos</string>
     <string name="mediastore_fragment_label">MediaStore Demo</string>
     <string name="filesystem_fragment_label">FileSystem Demo</string>
+    <string name="min_sdk_version_requirement">This demo requires API %1$d</string>
 
     <!-- MediaStore demo -->
     <string name="mediastore_permission_message">To add files, we need to request the storage permission</string>

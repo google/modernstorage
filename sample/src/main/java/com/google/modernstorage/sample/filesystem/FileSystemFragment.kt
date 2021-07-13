@@ -15,6 +15,7 @@
  */
 package com.google.modernstorage.sample.filesystem
 
+import android.os.Build
 import android.os.Bundle
 import android.text.format.Formatter
 import android.view.LayoutInflater
@@ -23,12 +24,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
 import com.google.modernstorage.sample.R
 import com.google.modernstorage.sample.databinding.FragmentFilesystemBinding
 
+@RequiresApi(Build.VERSION_CODES.O)
 class FileSystemFragment : Fragment() {
     private var _binding: FragmentFilesystemBinding? = null
     private val binding get() = _binding!!
@@ -85,7 +88,7 @@ class FileSystemFragment : Fragment() {
         }
 
         binding.openImageFile.setOnClickListener {
-            actionOpenImageFile.launch(arrayOf("image/png", "image/jpg", "image/webp"))
+            actionOpenImageFile.launch(arrayOf("image/*"))
         }
     }
 

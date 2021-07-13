@@ -16,11 +16,12 @@
 package com.google.modernstorage.sample.filesystem
 
 import android.app.Application
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Parcelable
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -38,13 +39,11 @@ import java.util.stream.Collectors
 
 const val CURRENT_DOCUMENT_KEY = "currentDocument"
 
+@RequiresApi(Build.VERSION_CODES.O)
 class FileSystemViewModel(
     application: Application,
     private val savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application) {
-    private val context: Context
-        get() = getApplication()
-
     val currentFile: LiveData<FileResource> = savedStateHandle.getLiveData(CURRENT_DOCUMENT_KEY)
     private val _currentFileContent = MutableLiveData<FileContent>()
     val currentFileContent: LiveData<FileContent> = _currentFileContent

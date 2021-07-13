@@ -15,6 +15,7 @@
  */
 package com.google.modernstorage.sample
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -27,12 +28,14 @@ private val apiList = arrayOf(
     Demo(
         R.drawable.ic_baseline_collections_24,
         R.string.demo_mediastore,
-        R.id.action_mainFragment_to_mediaStoreFragment
+        R.id.action_mainFragment_to_mediaStoreFragment,
+        Build.VERSION_CODES.LOLLIPOP
     ),
     Demo(
         R.drawable.ic_baseline_folder_24,
         R.string.demo_filesystem,
-        R.id.action_mainFragment_to_fileSystemFragment
+        R.id.action_mainFragment_to_fileSystemFragment,
+        Build.VERSION_CODES.O
     ),
 )
 

@@ -15,6 +15,7 @@
  */
 package com.google.modernstorage.sample
 
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
@@ -22,24 +23,26 @@ import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.google.modernstorage.sample.databinding.ListRowItemBinding
+import com.google.android.material.snackbar.Snackbar
+import com.google.modernstorage.sample.databinding.DemoListItemBinding
 
 data class Demo(
     @DrawableRes val iconRes: Int,
     @StringRes val nameRes: Int,
-    @IdRes val actionRes: Int
+    @IdRes val actionRes: Int,
+    val minSdk: Int
 )
 
 class DemoListAdapter(private val dataSet: Array<Demo>) :
     RecyclerView.Adapter<DemoListAdapter.ViewHolder>() {
 
-    class ViewHolder(viewBinding: ListRowItemBinding) : RecyclerView.ViewHolder(viewBinding.root) {
+    class ViewHolder(viewBinding: DemoListItemBinding) : RecyclerView.ViewHolder(viewBinding.root) {
         val binding = viewBinding
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val binding =
-            ListRowItemBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
+            DemoListItemBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
         return ViewHolder(binding)
     }
 
@@ -51,7 +54,18 @@ class DemoListAdapter(private val dataSet: Array<Demo>) :
         iconView.setImageResource(dataSet[position].iconRes)
         textView.text = context.getString(dataSet[position].nameRes)
         viewHolder.binding.root.setOnClickListener { rowView ->
-            rowView.findNavController().navigate(dataSet[position].actionRes)
+            if (Build.VERSION.SDK_INT >= dataSet[position].minSdk) {
+                rowView.findNavController().navigate(dataSet[position].actionRes)
+            } else {
+                Snackbar.make(
+                    rowView,
+                    rowView.context.getString(
+                        R.string.min_sdk_version_requirement,
+                        dataSet[position].minSdk
+                    ),
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
