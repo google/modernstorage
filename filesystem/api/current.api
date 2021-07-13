@@ -98,11 +98,11 @@ package com.google.modernstorage.filesystem {
     method public java.nio.file.Path normalize();
     method public java.nio.file.WatchKey register(java.nio.file.WatchService? watcher, java.nio.file.WatchEvent.Kind<?>![]? events, java.nio.file.WatchEvent.Modifier?... modifiers);
     method public java.nio.file.WatchKey register(java.nio.file.WatchService? watcher, java.nio.file.WatchEvent.Kind<?>?... events);
-    method public java.nio.file.Path relativize(java.nio.file.Path? other);
-    method public java.nio.file.Path resolve(java.nio.file.Path? other);
-    method public java.nio.file.Path resolve(String? other);
-    method public java.nio.file.Path resolveSibling(java.nio.file.Path? other);
-    method public java.nio.file.Path resolveSibling(String? other);
+    method public java.nio.file.Path relativize(java.nio.file.Path other);
+    method public java.nio.file.Path resolve(java.nio.file.Path other);
+    method public java.nio.file.Path resolve(String other);
+    method public java.nio.file.Path resolveSibling(java.nio.file.Path other);
+    method public java.nio.file.Path resolveSibling(String other);
     method public boolean startsWith(java.nio.file.Path? other);
     method public boolean startsWith(String? other);
     method public java.nio.file.Path subpath(int beginIndex, int endIndex);
@@ -113,6 +113,9 @@ package com.google.modernstorage.filesystem {
     property public final String! docId;
     property public final java.util.List<java.lang.String> path;
     property public final String? treeId;
+  }
+
+  public final class DocumentPathKt {
   }
 
   public interface PlatformContract {

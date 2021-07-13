@@ -18,6 +18,7 @@ package com.google.modernstorage.filesystem
 import com.google.modernstorage.filesystem.internal.TestContract
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
@@ -264,5 +265,207 @@ class DocumentPathTests {
         } catch (_: IndexOutOfBoundsException) {
             // Expected exception
         }
+    }
+
+    @Test
+    fun testDocumentPath_relativizeDifferentProviders() {
+        val providerA = URI("content://test.provider.a/tree/root")
+        val fileSystemA = AndroidFileSystems.getFileSystem(providerA) as ContentFileSystem
+
+        val providerB = URI("content://test.provider.b/tree/root")
+        val fileSystemB = AndroidFileSystems.getFileSystem(providerB) as ContentFileSystem
+
+        val pathA = DocumentPath(fileSystemA, "root", "parent", "child")
+        val pathB = DocumentPath(fileSystemB, "root", "parent", "child")
+
+        try {
+            val relativePath = pathA.relativize(pathB)
+            fail()
+        } catch (_: IllegalArgumentException) {
+            // Test pass
+        }
+    }
+
+    @Test
+    fun testDocumentPath_relativizeDifferentRoots() {
+        val pathA = DocumentPath(fileSystem, "root1", "cupcake", "abcd")
+        val pathB = DocumentPath(fileSystem, "root2", "donut", "zyxw")
+
+        try {
+            val relativePath = pathA.relativize(pathB)
+            fail()
+        } catch (_: IllegalArgumentException) {
+            // Test pass
+        }
+    }
+
+    @Test
+    fun testDocumentPath_relativizeDown() {
+        /*
+         * Unix path behavior:
+         * "/grandparent/parent".relativize("/grandparent/parent/child") -> "child"
+         */
+        val pathA = DocumentPath(fileSystem, "tree", "grandparent", "parent")
+        val pathB = DocumentPath(fileSystem, "tree", "grandparent", "parent", "child")
+
+        val expected = DocumentPath(fileSystem, "tree", "child")
+        val relative = pathA.relativize(pathB)
+        assertEquals(expected, relative)
+    }
+
+    @Test
+    fun testDocumentPath_relativizeUp() {
+        /*
+         * Unix path behavior:
+         * "/grandparent/parent/child".relativize("/grandparent/parent") -> ".."
+         *
+         * Because our path is built as a list of document ids, which are supposed to be treated
+         * as opaque tokens, and because there's no restriction on the format of a document ids
+         * this seems like a difficult situation.
+         *
+         * To solve it, we'll make an implementation specific "parent" document id to stand in
+         * for the ".." on a Unix file system.
+         */
+        val pathA = DocumentPath(fileSystem, "tree", "grandparent", "parent")
+        val pathB = DocumentPath(fileSystem, "tree", "grandparent", "parent", "child")
+
+        val expected = DocumentPath(fileSystem, "tree", RELATIVE_PARENT_ID)
+        val relative = pathB.relativize(pathA)
+        assertEquals(expected, relative)
+    }
+
+    @Test
+    fun testDocumentPath_relativizeSameIsEmpty() {
+        /*
+         * Unix path behavior:
+         * "/grandparent/parent/child".relativize("/grandparent/parent/child") -> ""
+         */
+        val pathA = DocumentPath(fileSystem, "tree", "grandparent", "parent", "child")
+        val pathB = DocumentPath(fileSystem, "tree", "grandparent", "parent", "child")
+
+        val expected = DocumentPath(fileSystem, "tree")
+        val relative = pathA.relativize(pathB)
+        assertEquals(expected, relative)
+    }
+
+    @Test
+    fun testDocumentPath_relativizeNothingCommon() {
+        /*
+         * Unix path behavior:
+         * "/a/b/c".relativize("/x/y/z") = "../../../x/y/z"
+         */
+        val pathA = DocumentPath(fileSystem, "tree", "a", "b", "c")
+        val pathB = DocumentPath(fileSystem, "tree", "x", "y", "z")
+
+        val expected = DocumentPath(
+            fileSystem,
+            "tree",
+            RELATIVE_PARENT_ID, RELATIVE_PARENT_ID, RELATIVE_PARENT_ID, "x", "y", "z"
+        )
+        val relative = pathA.relativize(pathB)
+        assertEquals(expected, relative)
+    }
+
+    @Test
+    fun testDocumentPath_resolveWithEmptyIsSame() {
+        val path = DocumentPath(fileSystem, "tree", "grandparent", "parent", "child")
+        val empty = DocumentPath(fileSystem, "tree")
+
+        val resolved = path.resolve(empty)
+        assertSame(path, resolved)
+    }
+
+    @Test
+    fun testDocumentPath_resolveDifferentRootIsOther() {
+        val pathA = DocumentPath(fileSystem, "root1", "cupcake", "abcd")
+        val pathB = DocumentPath(fileSystem, "root2", "donut", "zyxw")
+
+        val resolved = pathA.resolve(pathB)
+        assertSame(pathB, resolved)
+    }
+
+    @Test
+    fun testDocumentPath_resolveDifferentFileSystemsIsOther() {
+        val providerA = URI("content://test.provider.a/tree/root")
+        val fileSystemA = AndroidFileSystems.getFileSystem(providerA) as ContentFileSystem
+
+        val providerB = URI("content://test.provider.b/tree/root")
+        val fileSystemB = AndroidFileSystems.getFileSystem(providerB) as ContentFileSystem
+
+        val pathA = DocumentPath(fileSystemA, "root", "parent", "child")
+        val pathB = DocumentPath(fileSystemB, "root", "parent", "child")
+        val resolved = pathA.resolve(pathB)
+        assertSame(pathB, resolved)
+    }
+
+    @Test
+    fun testDocumentPath_relativizeResolveEquals() {
+        /*
+         * Unix path behavior:
+         * base = "/grandparent/parent"
+         * extended = "/grandparent/parent/child"
+         * rel = base.relativize(extended) = "child"
+         * base.resolve(rel) = "/grandparent/parent/child"
+         */
+        val basePath = DocumentPath(fileSystem, "tree", "grandparent", "parent")
+        val extended = DocumentPath(fileSystem, "tree", "grandparent", "parent", "child")
+
+        val relative = basePath.relativize(extended)
+        val resolve = basePath.resolve(relative)
+        assertEquals(extended, resolve)
+    }
+
+    @Test
+    fun testDocumentPath_normalizeWithRelativeParts() {
+        /*
+         * Unix path behavior:
+         * "parent/../child".normalize() -> "child"
+         */
+        val path = DocumentPath(fileSystem, "tree", "parent", RELATIVE_PARENT_ID, "child")
+        val expected = DocumentPath(fileSystem, "tree", "child")
+        val normalized = path.normalize()
+        assertEquals(expected, normalized)
+
+        /*
+         * Unix path behavior:
+         * "parent/child/..".normalize() -> "parent"
+         */
+        val path2 = DocumentPath(fileSystem, "tree", "parent", "child", RELATIVE_PARENT_ID)
+        val expected2 = DocumentPath(fileSystem, "tree", "parent")
+        val normalized2 = path2.normalize()
+        assertEquals(expected2, normalized2)
+    }
+
+    @Test
+    fun testDocumentPath_normalizeOnlyRelativeSame() {
+        /*
+         * Unix path behavior:
+         * "..".normalize() -> ".."
+         */
+        val path = DocumentPath(fileSystem, "tree", RELATIVE_PARENT_ID)
+        val normalized = path.normalize()
+        assertSame(path, normalized)
+
+        val multiple = DocumentPath(fileSystem, "tree", RELATIVE_PARENT_ID, RELATIVE_PARENT_ID)
+        val multiNormalized = multiple.normalize()
+        assertSame(multiple, multiNormalized)
+    }
+
+    @Test
+    fun testDocumentPath_normalizeNormalPathIsSelf() {
+        val path = DocumentPath(fileSystem, "tree", "grandparent", "parent", "child")
+        val normalized = path.normalize()
+        assertSame(path, normalized)
+    }
+
+    @Test
+    fun testDocumentPath_normalizeEmptyIsSame() {
+        /*
+         * Unix path behavior:
+         * "".normalize() -> ""
+         */
+        val path = DocumentPath(fileSystem, "tree")
+        val normalized = path.normalize()
+        assertSame(path, normalized)
     }
 }

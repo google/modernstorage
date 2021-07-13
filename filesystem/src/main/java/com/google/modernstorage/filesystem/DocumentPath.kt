@@ -135,28 +135,89 @@ class DocumentPath private constructor(
     }
 
     override fun normalize(): Path {
-        TODO("Not yet implemented")
+        if (path.isEmpty()) return this
+
+        val newParts = mutableListOf<String>()
+
+        // We only need to construct a new path if something in this path changed. This only
+        // happens if there's a '..' that can be removed.
+        var pathUpdated = false
+        path.forEach { element ->
+            if (element != RELATIVE_PARENT_ID) {
+                newParts.add(element)
+            } else if (newParts.isNotEmpty() && newParts.last() != RELATIVE_PARENT_ID) {
+                newParts.removeLast()
+                pathUpdated = true
+            } else {
+                newParts.add(RELATIVE_PARENT_ID)
+            }
+        }
+        return if (pathUpdated) DocumentPath(fileSystem, treeId, newParts) else this
     }
 
-    override fun resolve(other: Path?): Path {
-        TODO("Not yet implemented")
+    override fun resolve(other: Path): Path {
+        if (other !is DocumentPath) {
+            throw IllegalArgumentException("Cannot resolve against non-DocumentPaths")
+        }
+
+        if (other.fileSystem.authority != fileSystem.authority) return other
+        if (other.treeId == treeId && other.path.isEmpty()) return this
+        if (other.treeId != null && treeId != other.treeId) return other
+
+        val newPath = path.toMutableList()
+        newPath.addAll(other.path)
+        return DocumentPath(fileSystem, treeId, newPath)
     }
 
-    override fun resolve(other: String?): Path {
-        requireNotNull(other)
+    override fun resolve(other: String): Path {
         return DocumentPath(fileSystem, treeId, path + other)
     }
 
-    override fun resolveSibling(other: Path?): Path {
+    override fun resolveSibling(other: Path): Path {
         TODO("Not yet implemented")
     }
 
-    override fun resolveSibling(other: String?): Path {
+    override fun resolveSibling(other: String): Path {
         TODO("Not yet implemented")
     }
 
-    override fun relativize(other: Path?): Path {
-        TODO("Not yet implemented")
+    override fun relativize(other: Path): Path {
+        if (other !is DocumentPath) {
+            throw IllegalArgumentException("Cannot relativize against non-DocumentPaths")
+        }
+        if (other.fileSystem.authority != fileSystem.authority) {
+            throw IllegalArgumentException("Cannot relativize across providers")
+        }
+        if (other.treeId != treeId) {
+            throw IllegalArgumentException("Cannot relativize across trees")
+        }
+
+        var index = 0
+        val newPath = mutableListOf<String>()
+
+        // The paths may not be the same size, so we'll stop checking when we get to the end of
+        // the shorter of the two. i.e.: Resolving "/a/b/c" and "/a/x/y" -> "b/c" and "x/y"
+        val endIndex = if (path.size <= other.path.size) path.size else other.path.size
+
+        // Skip over path elements that are the same
+        while (index < endIndex && path[index] == other.path[index]) {
+            ++index
+        }
+
+        // If there are more parts of "this" path left, then they need to be replaced with ".."-y
+        // bits. i.e.: if we have "b/c" left, this needs to become "../.."
+        for (dots in index until path.size) {
+            newPath.add(RELATIVE_PARENT_ID)
+        }
+
+        // Then, if there are parts of the "other" path left, they need to be copied into the new
+        // path. i.e.: the "x/y" needs to be appended to the "../.." above.
+        for (remain in index until other.path.size) {
+            newPath.add(other.path[remain])
+        }
+
+        // Finally, construct a new path ("../../x/y" in our example)
+        return DocumentPath(fileSystem, treeId, newPath)
     }
 
     override fun toUri(): URI {
@@ -257,3 +318,12 @@ class DocumentPath private constructor(
 
     override fun hashCode() = Objects.hash(fileSystem.authority, treeId, docId)
 }
+
+/**
+ * Implementation specific version of ".." for building relative paths that go "up" a
+ * document tree. In a Unix file system, the ".." is not a valid file name, but this ID
+ * _could_ be used, it's just constructed to be very unlikely.
+ *
+ * The initial version is a ".." with a Zero Width Joiner between them.
+ */
+internal const val RELATIVE_PARENT_ID = ".\u200D."
