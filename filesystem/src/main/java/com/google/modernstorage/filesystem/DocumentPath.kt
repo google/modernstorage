@@ -207,13 +207,35 @@ class DocumentPath private constructor(
         // If there are more parts of "this" path left, then they need to be replaced with ".."-y
         // bits. i.e.: if we have "b/c" left, this needs to become "../.."
         for (dots in index until path.size) {
-            newPath.add(RELATIVE_PARENT_ID)
+            if (path[dots] != RELATIVE_PARENT_ID) {
+                newPath.add(RELATIVE_PARENT_ID)
+            } else {
+                // Special case for when there's a ".." in the base path. In this case, if
+                // there's at least one element, then we don't add this "..", and we remove the
+                // existing element (to resolve the ".." to it's parent).
+                // If there _isn't_ a path element left to remove, we throw, which matches what
+                // happens with UnixPath.
+                if (newPath.isEmpty()) {
+                    throw IllegalArgumentException("Cannot create relative path from $this -> $other")
+                }
+                newPath.removeLast()
+            }
         }
 
         // Then, if there are parts of the "other" path left, they need to be copied into the new
         // path. i.e.: the "x/y" needs to be appended to the "../.." above.
         for (remain in index until other.path.size) {
-            newPath.add(other.path[remain])
+            if (other.path[remain] != RELATIVE_PARENT_ID) {
+                newPath.add(other.path[remain])
+            } else {
+                // Similar to the above, but since this is the path we're building a relative path
+                // to, it's okay if it contains more relative components.
+                if (newPath.isNotEmpty() && newPath.last() != RELATIVE_PARENT_ID) {
+                    newPath.removeLast()
+                } else {
+                    newPath.add(RELATIVE_PARENT_ID)
+                }
+            }
         }
 
         // Finally, construct a new path ("../../x/y" in our example)

@@ -309,8 +309,8 @@ class DocumentPathTests {
         val pathB = DocumentPath(fileSystem, "tree", "grandparent", "parent", "child")
 
         val expected = DocumentPath(fileSystem, "tree", "child")
-        val relative = pathA.relativize(pathB)
-        assertEquals(expected, relative)
+        val relative = pathA.relativize(pathB) as DocumentPath
+        assertDeepEquals(expected, relative)
     }
 
     @Test
@@ -330,8 +330,8 @@ class DocumentPathTests {
         val pathB = DocumentPath(fileSystem, "tree", "grandparent", "parent", "child")
 
         val expected = DocumentPath(fileSystem, "tree", RELATIVE_PARENT_ID)
-        val relative = pathB.relativize(pathA)
-        assertEquals(expected, relative)
+        val relative = pathB.relativize(pathA) as DocumentPath
+        assertDeepEquals(expected, relative)
     }
 
     @Test
@@ -344,8 +344,8 @@ class DocumentPathTests {
         val pathB = DocumentPath(fileSystem, "tree", "grandparent", "parent", "child")
 
         val expected = DocumentPath(fileSystem, "tree")
-        val relative = pathA.relativize(pathB)
-        assertEquals(expected, relative)
+        val relative = pathA.relativize(pathB) as DocumentPath
+        assertDeepEquals(expected, relative)
     }
 
     @Test
@@ -362,8 +362,73 @@ class DocumentPathTests {
             "tree",
             RELATIVE_PARENT_ID, RELATIVE_PARENT_ID, RELATIVE_PARENT_ID, "x", "y", "z"
         )
-        val relative = pathA.relativize(pathB)
-        assertEquals(expected, relative)
+        val relative = pathA.relativize(pathB) as DocumentPath
+        assertDeepEquals(expected, relative)
+    }
+
+    @Test
+    fun testDocumentPath_relativizeIncludingRelativeParts() {
+        /*
+         * Unix path behavior:
+         * "/a/b/..".relativize("/x/y/z") = "../x/y/z"
+         */
+        val pathA = DocumentPath(fileSystem, "tree", "a", "b", RELATIVE_PARENT_ID)
+        val pathB = DocumentPath(fileSystem, "tree", "x", "y", "z")
+
+        val expected = DocumentPath(
+            fileSystem,
+            "tree",
+            RELATIVE_PARENT_ID, "x", "y", "z"
+        )
+        val relative = pathA.relativize(pathB) as DocumentPath
+        assertDeepEquals(expected, relative)
+
+        /*
+         * Unix path behavior:
+         * "/a/b/c".relativize("/x/../z") = "../../../z"
+         */
+        val pathA2 = DocumentPath(fileSystem, "tree", "a", "b", "c")
+        val pathB2 = DocumentPath(fileSystem, "tree", "x", RELATIVE_PARENT_ID, "z")
+
+        val expected2 = DocumentPath(
+            fileSystem,
+            "tree",
+            RELATIVE_PARENT_ID, RELATIVE_PARENT_ID, RELATIVE_PARENT_ID, "z"
+        )
+        val relative2 = pathA2.relativize(pathB2) as DocumentPath
+        assertDeepEquals(expected2, relative2)
+
+        /*
+         * Unix path behavior:
+         * "/a".relativize("/x/../..") = "../.."
+         */
+        val pathA3 = DocumentPath(fileSystem, "tree", "a")
+        val pathB3 = DocumentPath(fileSystem, "tree", "x", RELATIVE_PARENT_ID, RELATIVE_PARENT_ID)
+
+        val expected3 = DocumentPath(
+            fileSystem,
+            "tree",
+            RELATIVE_PARENT_ID, RELATIVE_PARENT_ID
+        )
+        val relative3 = pathA3.relativize(pathB3) as DocumentPath
+        assertDeepEquals(expected3, relative3)
+    }
+
+    @Test
+    fun testDocumentPath_relativizeInvalidRelativePath() {
+        /*
+         * Unix path behavior:
+         * "/a/../..".relativize("/x/../z") -> throw IllegalArgumentException
+         */
+        val pathA = DocumentPath(fileSystem, "tree", "a", RELATIVE_PARENT_ID, RELATIVE_PARENT_ID)
+        val pathB = DocumentPath(fileSystem, "tree", "x", "y", "z")
+
+        try {
+            val relativize = pathA.relativize(pathB)
+            fail("Relativized path? $relativize")
+        } catch (_: IllegalArgumentException) {
+            // Pass -- These paths cannot be relativized.
+        }
     }
 
     @Test
@@ -467,5 +532,11 @@ class DocumentPathTests {
         val path = DocumentPath(fileSystem, "tree")
         val normalized = path.normalize()
         assertSame(path, normalized)
+    }
+
+    private fun assertDeepEquals(expected: DocumentPath, other: DocumentPath) {
+        assertEquals(expected.fileSystem.authority, other.fileSystem.authority)
+        assertEquals(expected.treeId, other.treeId)
+        assertEquals(expected.path, other.path)
     }
 }
