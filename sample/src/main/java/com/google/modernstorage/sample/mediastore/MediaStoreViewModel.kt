@@ -17,6 +17,7 @@ package com.google.modernstorage.sample.mediastore
 
 import android.app.Application
 import android.net.Uri
+import android.os.Parcelable
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -29,6 +30,7 @@ import com.google.modernstorage.mediastore.SharedPrimary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.parcelize.Parcelize
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
@@ -59,13 +61,14 @@ class MediaStoreViewModel(
         _snackbarNotification.postValue(null)
     }
 
-    data class CaptureMediaIntentRequest(val type: FileType, val uri: Uri)
+    @Parcelize
+    data class CaptureMediaIntentRequest(val type: FileType, val uri: Uri): Parcelable
 
     private val _captureMediaIntent: MutableLiveData<CaptureMediaIntentRequest> = MutableLiveData()
     val captureMediaIntent: LiveData<CaptureMediaIntentRequest> get() = _captureMediaIntent
 
     private fun setCaptureMediaIntentRequest(type: FileType, uri: Uri) {
-        savedStateHandle.set(CURRENT_MEDIA_KEY, CaptureMediaIntentRequest(type, uri))
+        _captureMediaIntent.postValue(CaptureMediaIntentRequest(type, uri))
     }
 
     fun clearCaptureMediaIntentRequest() {

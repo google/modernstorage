@@ -92,6 +92,11 @@ class MediaStoreFragment : Fragment() {
         handlePermissionSectionVisibility()
     }
 
+    override fun onPause() {
+        super.onPause()
+        viewModel.clearCaptureMediaIntentRequest()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
