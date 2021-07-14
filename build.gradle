@@ -47,6 +47,11 @@ allprojects {
     }
 }
 
+tasks.withType(org.jetbrains.dokka.gradle.DokkaMultiModuleTask).configureEach {
+    outputDirectory = rootProject.file('docs/api')
+    failOnWarning = true
+}
+
 subprojects {
     apply plugin: 'com.diffplug.spotless'
     spotless {
