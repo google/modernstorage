@@ -17,6 +17,7 @@ package com.google.modernstorage.filesystem
 
 import com.google.modernstorage.filesystem.internal.TestContract
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
@@ -24,6 +25,7 @@ import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import java.net.URI
+import java.nio.file.Path
 
 class DocumentPathTests {
     private lateinit var fileSystem: ContentFileSystem
@@ -61,16 +63,19 @@ class DocumentPathTests {
 
     @Test
     fun testDocumentPath_testTreeIterator() {
+        /*
+         * Unix path behavior:
+         * "/grandparent/parent/child" -> ["grandparent", "parent", "child"]
+         */
         val path = DocumentPath(fileSystem, "tree", "grandparent", "parent", "child")
         val expectedElements = listOf(
-            DocumentPath(fileSystem, "tree"),
             DocumentPath(fileSystem, "tree", "grandparent"),
             DocumentPath(fileSystem, "tree", "parent"),
             DocumentPath(fileSystem, "tree", "child"),
         )
 
         val pathList = mutableListOf<DocumentPath>()
-        path.iterator().forEach { pathList.add(it as DocumentPath) }
+        path.forEach { pathList.add(it as DocumentPath) }
 
         expectedElements.forEachIndexed { index, expected ->
             assertEquals(expected.treeId, pathList[index].treeId)
@@ -280,7 +285,7 @@ class DocumentPathTests {
 
         try {
             val relativePath = pathA.relativize(pathB)
-            fail()
+            fail("Relativized incompatible paths (different providers): $relativePath")
         } catch (_: IllegalArgumentException) {
             // Test pass
         }
@@ -293,7 +298,7 @@ class DocumentPathTests {
 
         try {
             val relativePath = pathA.relativize(pathB)
-            fail()
+            fail("Relativized incompatible paths (different roots): $relativePath")
         } catch (_: IllegalArgumentException) {
             // Test pass
         }
@@ -534,7 +539,207 @@ class DocumentPathTests {
         assertSame(path, normalized)
     }
 
-    private fun assertDeepEquals(expected: DocumentPath, other: DocumentPath) {
+    @Test
+    fun testDocumentPath_resolveSibling() {
+        val cases = listOf(
+            // Unix: /a/b/c + x/y -> /a/b/x/y
+            listOf(
+                DocumentPath(fileSystem, "tree", "a", "b", "c"),
+                DocumentPath(fileSystem, "tree", "x", "y"),
+                DocumentPath(fileSystem, "tree", "a", "b", "x", "y"),
+            ),
+            // Unix: /a/b/c + ../y -> /a/b/../y
+            listOf(
+                DocumentPath(fileSystem, "tree", "a", "b", "c"),
+                DocumentPath(fileSystem, "tree", RELATIVE_PARENT_ID, "y"),
+                DocumentPath(fileSystem, "tree", "a", "b", RELATIVE_PARENT_ID, "y"),
+            ),
+            // Unix: /a/b/.. + x/y -> /a/b/x/y
+            listOf(
+                DocumentPath(fileSystem, "tree", "a", "b", RELATIVE_PARENT_ID),
+                DocumentPath(fileSystem, "tree", "x", "y"),
+                DocumentPath(fileSystem, "tree", "a", "b", "x", "y"),
+            ),
+            // Unix: /a/b/.. + .. -> /a/b/..
+            listOf(
+                DocumentPath(fileSystem, "tree", "a", "b", RELATIVE_PARENT_ID),
+                DocumentPath(fileSystem, "tree", RELATIVE_PARENT_ID),
+                DocumentPath(fileSystem, "tree", "a", "b", RELATIVE_PARENT_ID),
+            ),
+            // Unix: /a + x -> /x
+            listOf(
+                DocumentPath(fileSystem, "tree", "a"),
+                DocumentPath(fileSystem, "tree", "x"),
+                DocumentPath(fileSystem, "tree", "x"),
+            ),
+            // Unix only has one 'root'
+            listOf(
+                DocumentPath(fileSystem, "root1", "a", "b", "c"),
+                DocumentPath(fileSystem, "root2", "x", "y", "z"),
+                DocumentPath(fileSystem, "root2", "x", "y", "z"),
+            ),
+        )
+
+        cases.forEach { case ->
+            val (pathA, pathB, expected) = case
+            val result = pathA.resolveSibling(pathB) as DocumentPath
+            assertDeepEquals(expected, result)
+        }
+    }
+
+    @Test
+    fun testDocumentPath_resolveSiblingDifferentFileSystemsIsOther() {
+        val providerA = URI("content://test.provider.a/tree/root")
+        val fileSystemA = AndroidFileSystems.getFileSystem(providerA) as ContentFileSystem
+
+        val providerB = URI("content://test.provider.b/tree/root")
+        val fileSystemB = AndroidFileSystems.getFileSystem(providerB) as ContentFileSystem
+
+        val pathA = DocumentPath(fileSystemA, "root", "parent", "child")
+        val pathB = DocumentPath(fileSystemB, "root", "parent", "child")
+        val resolved = pathA.resolveSibling(pathB)
+        assertSame(pathB, resolved)
+    }
+
+    @Test
+    fun testDocumentPath_subPath() {
+        // Unix: "/a/b/c".subpath(1,3) -> "b/c"
+        val sub1 = DocumentPath(fileSystem, "tree", "a", "b", "c").subpath(1, 3)
+        assertDeepEquals(DocumentPath(fileSystem, "tree", "b", "c"), sub1)
+
+        // Unix: "/a/b/c".subpath(0,2) -> "a/b"
+        val sub2 = DocumentPath(fileSystem, "tree", "a", "b", "c").subpath(0, 2)
+        assertDeepEquals(DocumentPath(fileSystem, "tree", "a", "b"), sub2)
+
+        // Invalid ranges
+        listOf(
+            1 to 1,
+            -1 to 1,
+            1 to 4,
+            2 to 0
+        ).forEach { (start, end) ->
+            try {
+                DocumentPath(fileSystem, "tree", "a", "b", "c").subpath(start, end)
+                fail()
+            } catch (_: IllegalArgumentException) {
+                // Success - matches UnixPath
+            }
+        }
+    }
+
+    @Test
+    fun testDocumentPath_startsWithEndsWith() {
+        // Unix: "a/b/c".startsWith("a") -> true
+        assertTrue(
+            DocumentPath(fileSystem, null, "a", "b", "c").startsWith("a")
+        )
+        assertTrue(
+            DocumentPath(fileSystem, "tree", "a", "b", "c").startsWith("a")
+        )
+        assertTrue(
+            DocumentPath(fileSystem, null, "a", "b", "c")
+                .startsWith(DocumentPath(fileSystem, null, "a"))
+        )
+        // Unix: "a/b/c".startsWith("a/b/c") -> true
+        assertTrue(
+            DocumentPath(fileSystem, null, "a", "b", "c")
+                .startsWith(DocumentPath(fileSystem, null, "a", "b", "c"))
+        )
+        // Unix: "a/b".startsWith("a/b/c") -> false
+        assertFalse(
+            DocumentPath(fileSystem, null, "a", "b")
+                .startsWith(DocumentPath(fileSystem, null, "a", "b", "c"))
+        )
+        // Unix: "a/b/c".startsWith("a/b") -> true
+        assertTrue(
+            DocumentPath(fileSystem, null, "a", "b", "c")
+                .startsWith(DocumentPath(fileSystem, null, "a", "b"))
+        )
+        // Unix: "/a/b/c".startsWith("a/b") -> false
+        assertFalse(
+            DocumentPath(fileSystem, "tree", "a", "b", "c")
+                .startsWith(DocumentPath(fileSystem, null, "a", "b"))
+        )
+        // Unix: "a/b/c".startsWith("") -> false
+        assertFalse(
+            DocumentPath(fileSystem, "tree", "a", "b", "c")
+                .startsWith(DocumentPath(fileSystem, "tree"))
+        )
+
+        // Different roots
+        assertFalse(
+            DocumentPath(fileSystem, "root1", "a", "b", "c")
+                .startsWith(DocumentPath(fileSystem, "root2", "a", "b"))
+        )
+
+        // Test with different file systems
+        val providerA = URI("content://test.provider.a/tree/root")
+        val fileSystemA = AndroidFileSystems.getFileSystem(providerA) as ContentFileSystem
+
+        val providerB = URI("content://test.provider.b/tree/root")
+        val fileSystemB = AndroidFileSystems.getFileSystem(providerB) as ContentFileSystem
+
+        assertFalse(
+            DocumentPath(fileSystemA, "tree", "a", "b", "c")
+                .startsWith(DocumentPath(fileSystemB, "tree", "a", "b"))
+        )
+    }
+
+    @Test
+    fun testDocumentPath_endsWithEndsWith() {
+        // Unix: "a/b/c".endsWith("c") -> true
+        assertTrue(
+            DocumentPath(fileSystem, null, "a", "b", "c").endsWith("c")
+        )
+        assertTrue(
+            DocumentPath(fileSystem, "tree", "a", "b", "c").endsWith("c")
+        )
+        assertTrue(
+            DocumentPath(fileSystem, null, "a", "b", "c")
+                .endsWith(DocumentPath(fileSystem, null, "c"))
+        )
+        // Unix: "a/b/c".endsWith("a/b/c") -> true
+        assertTrue(
+            DocumentPath(fileSystem, null, "a", "b", "c")
+                .startsWith(DocumentPath(fileSystem, null, "a", "b", "c"))
+        )
+        // Unix: "a/b/c".endsWith("a/b/c") -> true
+        assertFalse(
+            DocumentPath(fileSystem, null, "a", "b")
+                .startsWith(DocumentPath(fileSystem, null, "a", "b", "c"))
+        )
+        // Unix: "a/b/c".endsWith("a/b") -> true
+        assertTrue(
+            DocumentPath(fileSystem, null, "a", "b", "c")
+                .endsWith(DocumentPath(fileSystem, null, "b", "c"))
+        )
+        // Unix: "a/b/c".endsWith("") -> false
+        assertFalse(
+            DocumentPath(fileSystem, "tree", "a", "b", "c")
+                .endsWith(DocumentPath(fileSystem, "tree"))
+        )
+
+        // Different roots
+        assertFalse(
+            DocumentPath(fileSystem, "root1", "a", "b", "c")
+                .endsWith(DocumentPath(fileSystem, "root2", "a", "b"))
+        )
+
+        // Test with different file systems
+        val providerA = URI("content://test.provider.a/tree/root")
+        val fileSystemA = AndroidFileSystems.getFileSystem(providerA) as ContentFileSystem
+
+        val providerB = URI("content://test.provider.b/tree/root")
+        val fileSystemB = AndroidFileSystems.getFileSystem(providerB) as ContentFileSystem
+
+        assertFalse(
+            DocumentPath(fileSystemA, "tree", "a", "b", "c")
+                .endsWith(DocumentPath(fileSystemB, "tree", "b", "c"))
+        )
+    }
+
+    private fun assertDeepEquals(expected: DocumentPath, other: Path) {
+        other as DocumentPath
         assertEquals(expected.fileSystem.authority, other.fileSystem.authority)
         assertEquals(expected.treeId, other.treeId)
         assertEquals(expected.path, other.path)

@@ -62,9 +62,6 @@ class DocumentPath private constructor(
 
     override fun iterator(): MutableIterator<Path> {
         val components = mutableListOf<DocumentPath>()
-        if (treeId != null) {
-            components += DocumentPath(fileSystem, treeId)
-        }
         path.forEach { element ->
             components += DocumentPath(fileSystem, treeId, element)
         }
@@ -103,7 +100,7 @@ class DocumentPath private constructor(
 
     override fun getParent(): Path? {
         return if (path.size > 1) {
-            DocumentPath(fileSystem, treeId, *path.subList(0, path.size - 1).toTypedArray())
+            subpath(0, path.size - 1)
         } else {
             null
         }
@@ -115,23 +112,72 @@ class DocumentPath private constructor(
         DocumentPath(fileSystem, treeId, path[index])
 
     override fun subpath(beginIndex: Int, endIndex: Int): Path {
-        TODO("Not yet implemented")
+        if (beginIndex >= 0 && endIndex <= path.size && beginIndex < endIndex) {
+            return DocumentPath(fileSystem, treeId, path.subList(beginIndex, endIndex))
+        } else {
+            throw IllegalArgumentException("Invalid indexes: $beginIndex..$endIndex")
+        }
     }
 
     override fun startsWith(other: Path?): Boolean {
-        TODO("Not yet implemented")
+        /*
+         * Get rid of a whole bunch of basic checks at the start.
+         * For a path to "startWith" another, it must:
+         * - Be a DocumentPath
+         * - Reference the same provider + tree
+         * - Not be an "empty" path
+         */
+        if (other !is DocumentPath) return false
+        if (other.fileSystem.authority != fileSystem.authority) return false
+        if (other.treeId != treeId) return false
+        if (other.path.isEmpty()) return false
+
+        // If other is _longer_ than this path, it also can't "start" with it
+        if (other.path.size > path.size) return false
+
+        // Check from the start and ensure each document id matches
+        other.path.forEachIndexed { index, part ->
+            if (path[index] != part) return false
+        }
+        // If we get here, the path starts with that one!
+        return true
     }
 
-    override fun startsWith(other: String?): Boolean {
-        TODO("Not yet implemented")
+    override fun startsWith(other: String): Boolean {
+        return startsWith(DocumentPath(fileSystem, treeId, other))
     }
 
-    override fun endsWith(other: Path?): Boolean {
-        TODO("Not yet implemented")
+    override fun endsWith(other: Path): Boolean {
+        /*
+         * Similar to `startsWith`, get rid of a whole bunch of basic checks at the start.
+         * For a path to "endsWith" another, it must:
+         * - Be a DocumentPath
+         * - Reference the same provider + tree
+         * - Not be an "empty" path
+         */
+        if (other !is DocumentPath) return false
+        if (other.fileSystem.authority != fileSystem.authority) return false
+        if (other.treeId != treeId) return false
+        if (other.path.isEmpty()) return false
+
+        // If other is _longer_ than this path, it also can't "end" with it
+        if (other.path.size > path.size) return false
+
+        // Check from the end of each list of document ids
+        // Since we know that the list of document ids in other is _at most_ the same as the
+        // number of ids in this path, we don't need to do additional range checks here.
+        val lastIndex = path.size - 1
+        val otherLast = other.path.size - 1
+        for (index in 0 until other.path.size) {
+            // `index` is how many elements from the last one to check
+            if (path[lastIndex - index] != other.path[otherLast - index]) return false
+        }
+        // If we get here, the path ends with that one!
+        return true
     }
 
-    override fun endsWith(other: String?): Boolean {
-        TODO("Not yet implemented")
+    override fun endsWith(other: String): Boolean {
+        return endsWith(DocumentPath(fileSystem, treeId, other))
     }
 
     override fun normalize(): Path {
@@ -170,15 +216,21 @@ class DocumentPath private constructor(
     }
 
     override fun resolve(other: String): Path {
-        return DocumentPath(fileSystem, treeId, path + other)
+        return resolve(DocumentPath(fileSystem, treeId, other))
     }
 
     override fun resolveSibling(other: Path): Path {
-        TODO("Not yet implemented")
+        if (other !is DocumentPath) {
+            throw IllegalArgumentException("Cannot resolve against non-DocumentPaths")
+        }
+
+        if (fileSystem.authority != other.fileSystem.authority) return other
+        if (treeId != other.treeId) return other
+        return parent?.resolve(other) ?: other
     }
 
     override fun resolveSibling(other: String): Path {
-        TODO("Not yet implemented")
+        return resolveSibling(DocumentPath(fileSystem, treeId, other))
     }
 
     override fun relativize(other: Path): Path {

@@ -82,8 +82,8 @@ package com.google.modernstorage.filesystem {
   public final class DocumentPath implements java.nio.file.Path {
     ctor public DocumentPath(com.google.modernstorage.filesystem.ContentFileSystem fileSystem, String? treeId, java.lang.String... elements);
     method public int compareTo(java.nio.file.Path? other);
-    method public boolean endsWith(java.nio.file.Path? other);
-    method public boolean endsWith(String? other);
+    method public boolean endsWith(java.nio.file.Path other);
+    method public boolean endsWith(String other);
     method public String! getDocId();
     method public java.nio.file.Path? getFileName();
     method public com.google.modernstorage.filesystem.ContentFileSystem getFileSystem();
@@ -104,7 +104,7 @@ package com.google.modernstorage.filesystem {
     method public java.nio.file.Path resolveSibling(java.nio.file.Path other);
     method public java.nio.file.Path resolveSibling(String other);
     method public boolean startsWith(java.nio.file.Path? other);
-    method public boolean startsWith(String? other);
+    method public boolean startsWith(String other);
     method public java.nio.file.Path subpath(int beginIndex, int endIndex);
     method public java.nio.file.Path toAbsolutePath();
     method public java.io.File toFile();
