@@ -16,6 +16,7 @@ theme:
 nav:
     -   'Overview': index.md
     -   'MediaStore': mediastore.md
+    -   'FileSystem': filesystem.md
 
 # Extensions
 markdown_extensions:
