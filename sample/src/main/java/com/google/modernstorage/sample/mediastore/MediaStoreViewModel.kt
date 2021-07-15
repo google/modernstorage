@@ -62,7 +62,7 @@ class MediaStoreViewModel(
     }
 
     @Parcelize
-    data class CaptureMediaIntentRequest(val type: FileType, val uri: Uri): Parcelable
+    data class CaptureMediaIntentRequest(val type: FileType, val uri: Uri) : Parcelable
 
     private val _captureMediaIntent: MutableLiveData<CaptureMediaIntentRequest> = MutableLiveData()
     val captureMediaIntent: LiveData<CaptureMediaIntentRequest> get() = _captureMediaIntent
@@ -121,6 +121,7 @@ class MediaStoreViewModel(
             val request = Request.Builder().url(url).build()
 
             val mediaUri = withContext(Dispatchers.IO) {
+                @Suppress("BlockingMethodInNonBlockingContext")
                 val response = httpClient.newCall(request).execute()
 
                 response.body?.use { responseBody ->
