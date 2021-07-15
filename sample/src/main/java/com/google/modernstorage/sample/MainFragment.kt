@@ -15,6 +15,7 @@
  */
 package com.google.modernstorage.sample
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,11 +23,20 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.modernstorage.sample.databinding.FragmentDemoListBinding
-import com.google.modernstorage.sample.ui.Demo
-import com.google.modernstorage.sample.ui.DemoListAdapter
 
 private val apiList = arrayOf(
-    Demo(R.string.demo_mediastore, R.id.action_mainFragment_to_mediaStoreFragment),
+    Demo(
+        R.drawable.ic_baseline_collections_24,
+        R.string.demo_mediastore,
+        R.id.action_mainFragment_to_mediaStoreFragment,
+        Build.VERSION_CODES.LOLLIPOP
+    ),
+    Demo(
+        R.drawable.ic_baseline_folder_24,
+        R.string.demo_filesystem,
+        R.id.action_mainFragment_to_fileSystemFragment,
+        Build.VERSION_CODES.O
+    ),
 )
 
 class MainFragment : Fragment() {
@@ -42,8 +52,6 @@ class MainFragment : Fragment() {
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = DemoListAdapter(apiList)
-
-        binding.recyclerView
 
         return binding.root
     }

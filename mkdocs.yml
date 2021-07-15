@@ -2,6 +2,7 @@ site_name: ModernStorage
 site_url: https://google.github.com/modernstorage/
 repo_name: google/modernstorage
 repo_url: https://github.com/google/modernstorage
+edit_uri: edit/main/docs/
 site_description: "ModernStorage is a group of libraries that provide an abstraction layer over storage on Android to simplify its interactions"
 site_author: Google
 theme:
@@ -15,6 +16,7 @@ theme:
 nav:
     -   'Overview': index.md
     -   'MediaStore': mediastore.md
+    -   'FileSystem': filesystem.md
 
 # Extensions
 markdown_extensions:
