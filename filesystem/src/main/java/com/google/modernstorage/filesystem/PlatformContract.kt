@@ -20,6 +20,7 @@ import java.net.URI
 import java.nio.channels.SeekableByteChannel
 import java.nio.file.DirectoryStream
 import java.nio.file.LinkOption
+import java.nio.file.OpenOption
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 
@@ -40,12 +41,12 @@ interface PlatformContract {
     /**
      * Build URI representing the children of the target directory in a document provider.
      */
-    fun buildChildDocumentsUri(authority: String, parentDocumentId: String): URI
+//    fun buildChildDocumentsUri(authority: String, parentDocumentId: String): URI
 
     /**
      * Build URI representing the children of the target directory in a document provider.
      */
-    fun buildChildDocumentsUriUsingTree(treeUri: URI, parentDocumentId: String): URI
+//    fun buildChildDocumentsUriUsingTree(treeUri: URI, parentDocumentId: String): URI
 
     /**
      * Builds a document [URI] from the provided authority and document ID.
@@ -145,7 +146,10 @@ interface PlatformContract {
      * parameter of [android.content.ContentProvider.openAssetFile].
      * @see [android.content.ContentProvider.openAssetFile]
      */
-    fun openByteChannel(uri: URI, mode: String): SeekableByteChannel
+    fun openByteChannel(
+        path: DocumentPath,
+        options: MutableSet<out OpenOption>
+    ): SeekableByteChannel
 
     /**
      * Builds a new [DirectoryStream] given a [DocumentPath] and [DirectoryStream.Filter].

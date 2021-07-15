@@ -22,6 +22,7 @@ import com.google.modernstorage.filesystem.provider.TestDocumentProvider
 import com.google.modernstorage.filesystem.provider.document
 import org.junit.After
 import org.junit.Assert
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import java.net.URI
@@ -79,7 +80,7 @@ class TreePathTests {
         directoryStream.forEach { document ->
             val docUri = document.toUri().toString()
             if (!expectedDocuments.remove(docUri)) {
-                Assert.fail("Unexpected URI: $docUri")
+                fail("Unexpected URI: $docUri")
             }
         }
 
@@ -94,7 +95,6 @@ class TreePathTests {
 
         val fileSystem = AndroidFileSystems.getFileSystem(uri) as ContentFileSystem
         val expectedParts = listOf(
-            DocumentPath(fileSystem, "root"),
             DocumentPath(fileSystem, "root", "root"),
             DocumentPath(fileSystem, "root", "root", "root/subdir"),
             DocumentPath(fileSystem, "root", "root", "root/subdir", "root/subdir/child1.txt")
@@ -131,5 +131,29 @@ class TreePathTests {
         val expected =
             DocumentPath(fileSystem, "root", "root", "root/subdir", "root/subdir/child1.txt")
         Assert.assertSame(expected, expected.toAbsolutePath())
+    }
+
+    @Test
+    fun createNewDocument() {
+        val docUri =
+            Uri.parse("content://com.google.modernstorage.filesystem.test.documents/tree/root/document/root%2Fsubdir%2Fchild1.txt")
+        val existingPath = AndroidPaths.get(docUri).toAbsolutePath()
+        val newPath = existingPath.resolveSibling("child_new.txt")
+        Files.createFile(newPath)
+    }
+
+    @Test
+    fun createNewDocument_failsIfExistsDisplayName() {
+        val docUri =
+            Uri.parse("content://com.google.modernstorage.filesystem.test.documents/tree/root/document/root%2Fsubdir%2Fchild1.txt")
+        val basePath = AndroidPaths.get(docUri).toAbsolutePath()
+        val existingPath = basePath.resolveSibling("child2.txt")
+        try {
+            Files.createFile(existingPath)
+            fail()
+        } catch (_: FileAlreadyExistsException) {
+            // Test pass!
+            println("Pass! $existingPath")
+        }
     }
 }

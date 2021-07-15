@@ -22,6 +22,7 @@ import java.nio.channels.SeekableByteChannel
 import java.nio.file.DirectoryStream
 import java.nio.file.DirectoryStream.Filter
 import java.nio.file.LinkOption
+import java.nio.file.OpenOption
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 
@@ -29,20 +30,12 @@ import java.nio.file.attribute.BasicFileAttributes
  * Implementation of a [PlatformContract] for host side tests.
  */
 class TestContract(
-    var openByteChannelImpl: (URI, String) -> SeekableByteChannel = { _, _ -> TODO() },
+    var openByteChannelImpl: (DocumentPath, MutableSet<out OpenOption>) -> SeekableByteChannel = { _, _ -> TODO() },
     var newDirectoryStreamImpl: (DocumentPath, Filter<in Path>?) -> DirectoryStream<Path> = { _, _ -> TODO() },
     var readAttributesImpl: (DocumentPath, options: Array<out LinkOption?>) -> BasicFileAttributes = { _, _ -> TODO() },
 ) : PlatformContract {
 
     override fun prepareUri(incomingUri: URI) = incomingUri
-
-    override fun buildChildDocumentsUri(authority: String, parentDocumentId: String): URI {
-        TODO("Not yet implemented")
-    }
-
-    override fun buildChildDocumentsUriUsingTree(treeUri: URI, parentDocumentId: String): URI {
-        TODO("Not yet implemented")
-    }
 
     override fun buildDocumentUri(authority: String, documentId: String): URI {
         return URI("content://$authority/document/$documentId")
@@ -117,7 +110,8 @@ class TestContract(
         TODO("Not yet implemented")
     }
 
-    override fun openByteChannel(uri: URI, mode: String) = openByteChannelImpl(uri, mode)
+    override fun openByteChannel(path: DocumentPath, options: MutableSet<out OpenOption>) =
+        openByteChannelImpl(path, options)
 
     override fun newDirectoryStream(
         path: DocumentPath,

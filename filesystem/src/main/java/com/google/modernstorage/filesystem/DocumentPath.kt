@@ -391,6 +391,12 @@ class DocumentPath private constructor(
     }
 
     override fun hashCode() = Objects.hash(fileSystem.authority, treeId, docId)
+
+    internal fun updateDocId(newDocId: String) {
+        synchronized(path) {
+            path[path.size - 1] = newDocId
+        }
+    }
 }
 
 /**

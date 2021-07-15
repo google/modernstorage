@@ -23,7 +23,6 @@ import android.provider.DocumentsContract
 import android.provider.DocumentsContract.Document
 import android.provider.DocumentsContract.Root
 import android.provider.DocumentsProvider
-import android.util.Log
 import java.io.FileNotFoundException
 import java.io.FileWriter
 import kotlin.concurrent.thread
@@ -151,10 +150,8 @@ class TestDocumentProvider : DocumentsProvider() {
     ): DocumentsContract.Path? {
         // If we don't support this, the super class throws.
         if (!supportFindDocumentPath) {
-            Log.d("nicole", "Not supported: $parentDocumentId + $childDocumentId")
             return super.findDocumentPath(parentDocumentId, childDocumentId)
         }
-        Log.d("nicole", "Supported: $parentDocumentId + $childDocumentId")
 
         val path = mutableListOf<String>()
         var child: TestDocument? = docIdsToDoc[childDocumentId]
@@ -165,6 +162,29 @@ class TestDocumentProvider : DocumentsProvider() {
         return if (path.isEmpty()) null else DocumentsContract.Path(null, path.reversed())
     }
 
+    /**
+     * A very naive implementation of [createDocument].
+     *
+     * This doesn't handle creating two documents with the same [displayName] like a standard
+     * [DocumentsProvider] would. For tests this isn't as big of a problem, but could be added.
+     */
+    override fun createDocument(
+        parentDocumentId: String?,
+        mimeType: String?,
+        displayName: String?
+    ): String {
+        val parent = docIdsToDoc[parentDocumentId] ?: throw FileNotFoundException()
+        val docId = "$parentDocumentId/$displayName"
+        val newDoc = TestDocument(docId, parentDocumentId)
+        parent.children.add(newDoc)
+        docIdsToDoc[docId] = newDoc
+        return docId
+    }
+
+    /**
+     * This implementation of [openDocument] only supports reading from documents.
+     * TODO: Support writing so it's possible to test writing to paths.
+     */
     override fun openDocument(
         documentId: String?,
         mode: String?,

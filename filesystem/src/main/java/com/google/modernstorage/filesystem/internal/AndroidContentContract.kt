@@ -19,12 +19,16 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.DocumentsContract
+import android.provider.DocumentsContract.Document.COLUMN_DISPLAY_NAME
+import android.provider.DocumentsContract.Document.COLUMN_DOCUMENT_ID
+import android.webkit.MimeTypeMap
 import com.google.modernstorage.filesystem.DocumentBasicAttributes
 import com.google.modernstorage.filesystem.DocumentPath
 import com.google.modernstorage.filesystem.PlatformContract
 import com.google.modernstorage.filesystem.SequenceDocumentDirectoryStream
 import com.google.modernstorage.filesystem.toURI
 import com.google.modernstorage.filesystem.toUri
+import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -33,7 +37,9 @@ import java.nio.channels.SeekableByteChannel
 import java.nio.file.DirectoryStream
 import java.nio.file.DirectoryStream.Filter
 import java.nio.file.LinkOption
+import java.nio.file.OpenOption
 import java.nio.file.Path
+import java.nio.file.StandardOpenOption
 import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.attribute.FileTime
 
@@ -66,12 +72,6 @@ class AndroidContentContract(context: Context) : PlatformContract {
 
     override fun buildTreeDocumentUri(authority: String, documentId: String) =
         DocumentsContract.buildTreeDocumentUri(authority, documentId).toURI()
-
-    override fun buildChildDocumentsUri(authority: String, parentDocumentId: String) =
-        DocumentsContract.buildChildDocumentsUri(authority, parentDocumentId).toURI()
-
-    override fun buildChildDocumentsUriUsingTree(treeUri: URI, parentDocumentId: String) =
-        DocumentsContract.buildChildDocumentsUriUsingTree(treeUri.toUri(), parentDocumentId).toURI()
 
     override fun createDocument(parentDocumentUri: URI, mimeType: String, displayName: String) {
         TODO("Not yet implemented")
@@ -129,7 +129,20 @@ class AndroidContentContract(context: Context) : PlatformContract {
         TODO("Not yet implemented")
     }
 
-    override fun openByteChannel(uri: URI, mode: String): SeekableByteChannel {
+    override fun openByteChannel(
+        path: DocumentPath,
+        options: MutableSet<out OpenOption>
+    ): SeekableByteChannel {
+        val mode = options.joinToString(separator = "") { option ->
+            when (option) {
+                StandardOpenOption.APPEND -> "a"
+                StandardOpenOption.READ -> "r"
+                StandardOpenOption.TRUNCATE_EXISTING -> "t"
+                StandardOpenOption.WRITE -> "w"
+                else -> ""
+            }
+        }
+
         // Fix for https://issuetracker.google.com/180526528
         val openMode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && mode == "w") {
             "rwt"
@@ -137,10 +150,58 @@ class AndroidContentContract(context: Context) : PlatformContract {
             mode
         }
 
-        val androidUri = uri.toUri()
+        // Check whether the document exists -- this will also update `path` to update
+        // a 'display name' to a 'document id' if the document exists.
+        val fileExists = checkPathExists(path)
+
+        // The docs for `CREATE_NEW` say that it takes precedence over `CREATE` if both are
+        // present, so do that filtering now.
+        val createMode = when {
+            options.contains(StandardOpenOption.CREATE_NEW) -> {
+                StandardOpenOption.CREATE_NEW
+            }
+            options.contains(StandardOpenOption.CREATE) -> {
+                StandardOpenOption.CREATE
+            }
+            else -> {
+                null
+            }
+        }
+
+        // Does the file need to be created if it doesn't exist?
+        if (createMode != null) {
+            if (createMode == StandardOpenOption.CREATE_NEW && fileExists) {
+                throw FileAlreadyExistsException(File(""), null, "$path already exists")
+            } else if (!fileExists) {
+                val displayName = path.docId!!
+                val parent = path.parent!! as DocumentPath
+
+                // For now, guess the mime type based on the file extension.
+                val mimeType = if (displayName.contains('.')) {
+                    val ext = displayName.substringAfterLast('.')
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)
+                        ?: "application/octet-stream"
+                } else {
+                    "application/octet-stream"
+                }
+
+                // Actually create the document
+                val newDocumentUri = DocumentsContract.createDocument(
+                    context.contentResolver,
+                    parent.androidUri,
+                    mimeType,
+                    displayName
+                )
+
+                // Update the path to use the document id rather than display name
+                path.updateDocId(DocumentsContract.getDocumentId(newDocumentUri))
+            }
+        }
+
+        val androidUri = path.androidUri
         return context.contentResolver.openFileDescriptor(androidUri, openMode)?.let { fd ->
             FileInputStream(fd.fileDescriptor).channel
-        } ?: throw FileNotFoundException("openFileDescriptor($uri) returned null")
+        } ?: throw FileNotFoundException("openFileDescriptor($androidUri) returned null")
     }
 
     override fun newDirectoryStream(
@@ -225,6 +286,65 @@ class AndroidContentContract(context: Context) : PlatformContract {
 
         // Couldn't read the attributes
         throw IOException("Could not query ContentResolver for ${path.androidUri}")
+    }
+
+    /**
+     * Checking if a path exists requires 2 different checks.
+     *
+     * The first, faster check, is to construct the android.net.Uri representation of the Path
+     * and try to open it. If it succeeds, then the file exists.
+     *
+     * If trying to open the file _fails_, however, the file might still exist, because the path
+     * might be constructed with [Path.resolve] or [Path.resolveSibling] with a "display name",
+     * rather than a document id.
+     *
+     * If the path has a display name, then we can query the children of the parent to see if the
+     * display name matches one of the children. If it does, then we can update the `Path` to
+     * include the document id, rather than its display name, in addition to noting that, yes,
+     * the path exists.
+     */
+    private fun checkPathExists(path: DocumentPath): Boolean {
+        val quickCheckUri = path.androidUri
+        try {
+            context.contentResolver.openFileDescriptor(quickCheckUri, "r")?.use {
+                // If we're able to open it, the path exists
+                return true
+            }
+        } catch (_: FileNotFoundException) {
+            // Promising, but should continue to check that it isn't a display name
+        } catch (_: SecurityException) {
+            // Probably tried to build a URI based on a display name rather than a doc id
+        }
+
+        // If this is a display name at the end, then it should have a parent. If it doesn't,
+        // then we can just assume it is a document ID and that the file really doesn't exist.
+        if (path.parent == null) return false
+
+        // We thought it was the document id, but it's probably a display name
+        val filename = path.docId
+        val queryUri = (path.parent as DocumentPath).childDocumentsUri
+        try {
+            context.contentResolver.query(
+                queryUri,
+                arrayOf(COLUMN_DOCUMENT_ID, COLUMN_DISPLAY_NAME),
+                null,
+                null,
+                null
+            )?.use { cursor ->
+                while (cursor.moveToNext()) {
+                    val (docId, name) = cursor.getString(0) to cursor.getString(1)
+                    if (name == filename) {
+                        path.updateDocId(docId)
+                        return true
+                    }
+                }
+            }
+        } finally {
+            // Something went wrong
+        }
+
+        // If we get here, then the file probably doesn't exist
+        return false
     }
 }
 

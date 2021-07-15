@@ -26,10 +26,7 @@ import java.nio.file.FileSystems
 import java.nio.file.LinkOption
 import java.nio.file.OpenOption
 import java.nio.file.Path
-import java.nio.file.StandardOpenOption.APPEND
 import java.nio.file.StandardOpenOption.READ
-import java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
-import java.nio.file.StandardOpenOption.WRITE
 import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.attribute.FileAttribute
 import java.nio.file.attribute.FileAttributeView
@@ -93,17 +90,11 @@ class ContentFileSystemProvider(
     ): SeekableByteChannel {
         val contentPath =
             path as? DocumentPath ?: throw IllegalArgumentException("path must be a DocumentPath")
-        val mode = if (options.isNullOrEmpty()) {
-            // By default, open for reading only
-            "r"
-        } else {
-            options.optionToMode(READ, "r") + options.optionToMode(WRITE, "w") +
-                options.optionToMode(APPEND, "a") + options.optionToMode(TRUNCATE_EXISTING, "t")
-        }
+        val useOptions = if (options.isNullOrEmpty()) mutableSetOf(READ) else options
 
         // TODO: Support providing attributes.
 
-        return contentContract.openByteChannel(contentPath.toUri(), mode)
+        return contentContract.openByteChannel(contentPath, useOptions)
     }
 
     override fun newDirectoryStream(

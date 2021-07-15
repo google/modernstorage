@@ -22,18 +22,18 @@ class TestDocument(
     val docId: String,
     val parentDocId: String?,
     val displayName: String = docId,
-    val content: String?,
-    val children: List<TestDocument>?
+    val content: String? = null,
+    val children: MutableList<TestDocument> = mutableListOf()
 ) {
     init {
-        if (content != null && children != null) {
+        if (content != null && children.isNotEmpty()) {
             throw IllegalArgumentException("A document can not contain content and children at the same")
         }
     }
 
     val mimeType
         get() = when {
-            children?.isNotEmpty() == true -> {
+            children.isNotEmpty() -> {
                 Document.MIME_TYPE_DIR
             }
             displayName.lastIndexOf(".") > 0 -> {
@@ -48,7 +48,7 @@ class TestDocument(
 }
 
 class TestDocumentBuilder(private val docId: String, private val parentDocId: String? = null) {
-    var displayName: String? = null
+    private var displayName: String? = null
     private var content: String? = null
     private val children = mutableMapOf<String, TestDocument>()
     private val fullDocId get() = if (parentDocId == null) docId else "$parentDocId/$docId"
@@ -71,7 +71,7 @@ class TestDocumentBuilder(private val docId: String, private val parentDocId: St
         parentDocId,
         displayName ?: docId,
         content,
-        if (children.isEmpty()) null else children.values.toList()
+        children.values.toMutableList()
     )
 }
 

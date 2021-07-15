@@ -17,10 +17,10 @@ package com.google.modernstorage.filesystem
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.test.core.app.ApplicationProvider
 import com.google.modernstorage.filesystem.provider.TestDocumentProvider
 import com.google.modernstorage.filesystem.provider.document
+import junit.framework.Assert.fail
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -68,10 +68,21 @@ class ContentPathTests {
     fun readSingleDocument_documentDoesNotExist() {
         val testPath = AndroidPaths.get(testNonExistingUri)
         try {
-            Files.readAllLines(testPath).forEach { Log.d("TAG", it) }
+            Files.readAllLines(testPath).forEach { println(it) }
             Assert.fail("Opened non-existing file?")
         } catch (fileNotFound: FileNotFoundException) {
             // Test pass
+        }
+    }
+
+    @Test
+    fun createNewDocument_failsIfExists() {
+        val existingPath = AndroidPaths.get(testUri)
+        try {
+            Files.createFile(existingPath)
+            fail()
+        } catch (_: FileAlreadyExistsException) {
+            // Test pass!
         }
     }
 }
