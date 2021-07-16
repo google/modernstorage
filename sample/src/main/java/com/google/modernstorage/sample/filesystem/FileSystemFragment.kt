@@ -15,6 +15,10 @@
  */
 package com.google.modernstorage.sample.filesystem
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.format.Formatter
@@ -23,11 +27,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
+import androidx.annotation.CallSuper
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.google.android.material.snackbar.Snackbar
 import com.google.modernstorage.sample.R
 import com.google.modernstorage.sample.databinding.FragmentFilesystemBinding
 
@@ -77,26 +82,70 @@ class FileSystemFragment : Fragment() {
         _binding = null
     }
 
+    private val actionOpenTextFile = registerForActivityResult(OpenDocument()) { uri ->
+        uri?.let { viewModel.previewFile(it, FileType.TEXT) }
+    }
+
+    private val actionOpenImageFile = registerForActivityResult(OpenDocument()) { uri ->
+        uri?.let { viewModel.previewFile(it, FileType.IMAGE) }
+    }
+
+    private val actionCreateTextFile = registerForActivityResult(CustomCreateDocument()) { uri ->
+        uri?.let { viewModel.downloadAndSaveContent(it, FileType.TEXT) }
+    }
+
+    private val actionCreateImageFile = registerForActivityResult(CustomCreateDocument()) { uri ->
+        uri?.let { viewModel.downloadAndSaveContent(it, FileType.IMAGE) }
+    }
+
     private fun setupLayout() {
         binding.openTextFile.setOnClickListener {
             actionOpenTextFile.launch(arrayOf("text/*"))
         }
 
-        binding.createTextFile.setOnClickListener { button ->
-            Snackbar.make(button, R.string.filesystem_not_available_yet, Snackbar.LENGTH_SHORT)
-                .show()
-        }
-
         binding.openImageFile.setOnClickListener {
             actionOpenImageFile.launch(arrayOf("image/*"))
         }
+
+        binding.createTextFile.setOnClickListener {
+            actionCreateTextFile.launch(
+                CustomCreateDocument.Args(
+                    "${System.currentTimeMillis()}.md",
+                    "text/markdown"
+                )
+            )
+        }
+
+        binding.createImageFile.setOnClickListener {
+            actionCreateImageFile.launch(
+                CustomCreateDocument.Args(
+                    "${System.currentTimeMillis()}.jpg",
+                    "image/jpeg"
+                )
+            )
+        }
+    }
+}
+
+class CustomCreateDocument : ActivityResultContract<CustomCreateDocument.Args, Uri?>() {
+    class Args(val displayName: String, val mimeType: String)
+
+    @CallSuper
+    override fun createIntent(context: Context, input: Args): Intent {
+        return Intent(Intent.ACTION_CREATE_DOCUMENT)
+            .addCategory(Intent.CATEGORY_OPENABLE)
+            .setType(input.mimeType)
+            .putExtra(Intent.EXTRA_TITLE, input.displayName)
     }
 
-    private val actionOpenTextFile = registerForActivityResult(OpenDocument()) { uri ->
-        uri?.let { viewModel.onFileSelect(it, FileType.TEXT) }
+    override fun getSynchronousResult(
+        context: Context,
+        input: Args
+    ): SynchronousResult<Uri?>? {
+        return null
     }
 
-    private val actionOpenImageFile = registerForActivityResult(OpenDocument()) { uri ->
-        uri?.let { viewModel.onFileSelect(it, FileType.IMAGE) }
+    override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
+        return if (intent == null || resultCode != Activity.RESULT_OK) null else intent.data
     }
 }
