@@ -101,7 +101,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              Overview
             
           </span>
         </div>
@@ -205,11 +205,79 @@
 
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="index.md" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Overview
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
         Overview
       </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#download" class="md-nav__link">
+    Download
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    Quick start
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#is-it-ready" class="md-nav__link">
+    Is it ready?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributions" class="md-nav__link">
+    Contributions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    License
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -333,6 +401,9 @@ simplify its interactions by apps developers. ModernStorage is:</p>
 <p>ModernStorage is available on <code>mavenCentral()</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// For MediaStore interactions</span>
 <span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.google.modernstorage:modernstorage-mediastore:1.0.0-alpha02&quot;</span><span class="p">)</span>
+
+<span class="c1">// For Storage Access Framework interactions on API 26+</span>
+<span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.google.modernstorage:modernstorage-filesystem:1.0.0-alpha02&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="quick-start">Quick start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
 <ul>
@@ -341,15 +412,15 @@ simplify its interactions by apps developers. ModernStorage is:</p>
 package</li>
 </ul>
 <h2 id="is-it-ready">Is it ready?<a class="headerlink" href="#is-it-ready" title="Permanent link">&para;</a></h2>
-<p>It's experimental! Our current version is <strong>1.0.0-alpha02</strong>. As it's an alpha release, we're 
-expecting API breaking changes between releases. While it always seems risky to rely on an 
-experimental library, we're enforcing storage best practises (including Scoped Storage), which 
+<p>It's experimental! Our current version is <strong>1.0.0-alpha02</strong>. As it's an alpha release, we're
+expecting API breaking changes between releases. While it always seems risky to rely on an
+experimental library, we're enforcing storage best practises (including Scoped Storage), which
 developers aren't always aware of.</p>
-<p>We're looking for a stable release later this year (we don't have yet a precise date). We actively 
-listen to your feedback to make ModernStorage the default library for storage interactions on 
+<p>We're looking for a stable release later this year (we don't have yet a precise date). We actively
+listen to your feedback to make ModernStorage the default library for storage interactions on
 Android.</p>
 <h2 id="contributions">Contributions<a class="headerlink" href="#contributions" title="Permanent link">&para;</a></h2>
-<p>We're still at an early stage sharing the vision of ModernStorage and would love to have more 
+<p>We're still at an early stage sharing the vision of ModernStorage and would love to have more
 feature requests and ideas proposed as issues. We would be glad to review pull requests, but keep in
 mind that we want to minimize expanding the API surface until we get more feedback from developers.
 Make sure to read the <a href="https://github.com/google/modernstorage/blob/main/CONTRIBUTING.md">Contributing</a> page first though.</p>
@@ -383,6 +454,26 @@ limitations under the License.
       
         
 <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+      
+        
+        <a href="mediastore/" class="md-footer__link md-footer__link--next" aria-label="Next: MediaStore" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              MediaStore
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
