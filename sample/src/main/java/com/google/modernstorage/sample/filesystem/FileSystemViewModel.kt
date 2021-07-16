@@ -111,10 +111,7 @@ class FileSystemViewModel(
 
                 response.body?.use { responseBody ->
                     @Suppress("BlockingMethodInNonBlockingContext")
-//                    Files.write(path, responseBody.bytes())
-                    Files.newOutputStream(path)?.use { outputStream ->
-                        responseBody.byteStream().copyTo(outputStream)
-                    }
+                    Files.copy(responseBody.byteStream(), path)
                 }
             }
 
