@@ -40,6 +40,7 @@
     <string name="filesystem_open_text_file_label">Open text file</string>
     <string name="filesystem_open_image_file_label">Open image file</string>
     <string name="filesystem_create_text_file_label">Create text file</string>
+    <string name="filesystem_create_image_file_label">Create image file</string>
     <string name="filesystem_not_available_yet">This functionality is not available yet</string>
     <string name="filesystem_size">File size: %1$s</string>
 </resources>
