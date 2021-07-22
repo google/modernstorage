@@ -27,7 +27,9 @@ import com.google.modernstorage.filesystem.toURI
 import com.google.modernstorage.filesystem.toUri
 import java.io.FileInputStream
 import java.io.FileNotFoundException
+import java.io.FileOutputStream
 import java.io.IOException
+import java.lang.UnsupportedOperationException
 import java.net.URI
 import java.nio.channels.SeekableByteChannel
 import java.nio.file.DirectoryStream
@@ -78,6 +80,13 @@ class AndroidContentContract(context: Context) : PlatformContract {
         }
 
     override fun openByteChannel(uri: URI, mode: String): SeekableByteChannel {
+        // TODO: Support read/write channels
+        val readable = mode.contains('r')
+        val writable = mode.contains('w') || mode.contains('a')
+        if (readable && writable) {
+            throw UnsupportedOperationException("ReadWrite channels are not yet supported.")
+        }
+
         // Fix for https://issuetracker.google.com/180526528
         val openMode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && mode == "w") {
             "rwt"
@@ -87,7 +96,13 @@ class AndroidContentContract(context: Context) : PlatformContract {
 
         val androidUri = uri.toUri()
         return context.contentResolver.openFileDescriptor(androidUri, openMode)?.let { fd ->
-            FileInputStream(fd.fileDescriptor).channel
+            when {
+                readable -> FileInputStream(fd.fileDescriptor).channel
+                writable -> FileOutputStream(fd.fileDescriptor).channel
+                else -> {
+                    throw IllegalArgumentException("Channel must be opened for read or write")
+                }
+            }
         } ?: throw FileNotFoundException("openFileDescriptor($uri) returned null")
     }
 

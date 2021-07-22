@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.modernstorage.sample.mediastore
+package com.google.modernstorage.sample
 
 object SampleData {
     val image = listOf(
@@ -28,5 +28,11 @@ object SampleData {
         "https://storage.googleapis.com/android-tv/Sample%20videos/Demo%20Slam/Google%20Demo%20Slam_%20Dance%20Search.mp4",
         "https://storage.googleapis.com/android-tv/Sample%20videos/Demo%20Slam/Google%20Demo%20Slam_%20Extra%20Spicy.mp4",
         "https://storage.googleapis.com/android-tv/Sample%20videos/Demo%20Slam/Google%20Demo%20Slam_%20Get%20Your%20Money's%20Worth.mp4"
+    )
+
+    val texts = listOf(
+        "https://raw.githubusercontent.com/android/storage-samples/main/README.md",
+        "https://raw.githubusercontent.com/android/security-samples/main/README.md",
+        "https://raw.githubusercontent.com/google/modernstorage/main/README.md"
     )
 }

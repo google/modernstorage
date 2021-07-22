@@ -29,10 +29,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.google.modernstorage.filesystem.AndroidFileSystems
 import com.google.modernstorage.filesystem.AndroidPaths
+import com.google.modernstorage.sample.SampleData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -43,6 +46,8 @@ class FileSystemViewModel(
     application: Application,
     private val savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application) {
+    private val httpClient by lazy { OkHttpClient() }
+
     val currentFile: LiveData<FileResource> = savedStateHandle.getLiveData(CURRENT_DOCUMENT_KEY)
     private val _currentFileContent = MutableLiveData<FileContent>()
     val currentFileContent: LiveData<FileContent> = _currentFileContent
@@ -51,12 +56,12 @@ class FileSystemViewModel(
         AndroidFileSystems.initialize(application)
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
-    fun onFileSelect(uri: Uri, type: FileType) {
+    fun previewFile(uri: Uri, type: FileType) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 val path = AndroidPaths.get(uri)
-                val file = FileResource(uri, Files.size(path), FileType.TEXT)
+                @Suppress("BlockingMethodInNonBlockingContext")
+                val file = FileResource(uri, Files.size(path), type)
 
                 withContext(Dispatchers.Main) {
                     savedStateHandle.set(CURRENT_DOCUMENT_KEY, file)
@@ -70,22 +75,47 @@ class FileSystemViewModel(
         }
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun loadTextContent(path: Path) {
         withContext(Dispatchers.IO) {
+            @Suppress("BlockingMethodInNonBlockingContext")
             val text = Files.readAllLines(path).joinToString(separator = "\n")
 
             _currentFileContent.postValue(TextContent(text))
         }
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun loadImageContent(path: Path) {
         withContext(Dispatchers.IO) {
+            @Suppress("BlockingMethodInNonBlockingContext")
             val inputStream = Files.newInputStream(path)
             val bitmap = BitmapFactory.decodeStream(inputStream)
 
             _currentFileContent.postValue(BitmapContent(bitmap))
+        }
+    }
+
+    fun downloadAndSaveContent(documentUri: Uri, type: FileType) {
+        viewModelScope.launch {
+            val path = AndroidPaths.get(documentUri)
+
+            val url = when (type) {
+                FileType.TEXT -> SampleData.texts.random()
+                FileType.IMAGE -> SampleData.image.random()
+            }
+
+            val request = Request.Builder().url(url).build()
+
+            withContext(Dispatchers.IO) {
+                @Suppress("BlockingMethodInNonBlockingContext")
+                val response = httpClient.newCall(request).execute()
+
+                response.body?.use { responseBody ->
+                    @Suppress("BlockingMethodInNonBlockingContext")
+                    Files.copy(responseBody.byteStream(), path)
+                }
+            }
+
+            previewFile(documentUri, type)
         }
     }
 }
