@@ -19,19 +19,21 @@ import android.database.Cursor
 import android.database.MatrixCursor
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
+import android.os.ParcelFileDescriptor.parseMode
 import android.provider.DocumentsContract
 import android.provider.DocumentsContract.Document
 import android.provider.DocumentsContract.Root
 import android.provider.DocumentsProvider
+import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileWriter
-import kotlin.concurrent.thread
 
 class TestDocumentProvider : DocumentsProvider() {
 
     companion object {
         private val testRoots = mutableListOf<TestDocument>()
         private val docIdsToDoc = mutableMapOf<String, TestDocument>()
+        private val docIdsToFile = mutableMapOf<String, File>()
         var supportFindDocumentPath = true
 
         fun clearAll() {
@@ -46,11 +48,13 @@ class TestDocumentProvider : DocumentsProvider() {
             }
         }
 
+        fun getFile(documentId: String?) = docIdsToFile[documentId]
+
         private fun updateMap(doc: TestDocument) {
             if (docIdsToDoc[doc.docId] == null) {
                 docIdsToDoc[doc.docId] = doc
             }
-            if (doc.children?.isNotEmpty() == true) {
+            if (doc.children.isNotEmpty()) {
                 doc.children.forEach { childDocument ->
                     updateMap(childDocument)
                 }
@@ -124,7 +128,7 @@ class TestDocumentProvider : DocumentsProvider() {
         val useProjection = projection ?: defaultRootProjection
 
         val cursor = MatrixCursor(useProjection)
-        parentDocument.children?.forEach { childDocument ->
+        parentDocument.children.forEach { childDocument ->
             cursor.newRow().apply {
                 add(Document.COLUMN_DOCUMENT_ID, childDocument.docId)
                 add(Document.COLUMN_MIME_TYPE, childDocument.mimeType)
@@ -186,16 +190,25 @@ class TestDocumentProvider : DocumentsProvider() {
      * TODO: Support writing so it's possible to test writing to paths.
      */
     override fun openDocument(
-        documentId: String?,
-        mode: String?,
+        documentId: String,
+        mode: String,
         signal: CancellationSignal?
     ): ParcelFileDescriptor {
         val document = docIdsToDoc[documentId] ?: throw FileNotFoundException()
-        val (readFd, writeFd) = ParcelFileDescriptor.createPipe()
-        thread(name = "io") {
-            FileWriter(writeFd.fileDescriptor).apply { write((document.content)) }
-            writeFd.close()
-        }
-        return readFd
+
+        val file = docIdsToFile[documentId]
+            ?: if (document.children.isEmpty()) {
+                File.createTempFile("tdp", null, context!!.cacheDir).also { tmp ->
+                    if (!mode.contains('t')) {
+                        FileWriter(tmp).write(document.content)
+                    }
+                    tmp.deleteOnExit()
+                }
+            } else {
+                // It's actually a directory, so just use one that exists... (it's an error anyway)
+                context!!.filesDir
+            }
+        docIdsToFile[documentId] = file
+        return ParcelFileDescriptor.open(file, parseMode(mode))
     }
 }

@@ -25,6 +25,7 @@ import org.junit.Assert
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
+import java.io.IOException
 import java.net.URI
 import java.nio.file.Files
 
@@ -154,6 +155,19 @@ class TreePathTests {
         } catch (_: FileAlreadyExistsException) {
             // Test pass!
             println("Pass! $existingPath")
+        }
+    }
+
+    @Test
+    fun openDirectoryAsFile() {
+        val dirUri =
+            Uri.parse("content://com.google.modernstorage.filesystem.test.documents/tree/root/document/root%2Fsubdir")
+        val path = AndroidPaths.get(dirUri)
+        try {
+            Files.readAllLines(path).forEach { println(it) }
+            fail()
+        } catch (ioe: IOException) {
+            // Pass
         }
     }
 }

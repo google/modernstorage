@@ -22,6 +22,7 @@ import android.provider.DocumentsContract
 import android.provider.DocumentsContract.Document.COLUMN_DISPLAY_NAME
 import android.provider.DocumentsContract.Document.COLUMN_DOCUMENT_ID
 import android.webkit.MimeTypeMap
+import com.example.myapplication.FileDescriptorChannel
 import com.google.modernstorage.filesystem.DocumentBasicAttributes
 import com.google.modernstorage.filesystem.DocumentPath
 import com.google.modernstorage.filesystem.PlatformContract
@@ -29,7 +30,6 @@ import com.google.modernstorage.filesystem.SequenceDocumentDirectoryStream
 import com.google.modernstorage.filesystem.toURI
 import com.google.modernstorage.filesystem.toUri
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.net.URI
@@ -133,7 +133,7 @@ class AndroidContentContract(context: Context) : PlatformContract {
         path: DocumentPath,
         options: MutableSet<out OpenOption>
     ): SeekableByteChannel {
-        val mode = options.joinToString(separator = "") { option ->
+        val mode = options.map { option ->
             when (option) {
                 StandardOpenOption.APPEND -> "a"
                 StandardOpenOption.READ -> "r"
@@ -141,10 +141,15 @@ class AndroidContentContract(context: Context) : PlatformContract {
                 StandardOpenOption.WRITE -> "w"
                 else -> ""
             }
-        }
+        }.sorted().joinToString("")
 
         // Fix for https://issuetracker.google.com/180526528
         val openMode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && mode == "w") {
+            "rwt"
+        } else if (mode == "tw") {
+            // The OpenJDK will pass the options WRITE + TRUNCATE_EXISTING together, but Android's
+            // ParcelFileDescriptor doesn't handle "tw" as a valid mode, so we need to change it
+            // to also include reading, which is then supported again.
             "rwt"
         } else {
             mode
@@ -200,7 +205,7 @@ class AndroidContentContract(context: Context) : PlatformContract {
 
         val androidUri = path.androidUri
         return context.contentResolver.openFileDescriptor(androidUri, openMode)?.let { fd ->
-            FileInputStream(fd.fileDescriptor).channel
+            FileDescriptorChannel(fd.fileDescriptor)
         } ?: throw FileNotFoundException("openFileDescriptor($androidUri) returned null")
     }
 
