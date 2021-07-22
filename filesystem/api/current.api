@@ -1,4 +1,20 @@
 // Signature format: 4.0
+package com.example.myapplication {
+
+  public class FileDescriptorChannel implements java.nio.channels.SeekableByteChannel {
+    ctor public FileDescriptorChannel(java.io.FileDescriptor fileDescriptor);
+    method public void close();
+    method public boolean isOpen();
+    method public long position();
+    method public java.nio.channels.SeekableByteChannel position(long newPosition);
+    method public int read(java.nio.ByteBuffer dst);
+    method public long size();
+    method public java.nio.channels.SeekableByteChannel truncate(long size);
+    method public int write(java.nio.ByteBuffer src);
+  }
+
+}
+
 package com.google.modernstorage.filesystem {
 
   public final class AndroidFileSystems {
@@ -119,8 +135,6 @@ package com.google.modernstorage.filesystem {
   }
 
   public interface PlatformContract {
-    method public java.net.URI buildChildDocumentsUri(String authority, String parentDocumentId);
-    method public java.net.URI buildChildDocumentsUriUsingTree(java.net.URI treeUri, String parentDocumentId);
     method public java.net.URI buildDocumentUri(String authority, String documentId);
     method public java.net.URI buildDocumentUriUsingTree(java.net.URI treeUri, String documentId);
     method public java.net.URI buildTreeDocumentUri(String authority, String documentId);
@@ -134,7 +148,7 @@ package com.google.modernstorage.filesystem {
     method public boolean isTreeUri(java.net.URI uri);
     method public java.net.URI? moveDocument(java.net.URI sourceDocumentUri, java.net.URI sourceParentDocumentUri, java.net.URI targetParentDocumentUri);
     method public java.nio.file.DirectoryStream<java.nio.file.Path> newDirectoryStream(com.google.modernstorage.filesystem.DocumentPath path, java.nio.file.DirectoryStream.Filter<? super java.nio.file.Path>? filter);
-    method public java.nio.channels.SeekableByteChannel openByteChannel(java.net.URI uri, String mode);
+    method public java.nio.channels.SeekableByteChannel openByteChannel(com.google.modernstorage.filesystem.DocumentPath path, java.util.Set<? extends java.nio.file.OpenOption> options);
     method public java.net.URI prepareUri(java.net.URI incomingUri);
     method public <A extends java.nio.file.attribute.BasicFileAttributes> A! readAttributes(com.google.modernstorage.filesystem.DocumentPath path, Class<A>? type, java.nio.file.LinkOption?... options);
     method public boolean removeDocument(java.net.URI documentUri, java.net.URI parentDocumentUri);
@@ -152,8 +166,6 @@ package com.google.modernstorage.filesystem.internal {
 
   public final class AndroidContentContract implements com.google.modernstorage.filesystem.PlatformContract {
     ctor public AndroidContentContract(android.content.Context context);
-    method public java.net.URI buildChildDocumentsUri(String authority, String parentDocumentId);
-    method public java.net.URI buildChildDocumentsUriUsingTree(java.net.URI treeUri, String parentDocumentId);
     method public java.net.URI buildDocumentUri(String authority, String documentId);
     method public java.net.URI buildDocumentUriUsingTree(java.net.URI treeUri, String documentId);
     method public java.net.URI buildTreeDocumentUri(String authority, String documentId);
@@ -167,7 +179,7 @@ package com.google.modernstorage.filesystem.internal {
     method public boolean isTreeUri(java.net.URI uri);
     method public java.net.URI? moveDocument(java.net.URI sourceDocumentUri, java.net.URI sourceParentDocumentUri, java.net.URI targetParentDocumentUri);
     method public java.nio.file.DirectoryStream<java.nio.file.Path> newDirectoryStream(com.google.modernstorage.filesystem.DocumentPath path, java.nio.file.DirectoryStream.Filter<? super java.nio.file.Path>? filter);
-    method public java.nio.channels.SeekableByteChannel openByteChannel(java.net.URI uri, String mode);
+    method public java.nio.channels.SeekableByteChannel openByteChannel(com.google.modernstorage.filesystem.DocumentPath path, java.util.Set<? extends java.nio.file.OpenOption> options);
     method public java.net.URI prepareUri(java.net.URI incomingUri);
     method public <A extends java.nio.file.attribute.BasicFileAttributes> A! readAttributes(com.google.modernstorage.filesystem.DocumentPath path, Class<A>? type, java.nio.file.LinkOption?... options);
     method public boolean removeDocument(java.net.URI documentUri, java.net.URI parentDocumentUri);
