@@ -14,6 +14,9 @@ ModernStorage is available on `mavenCentral()`.
 ```kotlin
 // For MediaStore interactions
 implementation("com.google.modernstorage:modernstorage-mediastore:1.0.0-alpha02")
+
+// For Storage Access Framework interactions on API 26+
+implementation("com.google.modernstorage:modernstorage-filesystem:1.0.0-alpha02")
 ```
 
 ## Quick Start

@@ -14,6 +14,9 @@ ModernStorage is available on `mavenCentral()`.
 ```kotlin
 // For MediaStore interactions
 implementation("com.google.modernstorage:modernstorage-mediastore:{{ lib_version }}")
+
+// For Storage Access Framework interactions on API 26+
+implementation("com.google.modernstorage:modernstorage-filesystem:{{ lib_version }}")
 ```
 
 ## Quick start
@@ -23,18 +26,18 @@ implementation("com.google.modernstorage:modernstorage-mediastore:{{ lib_version
 package
 
 ## Is it ready?
-It's experimental! Our current version is **{{ lib_version }}**. As it's an alpha release, we're 
-expecting API breaking changes between releases. While it always seems risky to rely on an 
-experimental library, we're enforcing storage best practises (including Scoped Storage), which 
+It's experimental! Our current version is **{{ lib_version }}**. As it's an alpha release, we're
+expecting API breaking changes between releases. While it always seems risky to rely on an
+experimental library, we're enforcing storage best practises (including Scoped Storage), which
 developers aren't always aware of.
 
-We're looking for a stable release later this year (we don't have yet a precise date). We actively 
-listen to your feedback to make ModernStorage the default library for storage interactions on 
+We're looking for a stable release later this year (we don't have yet a precise date). We actively
+listen to your feedback to make ModernStorage the default library for storage interactions on
 Android.
 
 ## Contributions
 
-We're still at an early stage sharing the vision of ModernStorage and would love to have more 
+We're still at an early stage sharing the vision of ModernStorage and would love to have more
 feature requests and ideas proposed as issues. We would be glad to review pull requests, but keep in
 mind that we want to minimize expanding the API surface until we get more feedback from developers.
 Make sure to read the [Contributing][contributing] page first though.

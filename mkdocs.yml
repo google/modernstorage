@@ -14,7 +14,7 @@ theme:
         primary: deep purple
 
 nav:
-    -   'Overview': index.md
+    -   'Overview': README.md
     -   'MediaStore': mediastore.md
     -   'FileSystem': filesystem.md
 
