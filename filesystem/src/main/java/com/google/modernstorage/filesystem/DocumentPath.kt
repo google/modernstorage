@@ -27,14 +27,23 @@ import java.util.Objects
 
 /**
  * Path representing a Document backed by an [android.provider.DocumentsProvider].
+ *
+ * Instances of this class are not directly created, but are returned from [AndroidPaths.get] when
+ * the provided [android.net.Uri] is backed by a `DocumentsProvider`.
  */
 class DocumentPath private constructor(
     private val fileSystem: ContentFileSystem,
     val treeId: String?,
-    elements: List<String> = emptyList()
+    elements: List<String> = emptyList(),
+    private val isAbsolutePath: Boolean = false
 ) : Path {
 
-    constructor(fileSystem: ContentFileSystem, treeId: String?, vararg elements: String) :
+    /**
+     * Constructs a [DocumentPath] for a specific [ContentFileSystem], given a tree document ID and
+     * list of document IDs that represent the 'path' from eldest ancestor to child.
+     * This method works very similarly to [java.nio.file.Paths.get].
+     */
+    internal constructor(fileSystem: ContentFileSystem, treeId: String?, vararg elements: String) :
         this(fileSystem, treeId, elements.toList())
 
     @VisibleForTesting
@@ -51,13 +60,7 @@ class DocumentPath private constructor(
         if (other !is DocumentPath) {
             throw IllegalArgumentException("Cannot compare non-DocumentPaths")
         }
-        val authority = fileSystem.authority
-        val otherAuthority = other.fileSystem.authority
-        return if (authority != otherAuthority) {
-            authority.compareTo(otherAuthority)
-        } else {
-            "$treeId:$docId".compareTo("${other.treeId}:${other.docId}")
-        }
+        return toString().compareTo(other.toString())
     }
 
     override fun iterator(): MutableIterator<Path> {
@@ -82,9 +85,7 @@ class DocumentPath private constructor(
 
     override fun getFileSystem() = fileSystem
 
-    override fun isAbsolute(): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun isAbsolute() = isAbsolutePath
 
     override fun getRoot(): Path? {
         return if (treeId != null) {
@@ -95,7 +96,7 @@ class DocumentPath private constructor(
     }
 
     override fun getFileName(): Path? {
-        return docId?.let { DocumentPath(fileSystem, treeId, it) }
+        return if (path.isNotEmpty()) getName(path.size - 1) else null
     }
 
     override fun getParent(): Path? {
@@ -109,11 +110,13 @@ class DocumentPath private constructor(
     override fun getNameCount() = path.size
 
     override fun getName(index: Int): Path =
-        DocumentPath(fileSystem, treeId, path[index])
+        DocumentPath(fileSystem, treeId, listOf(path[index]), index == 0 && isAbsolutePath)
 
     override fun subpath(beginIndex: Int, endIndex: Int): Path {
         if (beginIndex >= 0 && endIndex <= path.size && beginIndex < endIndex) {
-            return DocumentPath(fileSystem, treeId, path.subList(beginIndex, endIndex))
+            // Will the new path be an absolute path?
+            val absolute = (beginIndex == 0 && isAbsolutePath)
+            return DocumentPath(fileSystem, treeId, path.subList(beginIndex, endIndex), absolute)
         } else {
             throw IllegalArgumentException("Invalid indexes: $beginIndex..$endIndex")
         }
@@ -212,7 +215,7 @@ class DocumentPath private constructor(
 
         val newPath = path.toMutableList()
         newPath.addAll(other.path)
-        return DocumentPath(fileSystem, treeId, newPath)
+        return DocumentPath(fileSystem, treeId, newPath, isAbsolutePath)
     }
 
     override fun resolve(other: String): Path {
@@ -354,21 +357,21 @@ class DocumentPath private constructor(
         // If there aren't any documents in the path, then just return this path
         if (path.isEmpty()) return this
 
+        // If this path is already absolute, then return this one
+        if (isAbsolute) return this
+
         // There may be elements at the "end" of the path that don't (yet) exist. That's fine
         // though, since we only need to resolve the _start_.
         val resolvedPath = fileSystem.provider().findDocumentPath(getName(0) as DocumentPath)
 
-        // If the provider doesn't support `findDocumentPath`, return this path.
+        // If the provider doesn't support `findDocumentPath`, then it's impossible to get an
+        // absolute path.
         if (resolvedPath.isEmpty()) return this
-
-        // If the resolved path is a single element (that matches our first element), then this
-        // path already is an absolute path, so return it, instead of building a new one.
-        if (resolvedPath.size == 1 && resolvedPath[0] == path[0]) return this
 
         // Since we resolved the first document ID's path, the absolute path for this document is
         // the current path, with `resolvedPath` in place of `path[0]`.
         val elements = resolvedPath.toMutableList() + path.subList(1, path.size)
-        return DocumentPath(fileSystem, treeId, elements)
+        return DocumentPath(fileSystem, treeId, elements, isAbsolutePath = true)
     }
 
     override fun toRealPath(vararg options: LinkOption?): Path {
@@ -380,17 +383,21 @@ class DocumentPath private constructor(
     }
 
     override fun toString(): String {
-        return "${fileSystem.authority}:$treeId//${docId.orEmpty()}"
+        val pathString = path.joinToString(
+            separator = fileSystem.separator,
+            prefix = if (isAbsolutePath) fileSystem.separator else ""
+        )
+        val treeString = if (treeId == null) "" else "@$treeId"
+        return "//${fileSystem.authority}$treeString:$pathString"
     }
 
     override fun equals(other: Any?): Boolean {
         if (other !is DocumentPath) return false
         return fileSystem.authority == other.fileSystem.authority &&
-            treeId == other.treeId &&
-            docId == other.docId
+            treeId == other.treeId && path == other.path
     }
 
-    override fun hashCode() = Objects.hash(fileSystem.authority, treeId, docId)
+    override fun hashCode() = Objects.hash(fileSystem.authority, treeId, path)
 
     internal fun updateDocId(newDocId: String) {
         synchronized(path) {

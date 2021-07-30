@@ -22,7 +22,6 @@ import java.nio.channels.SeekableByteChannel
 import java.nio.file.DirectoryStream
 import java.nio.file.DirectoryStream.Filter
 import java.nio.file.LinkOption
-import java.nio.file.OpenOption
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 
@@ -30,9 +29,10 @@ import java.nio.file.attribute.BasicFileAttributes
  * Implementation of a [PlatformContract] for host side tests.
  */
 class TestContract(
-    var openByteChannelImpl: (DocumentPath, MutableSet<out OpenOption>) -> SeekableByteChannel = { _, _ -> TODO() },
+    var openByteChannelImpl: (DocumentPath, String) -> SeekableByteChannel = { _, _ -> TODO() },
     var newDirectoryStreamImpl: (DocumentPath, Filter<in Path>?) -> DirectoryStream<Path> = { _, _ -> TODO() },
     var readAttributesImpl: (DocumentPath, options: Array<out LinkOption?>) -> BasicFileAttributes = { _, _ -> TODO() },
+    var findDocumentPathImpl: (DocumentPath) -> List<String> = { _ -> TODO() },
 ) : PlatformContract {
 
     override fun prepareUri(incomingUri: URI) = incomingUri
@@ -55,17 +55,19 @@ class TestContract(
         TODO("Not yet implemented")
     }
 
-    override fun createDocument(parentDocumentUri: URI, mimeType: String, displayName: String) {
+    override fun createDocument(newDocumentPath: DocumentPath): Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun deleteDocument(documentUri: URI) {
+    override fun deleteDocument(path: DocumentPath) {
         TODO("Not yet implemented")
     }
 
-    override fun findDocumentPath(treePath: DocumentPath): List<String> {
+    override fun exists(path: DocumentPath): Boolean {
         TODO("Not yet implemented")
     }
+
+    override fun findDocumentPath(treePath: DocumentPath) = findDocumentPathImpl(treePath)
 
     override fun getDocumentId(documentUri: URI): String {
         val path = documentUri.path.substring(1).split('/', limit = 4)
@@ -106,12 +108,12 @@ class TestContract(
         TODO("Not yet implemented")
     }
 
-    override fun removeDocument(documentUri: URI, parentDocumentUri: URI): Boolean {
+    override fun removeDocument(path: DocumentPath): Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun openByteChannel(path: DocumentPath, options: MutableSet<out OpenOption>) =
-        openByteChannelImpl(path, options)
+    override fun openByteChannel(path: DocumentPath, mode: String) =
+        openByteChannelImpl(path, mode)
 
     override fun newDirectoryStream(
         path: DocumentPath,

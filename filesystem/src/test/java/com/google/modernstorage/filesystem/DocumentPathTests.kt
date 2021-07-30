@@ -18,6 +18,7 @@ package com.google.modernstorage.filesystem
 import com.google.modernstorage.filesystem.internal.TestContract
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
@@ -25,7 +26,6 @@ import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import java.net.URI
-import java.nio.file.Path
 
 class DocumentPathTests {
     private lateinit var fileSystem: ContentFileSystem
@@ -237,14 +237,18 @@ class DocumentPathTests {
     }
 
     @Test
-    fun testDocumentPath_compareIgnoresParents() {
-        val pathA = DocumentPath(fileSystem, "root", "cupcake", "abcd")
-        val pathB = DocumentPath(fileSystem, "root", "donut", "zyxw")
-        val pathC = DocumentPath(fileSystem, "root", "cupcake", "donut", "abcd")
+    fun testEquality_includesPath() {
+        val pathA = DocumentPath(fileSystem, "tree", "grandparent", "parent", "child")
+        val pathB = DocumentPath(fileSystem, "tree", "grandparent", "parent", "child")
+        val pathC = DocumentPath(fileSystem, "tree", "parent", "child")
 
-        assert(pathA < pathB)
-        assert(pathB > pathA)
-        assert(pathA.compareTo(pathC) == 0)
+        assertEquals(pathA, pathB)
+        assertEquals(pathA.hashCode(), pathB.hashCode())
+        assertNotEquals(pathA, pathC)
+        assertNotEquals(pathA.hashCode(), pathC.hashCode())
+
+        assertTrue(pathA.compareTo(pathB) == 0)
+        assertTrue(pathA < pathC)
     }
 
     @Test
@@ -315,7 +319,7 @@ class DocumentPathTests {
 
         val expected = DocumentPath(fileSystem, "tree", "child")
         val relative = pathA.relativize(pathB) as DocumentPath
-        assertDeepEquals(expected, relative)
+        assertEquals(expected, relative)
     }
 
     @Test
@@ -336,7 +340,7 @@ class DocumentPathTests {
 
         val expected = DocumentPath(fileSystem, "tree", RELATIVE_PARENT_ID)
         val relative = pathB.relativize(pathA) as DocumentPath
-        assertDeepEquals(expected, relative)
+        assertEquals(expected, relative)
     }
 
     @Test
@@ -350,7 +354,7 @@ class DocumentPathTests {
 
         val expected = DocumentPath(fileSystem, "tree")
         val relative = pathA.relativize(pathB) as DocumentPath
-        assertDeepEquals(expected, relative)
+        assertEquals(expected, relative)
     }
 
     @Test
@@ -368,7 +372,7 @@ class DocumentPathTests {
             RELATIVE_PARENT_ID, RELATIVE_PARENT_ID, RELATIVE_PARENT_ID, "x", "y", "z"
         )
         val relative = pathA.relativize(pathB) as DocumentPath
-        assertDeepEquals(expected, relative)
+        assertEquals(expected, relative)
     }
 
     @Test
@@ -386,7 +390,7 @@ class DocumentPathTests {
             RELATIVE_PARENT_ID, "x", "y", "z"
         )
         val relative = pathA.relativize(pathB) as DocumentPath
-        assertDeepEquals(expected, relative)
+        assertEquals(expected, relative)
 
         /*
          * Unix path behavior:
@@ -401,7 +405,7 @@ class DocumentPathTests {
             RELATIVE_PARENT_ID, RELATIVE_PARENT_ID, RELATIVE_PARENT_ID, "z"
         )
         val relative2 = pathA2.relativize(pathB2) as DocumentPath
-        assertDeepEquals(expected2, relative2)
+        assertEquals(expected2, relative2)
 
         /*
          * Unix path behavior:
@@ -416,7 +420,7 @@ class DocumentPathTests {
             RELATIVE_PARENT_ID, RELATIVE_PARENT_ID
         )
         val relative3 = pathA3.relativize(pathB3) as DocumentPath
-        assertDeepEquals(expected3, relative3)
+        assertEquals(expected3, relative3)
     }
 
     @Test
@@ -583,7 +587,7 @@ class DocumentPathTests {
         cases.forEach { case ->
             val (pathA, pathB, expected) = case
             val result = pathA.resolveSibling(pathB) as DocumentPath
-            assertDeepEquals(expected, result)
+            assertEquals(expected, result)
         }
     }
 
@@ -605,11 +609,11 @@ class DocumentPathTests {
     fun testDocumentPath_subPath() {
         // Unix: "/a/b/c".subpath(1,3) -> "b/c"
         val sub1 = DocumentPath(fileSystem, "tree", "a", "b", "c").subpath(1, 3)
-        assertDeepEquals(DocumentPath(fileSystem, "tree", "b", "c"), sub1)
+        assertEquals(DocumentPath(fileSystem, "tree", "b", "c"), sub1)
 
         // Unix: "/a/b/c".subpath(0,2) -> "a/b"
         val sub2 = DocumentPath(fileSystem, "tree", "a", "b", "c").subpath(0, 2)
-        assertDeepEquals(DocumentPath(fileSystem, "tree", "a", "b"), sub2)
+        assertEquals(DocumentPath(fileSystem, "tree", "a", "b"), sub2)
 
         // Invalid ranges
         listOf(
@@ -738,10 +742,14 @@ class DocumentPathTests {
         )
     }
 
-    private fun assertDeepEquals(expected: DocumentPath, other: Path) {
-        other as DocumentPath
-        assertEquals(expected.fileSystem.authority, other.fileSystem.authority)
-        assertEquals(expected.treeId, other.treeId)
-        assertEquals(expected.path, other.path)
+    @Test
+    fun testToAbsolutePath_pathsReturnSame() {
+        // Non-tree paths return themselves
+        val nonTree = DocumentPath(fileSystem, null, "documentId")
+        assertSame(nonTree, nonTree.toAbsolutePath())
+
+        // Empty paths should also return themselves
+        val emptyPath = DocumentPath(fileSystem, "tree")
+        assertSame(emptyPath, emptyPath.toAbsolutePath())
     }
 }

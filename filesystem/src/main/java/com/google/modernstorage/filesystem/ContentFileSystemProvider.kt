@@ -15,6 +15,8 @@
  */
 package com.google.modernstorage.filesystem
 
+import java.io.File
+import java.io.IOException
 import java.net.URI
 import java.nio.channels.SeekableByteChannel
 import java.nio.file.AccessMode
@@ -26,7 +28,6 @@ import java.nio.file.FileSystems
 import java.nio.file.LinkOption
 import java.nio.file.OpenOption
 import java.nio.file.Path
-import java.nio.file.StandardOpenOption.READ
 import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.attribute.FileAttribute
 import java.nio.file.attribute.FileAttributeView
@@ -45,9 +46,7 @@ class ContentFileSystemProvider(
     private val contentContract: PlatformContract
 ) : FileSystemProvider(), PlatformContract by contentContract {
 
-    companion object {
-        private val fileSystemCache = mutableMapOf<String, ContentFileSystem>()
-    }
+    private val fileSystemCache = mutableMapOf<String, ContentFileSystem>()
 
     override fun getScheme() = CONTENT_SCHEME
 
@@ -85,16 +84,30 @@ class ContentFileSystemProvider(
 
     override fun newByteChannel(
         path: Path?,
-        options: MutableSet<out OpenOption>?,
+        optsIn: MutableSet<out OpenOption>?,
         vararg attrs: FileAttribute<*>?
     ): SeekableByteChannel {
         val contentPath =
             path as? DocumentPath ?: throw IllegalArgumentException("path must be a DocumentPath")
-        val useOptions = if (options.isNullOrEmpty()) mutableSetOf(READ) else options
 
-        // TODO: Support providing attributes.
+        val options = OpenOptionFlags(optsIn)
 
-        return contentContract.openByteChannel(contentPath, useOptions)
+        val pathExists = contentContract.exists(contentPath)
+        if (options.create && options.exclusive && pathExists) {
+            throw FileAlreadyExistsException(File(""), null, "$path already exists")
+        } else if (options.create && !pathExists) {
+            if (!contentContract.createDocument(contentPath)) {
+                throw IOException("Failed to create document: $contentPath")
+            }
+        }
+
+        // Based on how the default provider handles FileAttributes, there isn't anything really
+        // like that available via ContentResolver (i.e.: creating a file with r/w for the owner,
+        // but read only, or no access to 'group' or 'other'.)
+        // The real question is whether we should silently ignore attributes or signal some sort
+        // of error since we can't apply them.
+
+        return contentContract.openByteChannel(contentPath, options.toMode())
     }
 
     override fun newDirectoryStream(
@@ -110,7 +123,8 @@ class ContentFileSystemProvider(
     }
 
     override fun delete(path: Path?) {
-        TODO("Not yet implemented")
+        path as? DocumentPath ?: throw IllegalArgumentException("path must be a ContentPath")
+        contentContract.removeDocument(path)
     }
 
     override fun copy(source: Path?, target: Path?, vararg options: CopyOption?) {
@@ -170,9 +184,6 @@ class ContentFileSystemProvider(
     ) {
         TODO("Not yet implemented")
     }
-
-    private fun Set<OpenOption>.optionToMode(openOption: OpenOption, modeString: String) =
-        if (contains(openOption)) modeString else ""
 
     private fun getOrCreateFileSystem(root: URI): ContentFileSystem {
         val authority = root.authority

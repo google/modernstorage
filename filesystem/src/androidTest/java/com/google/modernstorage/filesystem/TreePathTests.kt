@@ -97,8 +97,8 @@ class TreePathTests {
         val fileSystem = AndroidFileSystems.getFileSystem(uri) as ContentFileSystem
         val expectedParts = listOf(
             DocumentPath(fileSystem, "root", "root"),
-            DocumentPath(fileSystem, "root", "root", "root/subdir"),
-            DocumentPath(fileSystem, "root", "root", "root/subdir", "root/subdir/child1.txt")
+            DocumentPath(fileSystem, "root", "root/subdir"),
+            DocumentPath(fileSystem, "root", "root/subdir/child1.txt")
         )
 
         val path = AndroidPaths.get(uri)
@@ -116,7 +116,13 @@ class TreePathTests {
 
         val fileSystem = AndroidFileSystems.getFileSystem(uri) as ContentFileSystem
         val expected =
-            DocumentPath(fileSystem, "root", "root", "root/subdir", "root/subdir/child1.txt")
+            DocumentPath(
+                fileSystem,
+                "root",
+                "root",
+                "root/subdir",
+                "root/subdir/child1.txt"
+            ).toAbsolutePath()
         Assert.assertSame(expected, expected.toAbsolutePath())
     }
 

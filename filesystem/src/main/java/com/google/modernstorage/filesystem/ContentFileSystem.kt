@@ -36,7 +36,7 @@ open class ContentFileSystem internal constructor(
 
     override fun isReadOnly() = false
 
-    override fun getSeparator() = "/"
+    override fun getSeparator() = PATH_SEPARATOR
 
     override fun getRootDirectories() = roots.toMutableList().asIterable()
 
@@ -68,3 +68,9 @@ open class ContentFileSystem internal constructor(
         TODO("Not yet implemented")
     }
 }
+
+/**
+ * Implementation specific path separator -- this _looks_ very similar to the
+ * UNIX/Linux path separator (U+002F), but is actually U+2571.
+ */
+internal const val PATH_SEPARATOR = "→"

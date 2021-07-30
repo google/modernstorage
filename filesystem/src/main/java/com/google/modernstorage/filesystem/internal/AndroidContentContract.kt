@@ -21,6 +21,7 @@ import android.os.Build
 import android.provider.DocumentsContract
 import android.provider.DocumentsContract.Document.COLUMN_DISPLAY_NAME
 import android.provider.DocumentsContract.Document.COLUMN_DOCUMENT_ID
+import android.util.Log
 import android.webkit.MimeTypeMap
 import com.example.myapplication.FileDescriptorChannel
 import com.google.modernstorage.filesystem.DocumentBasicAttributes
@@ -29,7 +30,6 @@ import com.google.modernstorage.filesystem.PlatformContract
 import com.google.modernstorage.filesystem.SequenceDocumentDirectoryStream
 import com.google.modernstorage.filesystem.toURI
 import com.google.modernstorage.filesystem.toUri
-import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.net.URI
@@ -37,12 +37,14 @@ import java.nio.channels.SeekableByteChannel
 import java.nio.file.DirectoryStream
 import java.nio.file.DirectoryStream.Filter
 import java.nio.file.LinkOption
-import java.nio.file.OpenOption
 import java.nio.file.Path
-import java.nio.file.StandardOpenOption
 import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.attribute.FileTime
 
+/**
+ * Android specific implementations of the [PlatformContract] based on
+ * [android.provider.DocumentsContract] and [android.content.ContentResolver].
+ */
 class AndroidContentContract(context: Context) : PlatformContract {
     private val context = context.applicationContext
 
@@ -73,17 +75,45 @@ class AndroidContentContract(context: Context) : PlatformContract {
     override fun buildTreeDocumentUri(authority: String, documentId: String) =
         DocumentsContract.buildTreeDocumentUri(authority, documentId).toURI()
 
-    override fun createDocument(parentDocumentUri: URI, mimeType: String, displayName: String) {
-        TODO("Not yet implemented")
-    }
-
     override fun copyDocument(sourceDocumentUri: URI, targetParentDocumentUri: URI) {
         TODO("Not yet implemented")
     }
 
-    override fun deleteDocument(documentUri: URI) {
-        TODO("Not yet implemented")
+    override fun createDocument(newDocumentPath: DocumentPath): Boolean {
+        val displayName = newDocumentPath.docId!!
+        val parent = newDocumentPath.parent!! as DocumentPath
+
+        // For now, guess the mime type based on the file extension.
+        val mimeType = if (displayName.contains('.')) {
+            val ext = displayName.substringAfterLast('.')
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)
+                ?: "application/octet-stream"
+        } else {
+            "application/octet-stream"
+        }
+
+        // Actually create the document
+        val newDocumentUri = DocumentsContract.createDocument(
+            context.contentResolver,
+            parent.androidUri,
+            mimeType,
+            displayName
+        )
+
+        return if (newDocumentUri != null) {
+            // Update the path to use the document id rather than display name
+            newDocumentPath.updateDocId(DocumentsContract.getDocumentId(newDocumentUri))
+            true
+        } else {
+            false
+        }
     }
+
+    override fun deleteDocument(path: DocumentPath) {
+        DocumentsContract.deleteDocument(context.contentResolver, path.androidUri)
+    }
+
+    override fun exists(path: DocumentPath) = checkPathExists(path)
 
     override fun findDocumentPath(treePath: DocumentPath): List<String> = try {
         DocumentsContract.findDocumentPath(
@@ -121,8 +151,13 @@ class AndroidContentContract(context: Context) : PlatformContract {
         TODO("Not yet implemented")
     }
 
-    override fun removeDocument(documentUri: URI, parentDocumentUri: URI): Boolean {
-        TODO("Not yet implemented")
+    override fun removeDocument(path: DocumentPath): Boolean {
+        val parent = path.parent!! as DocumentPath
+        return DocumentsContract.removeDocument(
+            context.contentResolver,
+            path.androidUri,
+            parent.androidUri
+        )
     }
 
     override fun renameDocument(documentUri: URI, displayName: String): URI? {
@@ -131,76 +166,16 @@ class AndroidContentContract(context: Context) : PlatformContract {
 
     override fun openByteChannel(
         path: DocumentPath,
-        options: MutableSet<out OpenOption>
+        mode: String
     ): SeekableByteChannel {
-        val mode = options.map { option ->
-            when (option) {
-                StandardOpenOption.APPEND -> "a"
-                StandardOpenOption.READ -> "r"
-                StandardOpenOption.TRUNCATE_EXISTING -> "t"
-                StandardOpenOption.WRITE -> "w"
-                else -> ""
-            }
-        }.sorted().joinToString("")
 
         // Fix for https://issuetracker.google.com/180526528
         val openMode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && mode == "w") {
             "rwt"
-        } else if (mode == "tw") {
-            // The OpenJDK will pass the options WRITE + TRUNCATE_EXISTING together, but Android's
-            // ParcelFileDescriptor doesn't handle "tw" as a valid mode, so we need to change it
-            // to also include reading, which is then supported again.
-            "rwt"
         } else {
             mode
-        }
-
-        // Check whether the document exists -- this will also update `path` to update
-        // a 'display name' to a 'document id' if the document exists.
-        val fileExists = checkPathExists(path)
-
-        // The docs for `CREATE_NEW` say that it takes precedence over `CREATE` if both are
-        // present, so do that filtering now.
-        val createMode = when {
-            options.contains(StandardOpenOption.CREATE_NEW) -> {
-                StandardOpenOption.CREATE_NEW
-            }
-            options.contains(StandardOpenOption.CREATE) -> {
-                StandardOpenOption.CREATE
-            }
-            else -> {
-                null
-            }
-        }
-
-        // Does the file need to be created if it doesn't exist?
-        if (createMode != null) {
-            if (createMode == StandardOpenOption.CREATE_NEW && fileExists) {
-                throw FileAlreadyExistsException(File(""), null, "$path already exists")
-            } else if (!fileExists) {
-                val displayName = path.docId!!
-                val parent = path.parent!! as DocumentPath
-
-                // For now, guess the mime type based on the file extension.
-                val mimeType = if (displayName.contains('.')) {
-                    val ext = displayName.substringAfterLast('.')
-                    MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)
-                        ?: "application/octet-stream"
-                } else {
-                    "application/octet-stream"
-                }
-
-                // Actually create the document
-                val newDocumentUri = DocumentsContract.createDocument(
-                    context.contentResolver,
-                    parent.androidUri,
-                    mimeType,
-                    displayName
-                )
-
-                // Update the path to use the document id rather than display name
-                path.updateDocId(DocumentsContract.getDocumentId(newDocumentUri))
-            }
+        }.also {
+            Log.d("nicole", "openMode=$it")
         }
 
         val androidUri = path.androidUri
@@ -219,7 +194,7 @@ class AndroidContentContract(context: Context) : PlatformContract {
         val contentResolver = context.contentResolver
         val cursor = contentResolver.query(
             childDocsUri,
-            arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID),
+            arrayOf(COLUMN_DOCUMENT_ID),
             null,
             null,
             null,

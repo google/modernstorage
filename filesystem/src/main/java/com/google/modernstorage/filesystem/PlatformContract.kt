@@ -20,7 +20,6 @@ import java.net.URI
 import java.nio.channels.SeekableByteChannel
 import java.nio.file.DirectoryStream
 import java.nio.file.LinkOption
-import java.nio.file.OpenOption
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 
@@ -37,16 +36,6 @@ interface PlatformContract {
      * [DocumentPath]. For example, building a "document" uri when provided a "tree" uri.
      */
     fun prepareUri(incomingUri: URI): URI
-
-    /**
-     * Build URI representing the children of the target directory in a document provider.
-     */
-//    fun buildChildDocumentsUri(authority: String, parentDocumentId: String): URI
-
-    /**
-     * Build URI representing the children of the target directory in a document provider.
-     */
-//    fun buildChildDocumentsUriUsingTree(treeUri: URI, parentDocumentId: String): URI
 
     /**
      * Builds a document [URI] from the provided authority and document ID.
@@ -75,19 +64,22 @@ interface PlatformContract {
     fun copyDocument(sourceDocumentUri: URI, targetParentDocumentUri: URI)
 
     /**
-     * Create a new document with given MIME type and display name.
+     * Create a new document from the given path.
      *
-     * @param parentDocumentUri URI of the directory to create the document in.
-     * @param mimeType MIME type of the document to create.
-     * @param displayName Ideal name of the document. This name may be changed by the
-     * DocumentProvider to resolve naming conflicts.
+     * @param newDocumentPath Path to create. The [Path.getFileName] is expected to be a the
+     * desired value for [android.provider.DocumentsContract.Document.COLUMN_DISPLAY_NAME].
      */
-    fun createDocument(parentDocumentUri: URI, mimeType: String, displayName: String)
+    fun createDocument(newDocumentPath: DocumentPath): Boolean
 
     /**
      * Delete the given document.
      */
-    fun deleteDocument(documentUri: URI)
+    fun deleteDocument(path: DocumentPath)
+
+    /**
+     * Checks if a given path exists.
+     */
+    fun exists(path: DocumentPath): Boolean
 
     /**
      * Finds the canonical path from the top of the document tree.
@@ -131,7 +123,7 @@ interface PlatformContract {
      * In contrast to [deleteDocument] it requires specifying the parent. This method is especially
      * useful if the document can be in multiple parents.
      */
-    fun removeDocument(documentUri: URI, parentDocumentUri: URI): Boolean
+    fun removeDocument(path: DocumentPath): Boolean
 
     /**
      * Changes the display name of a provided document.
@@ -148,7 +140,7 @@ interface PlatformContract {
      */
     fun openByteChannel(
         path: DocumentPath,
-        options: MutableSet<out OpenOption>
+        mode: String
     ): SeekableByteChannel
 
     /**
