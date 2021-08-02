@@ -15,6 +15,7 @@
  */
 package com.google.modernstorage.filesystem
 
+import android.provider.DocumentsContract
 import java.io.File
 import java.io.IOException
 import java.net.URI
@@ -119,7 +120,14 @@ class ContentFileSystemProvider(
     }
 
     override fun createDirectory(dir: Path?, vararg attrs: FileAttribute<*>?) {
-        TODO("Not yet implemented")
+        dir as? DocumentPath ?: throw IllegalArgumentException("path must be a ContentPath")
+
+        // Like `newByteChannel`, `attrs` are ignored since there isn't an obvious mapping
+        // possible for a DocumentsProvider.
+
+        if (!contentContract.exists(dir)) {
+            contentContract.createDocument(dir, DocumentsContract.Document.MIME_TYPE_DIR)
+        }
     }
 
     override fun delete(path: Path?) {
@@ -135,12 +143,26 @@ class ContentFileSystemProvider(
         TODO("Not yet implemented")
     }
 
-    override fun isSameFile(path: Path?, path2: Path?): Boolean {
-        TODO("Not yet implemented")
+    override fun isSameFile(path: Path, path2: Path): Boolean {
+        path as? DocumentPath ?: throw IllegalArgumentException("path must be a ContentPath")
+        path2 as? DocumentPath ?: throw IllegalArgumentException("path must be a ContentPath")
+
+        // If the paths are different providers, then return false
+        if (path.fileSystem.authority != path2.fileSystem.authority) return false
+
+        // If the paths refer to different trees, then also return false
+        if (path.treeId != path2.treeId) return false
+
+        // Otherwise, since a document ID refers to a specific document, if the doc IDs are the
+        // same, then it's the same file.
+        return path.docId != null && path.docId == path2.docId
     }
 
     override fun isHidden(path: Path?): Boolean {
-        TODO("Not yet implemented")
+        path as? DocumentPath ?: throw IllegalArgumentException("path must be a ContentPath")
+
+        // As far as I can tell, it isn't possible to have 'hidden' documents.
+        return false
     }
 
     override fun getFileStore(path: Path?): FileStore {
@@ -148,7 +170,9 @@ class ContentFileSystemProvider(
     }
 
     override fun checkAccess(path: Path?, vararg modes: AccessMode?) {
-        TODO("Not yet implemented")
+        path as? DocumentPath ?: throw IllegalArgumentException("path must be a ContentPath")
+        val checkModes: List<AccessMode> = modes.filterNotNull()
+        contentContract.checkAccess(path, checkModes)
     }
 
     override fun <V : FileAttributeView?> getFileAttributeView(

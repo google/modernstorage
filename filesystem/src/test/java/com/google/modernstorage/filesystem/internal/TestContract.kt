@@ -19,6 +19,7 @@ import com.google.modernstorage.filesystem.DocumentPath
 import com.google.modernstorage.filesystem.PlatformContract
 import java.net.URI
 import java.nio.channels.SeekableByteChannel
+import java.nio.file.AccessMode
 import java.nio.file.DirectoryStream
 import java.nio.file.DirectoryStream.Filter
 import java.nio.file.LinkOption
@@ -29,6 +30,9 @@ import java.nio.file.attribute.BasicFileAttributes
  * Implementation of a [PlatformContract] for host side tests.
  */
 class TestContract(
+    var checkAccessImpl: (DocumentPath, List<AccessMode>) -> Unit = { _, _ -> TODO() },
+    var createDocumentImpl: (DocumentPath, String?) -> Boolean = { _, _ -> TODO() },
+    var existsImpl: (DocumentPath) -> Boolean = { _ -> TODO() },
     var openByteChannelImpl: (DocumentPath, String) -> SeekableByteChannel = { _, _ -> TODO() },
     var newDirectoryStreamImpl: (DocumentPath, Filter<in Path>?) -> DirectoryStream<Path> = { _, _ -> TODO() },
     var readAttributesImpl: (DocumentPath, options: Array<out LinkOption?>) -> BasicFileAttributes = { _, _ -> TODO() },
@@ -51,21 +55,21 @@ class TestContract(
         return URI("content://$authority/tree/$documentId")
     }
 
+    override fun checkAccess(path: DocumentPath, modes: List<AccessMode>) =
+        checkAccessImpl(path, modes)
+
     override fun copyDocument(sourceDocumentUri: URI, targetParentDocumentUri: URI) {
         TODO("Not yet implemented")
     }
 
-    override fun createDocument(newDocumentPath: DocumentPath): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun createDocument(newDocumentPath: DocumentPath, mimeType: String?) =
+        createDocumentImpl(newDocumentPath, mimeType)
 
     override fun deleteDocument(path: DocumentPath) {
         TODO("Not yet implemented")
     }
 
-    override fun exists(path: DocumentPath): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun exists(path: DocumentPath) = existsImpl(path)
 
     override fun findDocumentPath(treePath: DocumentPath) = findDocumentPathImpl(treePath)
 

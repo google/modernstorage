@@ -67,7 +67,7 @@ package com.google.modernstorage.filesystem {
     method public java.nio.file.Path getPath(java.net.URI? uri);
     method public String getScheme();
     method public boolean isHidden(java.nio.file.Path? path);
-    method public boolean isSameFile(java.nio.file.Path? path, java.nio.file.Path? path2);
+    method public boolean isSameFile(java.nio.file.Path path, java.nio.file.Path path2);
     method public void move(java.nio.file.Path? source, java.nio.file.Path? target, java.nio.file.CopyOption?... options);
     method public java.nio.channels.SeekableByteChannel newByteChannel(java.nio.file.Path? path, java.util.Set<? extends java.nio.file.OpenOption>? optsIn, java.nio.file.attribute.FileAttribute<?>?... attrs);
     method public java.nio.file.DirectoryStream<java.nio.file.Path> newDirectoryStream(java.nio.file.Path? path, java.nio.file.DirectoryStream.Filter<? super java.nio.file.Path>? filter);
@@ -153,8 +153,9 @@ package com.google.modernstorage.filesystem {
     method public java.net.URI buildDocumentUri(String authority, String documentId);
     method public java.net.URI buildDocumentUriUsingTree(java.net.URI treeUri, String documentId);
     method public java.net.URI buildTreeDocumentUri(String authority, String documentId);
+    method public void checkAccess(com.google.modernstorage.filesystem.DocumentPath path, java.util.List<? extends java.nio.file.AccessMode> modes);
     method public void copyDocument(java.net.URI sourceDocumentUri, java.net.URI targetParentDocumentUri);
-    method public boolean createDocument(com.google.modernstorage.filesystem.DocumentPath newDocumentPath);
+    method public boolean createDocument(com.google.modernstorage.filesystem.DocumentPath newDocumentPath, optional String? mimeType);
     method public void deleteDocument(com.google.modernstorage.filesystem.DocumentPath path);
     method public boolean exists(com.google.modernstorage.filesystem.DocumentPath path);
     method public java.util.List<java.lang.String> findDocumentPath(com.google.modernstorage.filesystem.DocumentPath treePath);
@@ -185,8 +186,9 @@ package com.google.modernstorage.filesystem.internal {
     method public java.net.URI buildDocumentUri(String authority, String documentId);
     method public java.net.URI buildDocumentUriUsingTree(java.net.URI treeUri, String documentId);
     method public java.net.URI buildTreeDocumentUri(String authority, String documentId);
+    method public void checkAccess(com.google.modernstorage.filesystem.DocumentPath path, java.util.List<? extends java.nio.file.AccessMode> modes);
     method public void copyDocument(java.net.URI sourceDocumentUri, java.net.URI targetParentDocumentUri);
-    method public boolean createDocument(com.google.modernstorage.filesystem.DocumentPath newDocumentPath);
+    method public boolean createDocument(com.google.modernstorage.filesystem.DocumentPath newDocumentPath, String? mimeType);
     method public void deleteDocument(com.google.modernstorage.filesystem.DocumentPath path);
     method public boolean exists(com.google.modernstorage.filesystem.DocumentPath path);
     method public java.util.List<java.lang.String> findDocumentPath(com.google.modernstorage.filesystem.DocumentPath treePath);

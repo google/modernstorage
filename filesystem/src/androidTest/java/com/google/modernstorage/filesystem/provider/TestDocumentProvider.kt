@@ -27,6 +27,7 @@ import android.provider.DocumentsProvider
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileWriter
+import java.lang.IllegalStateException
 
 class TestDocumentProvider : DocumentsProvider() {
 
@@ -210,5 +211,29 @@ class TestDocumentProvider : DocumentsProvider() {
             }
         docIdsToFile[documentId] = file
         return ParcelFileDescriptor.open(file, parseMode(mode))
+    }
+
+    /**
+     * Bare-bones implementation of [removeDocument] -- simply removes the entry from the map,
+     * since that's the only way to find it. :)
+     */
+    override fun removeDocument(documentId: String?, parentDocumentId: String?) {
+        val parent = docIdsToDoc[parentDocumentId] ?: throw FileNotFoundException()
+        val document = docIdsToDoc[documentId] ?: throw FileNotFoundException()
+        if (document !in parent.children) throw FileNotFoundException()
+
+        // Checks done -- remove it
+        parent.children.remove(document)
+        docIdsToDoc.remove(documentId)
+    }
+
+    /**
+     * Even more bare-bones. This should only ever be called on a document that doesn't exist,
+     * since documents that _do_ exist would have a parent, and the code should call through to
+     * [removeDocument] instead.
+     */
+    override fun deleteDocument(documentId: String?) {
+        docIdsToDoc[documentId] ?: throw FileNotFoundException()
+        throw IllegalStateException("deleteDocument called instead of removeDocument!")
     }
 }

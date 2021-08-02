@@ -16,12 +16,15 @@
 package com.google.modernstorage.filesystem.internal
 
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
 import android.os.Build
+import android.os.Process.myPid
+import android.os.Process.myUid
 import android.provider.DocumentsContract
 import android.provider.DocumentsContract.Document.COLUMN_DISPLAY_NAME
 import android.provider.DocumentsContract.Document.COLUMN_DOCUMENT_ID
-import android.util.Log
 import android.webkit.MimeTypeMap
 import com.example.myapplication.FileDescriptorChannel
 import com.google.modernstorage.filesystem.DocumentBasicAttributes
@@ -34,6 +37,7 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.net.URI
 import java.nio.channels.SeekableByteChannel
+import java.nio.file.AccessMode
 import java.nio.file.DirectoryStream
 import java.nio.file.DirectoryStream.Filter
 import java.nio.file.LinkOption
@@ -75,16 +79,35 @@ class AndroidContentContract(context: Context) : PlatformContract {
     override fun buildTreeDocumentUri(authority: String, documentId: String) =
         DocumentsContract.buildTreeDocumentUri(authority, documentId).toURI()
 
+    override fun checkAccess(path: DocumentPath, modes: List<AccessMode>) {
+        if (modes.isEmpty()) {
+            if (!checkPathExists(path)) throw FileNotFoundException()
+        } else {
+            val uri = path.androidUri
+            modes.forEach { mode ->
+                // Check for read or write, but 'execute' doesn't really have a good representation
+                // for a DocumentsProvider.
+                val access = when (mode) {
+                    AccessMode.READ -> checkAccess(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    AccessMode.WRITE -> checkAccess(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                    AccessMode.EXECUTE -> true
+                    else -> throw UnsupportedOperationException("Unsupported mode check: $mode")
+                }
+                if (!access) throw SecurityException("$mode not granted for $path")
+            }
+        }
+    }
+
     override fun copyDocument(sourceDocumentUri: URI, targetParentDocumentUri: URI) {
         TODO("Not yet implemented")
     }
 
-    override fun createDocument(newDocumentPath: DocumentPath): Boolean {
+    override fun createDocument(newDocumentPath: DocumentPath, mimeType: String?): Boolean {
         val displayName = newDocumentPath.docId!!
         val parent = newDocumentPath.parent!! as DocumentPath
 
         // For now, guess the mime type based on the file extension.
-        val mimeType = if (displayName.contains('.')) {
+        val useMimeType = mimeType ?: if (displayName.contains('.')) {
             val ext = displayName.substringAfterLast('.')
             MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)
                 ?: "application/octet-stream"
@@ -96,7 +119,7 @@ class AndroidContentContract(context: Context) : PlatformContract {
         val newDocumentUri = DocumentsContract.createDocument(
             context.contentResolver,
             parent.androidUri,
-            mimeType,
+            useMimeType,
             displayName
         )
 
@@ -152,12 +175,28 @@ class AndroidContentContract(context: Context) : PlatformContract {
     }
 
     override fun removeDocument(path: DocumentPath): Boolean {
-        val parent = path.parent!! as DocumentPath
-        return DocumentsContract.removeDocument(
-            context.contentResolver,
-            path.androidUri,
-            parent.androidUri
-        )
+        /*
+         * Since there are two ways to delete a document, we first try with 'remove', which
+         * more closely matches 'unlink'. This requires the path to have a parent, however.
+         * If the path doesn't have a parent, then we fall back to 'delete'.
+         */
+        return try {
+            return if (path.parent != null) {
+                DocumentsContract.removeDocument(
+                    context.contentResolver,
+                    path.androidUri,
+                    (path.parent as DocumentPath).androidUri
+                )
+            } else {
+                DocumentsContract.deleteDocument(
+                    context.contentResolver,
+                    path.androidUri
+                )
+            }
+        } catch (_: FileNotFoundException) {
+            // File doesn't exist to delete it
+            false
+        }
     }
 
     override fun renameDocument(documentUri: URI, displayName: String): URI? {
@@ -174,8 +213,6 @@ class AndroidContentContract(context: Context) : PlatformContract {
             "rwt"
         } else {
             mode
-        }.also {
-            Log.d("nicole", "openMode=$it")
         }
 
         val androidUri = path.androidUri
@@ -325,6 +362,13 @@ class AndroidContentContract(context: Context) : PlatformContract {
 
         // If we get here, then the file probably doesn't exist
         return false
+    }
+
+    /**
+     * Checks if the calling app has access to a given uri.
+     */
+    private fun checkAccess(uri: Uri, permission: Int): Boolean {
+        return context.checkUriPermission(uri, myPid(), myUid(), permission) == PERMISSION_GRANTED
     }
 }
 

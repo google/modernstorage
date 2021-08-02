@@ -18,6 +18,7 @@ package com.google.modernstorage.filesystem
 import com.google.modernstorage.filesystem.internal.AndroidContentContract
 import java.net.URI
 import java.nio.channels.SeekableByteChannel
+import java.nio.file.AccessMode
 import java.nio.file.DirectoryStream
 import java.nio.file.LinkOption
 import java.nio.file.Path
@@ -58,6 +59,8 @@ interface PlatformContract {
      */
     fun buildTreeDocumentUri(authority: String, documentId: String): URI
 
+    fun checkAccess(path: DocumentPath, modes: List<AccessMode>)
+
     /**
      * Copies the given document.
      */
@@ -68,8 +71,9 @@ interface PlatformContract {
      *
      * @param newDocumentPath Path to create. The [Path.getFileName] is expected to be a the
      * desired value for [android.provider.DocumentsContract.Document.COLUMN_DISPLAY_NAME].
+     * @param mimeType The mime type of the document to create.
      */
-    fun createDocument(newDocumentPath: DocumentPath): Boolean
+    fun createDocument(newDocumentPath: DocumentPath, mimeType: String? = null): Boolean
 
     /**
      * Delete the given document.

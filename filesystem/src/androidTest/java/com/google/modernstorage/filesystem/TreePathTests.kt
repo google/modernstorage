@@ -22,6 +22,7 @@ import com.google.modernstorage.filesystem.provider.TestDocumentProvider
 import com.google.modernstorage.filesystem.provider.document
 import org.junit.After
 import org.junit.Assert
+import org.junit.Assert.assertFalse
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
@@ -175,5 +176,22 @@ class TreePathTests {
         } catch (ioe: IOException) {
             // Pass
         }
+    }
+
+    @Test
+    fun removeDocument() {
+        val docUri =
+            Uri.parse("content://com.google.modernstorage.filesystem.test.documents/tree/root/document/root%2Fsubdir%2Fchild1.txt")
+        val existingPath = AndroidPaths.get(docUri).toAbsolutePath()
+        Files.delete(existingPath)
+        assertFalse(Files.exists(existingPath))
+    }
+
+    @Test
+    fun removeDocument_doesNotExist() {
+        val dirUri =
+            Uri.parse("content://com.google.modernstorage.filesystem.test.documents/tree/root/document/root%2Fsubdir%2Fnon-existing.txt")
+        val path = AndroidPaths.get(dirUri)
+        Files.deleteIfExists(path)
     }
 }
