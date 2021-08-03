@@ -27,13 +27,12 @@ import android.provider.DocumentsProvider
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileWriter
-import java.lang.IllegalStateException
 
 class TestDocumentProvider : DocumentsProvider() {
 
     companion object {
-        private val testRoots = mutableListOf<TestDocument>()
-        private val docIdsToDoc = mutableMapOf<String, TestDocument>()
+        val testRoots = mutableListOf<TestDocument>()
+        val docIdsToDoc = mutableMapOf<String, TestDocument>()
         private val docIdsToFile = mutableMapOf<String, File>()
         var supportFindDocumentPath = true
 
@@ -129,7 +128,9 @@ class TestDocumentProvider : DocumentsProvider() {
         val useProjection = projection ?: defaultRootProjection
 
         val cursor = MatrixCursor(useProjection)
-        parentDocument.children.forEach { childDocument ->
+        parentDocument.children.filter { childDocument ->
+            childDocument.docId != "."
+        }.forEach { childDocument ->
             cursor.newRow().apply {
                 add(Document.COLUMN_DOCUMENT_ID, childDocument.docId)
                 add(Document.COLUMN_MIME_TYPE, childDocument.mimeType)
@@ -181,6 +182,16 @@ class TestDocumentProvider : DocumentsProvider() {
         val parent = docIdsToDoc[parentDocumentId] ?: throw FileNotFoundException()
         val docId = "$parentDocumentId/$displayName"
         val newDoc = TestDocument(docId, parentDocumentId)
+        if (mimeType == Document.MIME_TYPE_DIR) {
+            /*
+             * Because of the questionable way directories are handled in the test provider,
+             * (mime types in general), a directory has to have a child or it is reported as a
+             * generic file. Add in a "." child (which is filtered out of the list if/when the
+             * children are requested).
+             */
+            newDoc.children.add(TestDocument(".", newDoc.docId))
+        }
+        // Add the child to the parent, and make a mapping of doc ID -> TestDocument.
         parent.children.add(newDoc)
         docIdsToDoc[docId] = newDoc
         return docId
@@ -200,7 +211,7 @@ class TestDocumentProvider : DocumentsProvider() {
         val file = docIdsToFile[documentId]
             ?: if (document.children.isEmpty()) {
                 File.createTempFile("tdp", null, context!!.cacheDir).also { tmp ->
-                    if (!mode.contains('t')) {
+                    if (!mode.contains('t') && !document.content.isNullOrEmpty()) {
                         FileWriter(tmp).write(document.content)
                     }
                     tmp.deleteOnExit()

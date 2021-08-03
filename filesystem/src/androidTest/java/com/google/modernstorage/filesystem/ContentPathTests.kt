@@ -27,6 +27,7 @@ import org.junit.Before
 import org.junit.Test
 import java.io.FileNotFoundException
 import java.io.FileReader
+import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Files
 
 class ContentPathTests {

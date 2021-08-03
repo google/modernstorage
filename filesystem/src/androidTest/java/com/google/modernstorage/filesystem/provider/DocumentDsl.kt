@@ -31,7 +31,7 @@ class TestDocument(
         }
     }
 
-    val mimeType
+    val mimeType: String
         get() = when {
             children.isNotEmpty() -> {
                 Document.MIME_TYPE_DIR

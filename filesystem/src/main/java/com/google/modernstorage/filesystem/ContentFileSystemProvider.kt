@@ -16,13 +16,13 @@
 package com.google.modernstorage.filesystem
 
 import android.provider.DocumentsContract
-import java.io.File
 import java.io.IOException
 import java.net.URI
 import java.nio.channels.SeekableByteChannel
 import java.nio.file.AccessMode
 import java.nio.file.CopyOption
 import java.nio.file.DirectoryStream
+import java.nio.file.FileAlreadyExistsException
 import java.nio.file.FileStore
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
@@ -95,7 +95,7 @@ class ContentFileSystemProvider(
 
         val pathExists = contentContract.exists(contentPath)
         if (options.create && options.exclusive && pathExists) {
-            throw FileAlreadyExistsException(File(""), null, "$path already exists")
+            throw FileAlreadyExistsException(path.toString(), null, "$path already exists")
         } else if (options.create && !pathExists) {
             if (!contentContract.createDocument(contentPath)) {
                 throw IOException("Failed to create document: $contentPath")

@@ -41,6 +41,7 @@ import java.nio.file.AccessMode
 import java.nio.file.DirectoryStream
 import java.nio.file.DirectoryStream.Filter
 import java.nio.file.LinkOption
+import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.attribute.FileTime
@@ -81,7 +82,9 @@ class AndroidContentContract(context: Context) : PlatformContract {
 
     override fun checkAccess(path: DocumentPath, modes: List<AccessMode>) {
         if (modes.isEmpty()) {
-            if (!checkPathExists(path)) throw FileNotFoundException()
+            if (!checkPathExists(path)) {
+                throw NoSuchFileException(path.toString(), null, "$path does not exist")
+            }
         } else {
             val uri = path.androidUri
             modes.forEach { mode ->
@@ -116,12 +119,17 @@ class AndroidContentContract(context: Context) : PlatformContract {
         }
 
         // Actually create the document
-        val newDocumentUri = DocumentsContract.createDocument(
-            context.contentResolver,
-            parent.androidUri,
-            useMimeType,
-            displayName
-        )
+        val newDocumentUri = try {
+            DocumentsContract.createDocument(
+                context.contentResolver,
+                parent.androidUri,
+                useMimeType,
+                displayName
+            )
+        } catch (securityException: SecurityException) {
+            // Couldn't create the document
+            throw IOException(securityException)
+        }
 
         return if (newDocumentUri != null) {
             // Update the path to use the document id rather than display name
@@ -356,8 +364,8 @@ class AndroidContentContract(context: Context) : PlatformContract {
                     }
                 }
             }
-        } finally {
-            // Something went wrong
+        } catch (_: SecurityException) {
+            // Not allowed to query
         }
 
         // If we get here, then the file probably doesn't exist
