@@ -85,7 +85,7 @@ val path = AndroidPaths.get(documentUri)
 ```
 
 ## Get file size
-You can get the file size by using the method `Files.size`:
+You can get the file size by using the method [`Files.size`][Files.size_api]:
 
 ```kotlin
 val path = AndroidPaths.get(documentUri)
@@ -93,7 +93,8 @@ val size = Files.size(path)
 ```
 
 ## Get InputStream
-You can get an [InputStream][InputStream_api] of by using the method `Files.newInputStream`:
+You can get an [InputStream][InputStream_api] of by using the method
+[`Files.newInputStream`][Files.newInputStream_api]:
 
 ```kotlin
 val path = AndroidPaths.get(documentUri)
@@ -101,24 +102,31 @@ val inputStream = Files.newInputStream(path)
 ```
 
 ## Read a text file
-You can read a text file by using the method `Files.readAllLines`:
+You can read a text file by using the method [`Files.readAllLines`][Files.readAllLines_api]:
 
 ```kotlin
-/**
- * documentUri refers to a Uri your app has received using SAF
- */
 val path = AndroidPaths.get(documentUri)
 val content = Files.readAllLines(path).joinToString(separator = "\n")
 ```
 
-## Get a bitmap from an image
-Modifying a file requires to scan it to make MediaStore aware of the file changes (size,
-modification date, etc.). To request a scan for a media URI, use the `scanUri` method:
+## Write a ByteArray
+If you have write access to a document uri, you can write a `ByteArray` by using the method
+[`Files.write`][Files.write_api]:
 
 ```kotlin
 val path = AndroidPaths.get(documentUri)
-val inputStream = Files.newInputStream(path)
-val bitmap = BitmapFactory.decodeStream(inputStream)
+val bytes = byteArrayOf(75, 111, 116, 108, 105, 110)
+Files.write(path, bytes)
+```
+
+## Write from an InputStream
+You can get an [InputStream][InputStream_api] of by using the method `Files.newInputStream`:
+If you have write access to a document uri, you can write from an [InputStream][InputStream_api] by
+using the method [`Files.copy`][Files.copy_api]:
+
+```kotlin
+val path = AndroidPaths.get(documentUri)
+Files.copy(inputStream, path)
 ```
 
 [saf_guide]: https://developer.android.com/guide/topics/providers/document-provider
@@ -128,4 +136,9 @@ val bitmap = BitmapFactory.decodeStream(inputStream)
 [java.nio_api]: https://developer.android.com/reference/java/nio/package-summary
 [Uri_api]: https://developer.android.com/reference/kotlin/android/net/Uri
 [api_reference]: /api/filesystem
+[Files.size_api]: https://developer.android.com/reference/kotlin/java/nio/file/Files#size
+[Files.readAllLines_api]: https://developer.android.com/reference/kotlin/java/nio/file/Files#readalllines_1
 [InputStream_api]: https://developer.android.com/reference/kotlin/java/io/InputStream
+[Files.newInputStream_api]: https://developer.android.com/reference/kotlin/java/nio/file/Files#newinputstream
+[Files.write_api]: https://developer.android.com/reference/kotlin/java/nio/file/Files#write
+[Files.copy_api]: https://developer.android.com/reference/kotlin/java/nio/file/Files#copy_1

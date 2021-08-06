@@ -27,6 +27,7 @@ import com.google.modernstorage.mediastore.FileResource
 import com.google.modernstorage.mediastore.FileType
 import com.google.modernstorage.mediastore.MediaStoreRepository
 import com.google.modernstorage.mediastore.SharedPrimary
+import com.google.modernstorage.sample.SampleData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

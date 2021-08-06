@@ -85,6 +85,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/filesystem_create_text_file_label" />
+
+        <Button
+            android:id="@+id/create_image_file"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/filesystem_create_image_file_label" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
