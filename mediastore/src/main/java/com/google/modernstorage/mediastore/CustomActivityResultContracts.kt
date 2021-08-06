@@ -19,8 +19,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult
 
 /**
  * An [ActivityResultContract] to take a picture using the [MediaStore.ACTION_IMAGE_CAPTURE] saving
@@ -54,6 +57,62 @@ class TakeVideo : ActivityResultContract<Uri, Uri?>() {
             null
         } else {
             intent.data
+        }
+    }
+}
+
+/**
+ * An [ActivityResultContract] to delete a [FileResource]
+ *
+ * @return a successful [Result] without value if the [FileResource] has been deleted. A failed
+ * [Result] means the system couldn't deleted the file or the user denied the request (from API 30+)
+ */
+class DeleteResource : ActivityResultContract<FileResource, Result<Unit>>() {
+
+    override fun createIntent(context: Context, input: FileResource): Intent {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Intent(StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST)
+                .putExtra(
+                    StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST,
+                    IntentSenderRequest.Builder(
+                        MediaStore.createDeleteRequest(
+                            context.contentResolver,
+                            listOf(input.uri)
+                        ).intentSender
+                    ).build()
+                )
+        } else {
+            Intent()
+        }
+    }
+
+    override fun getSynchronousResult(context: Context, input: FileResource):
+        SynchronousResult<Result<Unit>>? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            null
+        } else {
+            return try {
+                when (context.contentResolver.delete(input.uri, null, null)) {
+                    1 -> SynchronousResult(Result.success(Unit))
+                    0 -> SynchronousResult(Result.failure(Exceptions.UriNotFoundException(input.uri)))
+                    else -> SynchronousResult(
+                        Result.failure(
+                            Exceptions.UriNotDeletedException
+                            (input.uri)
+                        )
+                    )
+                }
+            } catch (e: IllegalArgumentException) {
+                SynchronousResult(Result.failure(e))
+            }
+        }
+    }
+
+    override fun parseResult(resultCode: Int, intent: Intent?): Result<Unit> {
+        return if (resultCode == Activity.RESULT_OK) {
+            Result.success(Unit)
+        } else {
+            Result.failure(Exceptions.UriOperationDeniedException("delete"))
         }
     }
 }
