@@ -18,3 +18,4 @@ include ':mediastore'
 include ':sample'
 rootProject.name = "ModernStorage"
 include ':filesystem'
+include ':sample_compose'
