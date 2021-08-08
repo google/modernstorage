@@ -1,18 +1,11 @@
 // Signature format: 4.0
 package com.google.modernstorage.mediastore {
 
-  public final class CustomTakePicture extends androidx.activity.result.contract.ActivityResultContract<android.net.Uri,java.lang.Boolean> {
-    ctor public CustomTakePicture();
-    method public android.content.Intent createIntent(android.content.Context context, android.net.Uri input);
-    method public androidx.activity.result.contract.ActivityResultContract.SynchronousResult<java.lang.Boolean>? getSynchronousResult(android.content.Context context, android.net.Uri input);
-    method public Boolean parseResult(int resultCode, android.content.Intent? intent);
-  }
-
-  public final class CustomTakeVideo extends androidx.activity.result.contract.ActivityResultContract<android.net.Uri,android.net.Uri> {
-    ctor public CustomTakeVideo();
-    method public android.content.Intent createIntent(android.content.Context context, android.net.Uri input);
-    method public androidx.activity.result.contract.ActivityResultContract.SynchronousResult<android.net.Uri>? getSynchronousResult(android.content.Context context, android.net.Uri input);
-    method public android.net.Uri? parseResult(int resultCode, android.content.Intent? intent);
+  public final class DeleteSharedResource extends androidx.activity.result.contract.ActivityResultContract<com.google.modernstorage.mediastore.FileResource,kotlin.Result<? extends kotlin.Unit>> {
+    ctor public DeleteSharedResource();
+    method public android.content.Intent createIntent(android.content.Context context, com.google.modernstorage.mediastore.FileResource input);
+    method public androidx.activity.result.contract.ActivityResultContract.SynchronousResult<kotlin.Result<kotlin.Unit>>? getSynchronousResult(android.content.Context context, com.google.modernstorage.mediastore.FileResource input);
+    method public Object parseResult-d1pmJ48(int resultCode, android.content.Intent? intent);
   }
 
   @kotlinx.parcelize.Parcelize public final class FileResource implements android.os.Parcelable {
@@ -81,6 +74,18 @@ package com.google.modernstorage.mediastore {
   }
 
   public abstract sealed class StorageLocation {
+  }
+
+  public final class TakePicture extends androidx.activity.result.contract.ActivityResultContract<android.net.Uri,java.lang.Boolean> {
+    ctor public TakePicture();
+    method public android.content.Intent createIntent(android.content.Context context, android.net.Uri input);
+    method public Boolean parseResult(int resultCode, android.content.Intent? intent);
+  }
+
+  public final class TakeVideo extends androidx.activity.result.contract.ActivityResultContract<android.net.Uri,android.net.Uri> {
+    ctor public TakeVideo();
+    method public android.content.Intent createIntent(android.content.Context context, android.net.Uri input);
+    method public android.net.Uri? parseResult(int resultCode, android.content.Intent? intent);
   }
 
 }

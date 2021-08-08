@@ -65,9 +65,9 @@ class TakeVideo : ActivityResultContract<Uri, Uri?>() {
  * An [ActivityResultContract] to delete a [FileResource]
  *
  * @return a successful [Result] without value if the [FileResource] has been deleted. A failed
- * [Result] means the system couldn't deleted the file or the user denied the request (from API 30+)
+ * [Result] means the system couldn't delete the file or the user denied the request (from API 30+)
  */
-class DeleteResource : ActivityResultContract<FileResource, Result<Unit>>() {
+class DeleteSharedResource : ActivityResultContract<FileResource, Result<Unit>>() {
 
     override fun createIntent(context: Context, input: FileResource): Intent {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

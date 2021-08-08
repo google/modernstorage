@@ -196,24 +196,24 @@ class MediaStoreRepository(private val appContext: Context) {
     /**
      * Get file path from a [MediaStore] [Uri].
      *
-     * @param mediaUri [Uri] representing the MediaStore entry.
+     * @param uri [Uri] representing the MediaStore entry.
      * @param context [CoroutineContext] where the method will run on, default to [Dispatchers.IO].
      */
     private suspend fun getPathByUri(
-        mediaUri: Uri,
+        uri: Uri,
         context: CoroutineContext = Dispatchers.IO
     ): Result<String> = withContext(context) {
         val cursor = contentResolver.query(
-            mediaUri,
+            uri,
             arrayOf(FileColumns.DATA),
             null,
             null,
             null
-        ) ?: return@withContext Result.failure(Exceptions.UriNotFoundException(mediaUri))
+        ) ?: return@withContext Result.failure(Exceptions.UriNotFoundException(uri))
 
         cursor.use {
             if (!cursor.moveToFirst()) {
-                return@withContext Result.failure(Exceptions.UriNotFoundException(mediaUri))
+                return@withContext Result.failure(Exceptions.UriNotFoundException(uri))
             }
 
             Result.success(cursor.getString(cursor.getColumnIndexOrThrow(FileColumns.DATA)))
