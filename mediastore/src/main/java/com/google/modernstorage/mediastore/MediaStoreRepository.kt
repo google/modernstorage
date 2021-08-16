@@ -26,10 +26,15 @@ import android.os.Build
 import android.provider.MediaStore
 import android.provider.MediaStore.Files.FileColumns
 import androidx.core.content.ContextCompat
+import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.getOrElse
+import com.github.kittinunf.result.isSuccess
+import com.github.kittinunf.result.onSuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.io.InputStream
+import java.lang.Exception
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 
@@ -173,7 +178,7 @@ class MediaStoreRepository(private val appContext: Context) {
         type: FileType,
         location: StorageLocation,
         context: CoroutineContext = Dispatchers.IO
-    ): Result<Uri> = withContext(context) {
+    ): Result<Uri, Exception> = withContext(context) {
         val entry = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
         }
@@ -202,7 +207,7 @@ class MediaStoreRepository(private val appContext: Context) {
     private suspend fun getPathByUri(
         mediaUri: Uri,
         context: CoroutineContext = Dispatchers.IO
-    ): Result<String> = withContext(context) {
+    ): Result<String, Exceptions.UriNotFoundException> = withContext(context) {
         val cursor = contentResolver.query(
             mediaUri,
             arrayOf(FileColumns.DATA),
@@ -241,7 +246,7 @@ class MediaStoreRepository(private val appContext: Context) {
         inputStream: InputStream,
         location: StorageLocation,
         context: CoroutineContext = Dispatchers.IO
-    ): Result<Uri> = withContext(context) {
+    ): Result<Uri, Exception> = withContext(context) {
         val uri = createMediaUri(filename, type, location).getOrElse {
             return@withContext Result.failure(it)
         }
@@ -275,7 +280,7 @@ class MediaStoreRepository(private val appContext: Context) {
     private suspend fun scanFilePath(
         path: String,
         mimeType: String,
-    ): Result<Uri> {
+    ): Result<Uri, Exceptions.FileNotScannedException> {
         return suspendCancellableCoroutine { continuation ->
             MediaScannerConnection.scanFile(
                 appContext,
@@ -307,7 +312,7 @@ class MediaStoreRepository(private val appContext: Context) {
         uri: Uri,
         mimeType: String,
         context: CoroutineContext = Dispatchers.IO
-    ): Result<String> = withContext(context) {
+    ): Result<String, Exception> = withContext(context) {
         val cursor = appContext.contentResolver.query(
             uri,
             arrayOf(FileColumns.DATA),
@@ -334,7 +339,7 @@ class MediaStoreRepository(private val appContext: Context) {
 
         val scanResult = scanFilePath(path, mimeType)
 
-        if (scanResult.isSuccess) {
+        if (scanResult.isSuccess()) {
             Result.success(path)
         } else {
             Result.failure(Exceptions.UriNotScannedException(uri))
@@ -372,7 +377,7 @@ class MediaStoreRepository(private val appContext: Context) {
     suspend fun getResourceByUri(
         uri: Uri,
         context: CoroutineContext = Dispatchers.IO
-    ): Result<FileResource> = withContext(context) {
+    ): Result<FileResource, Exception> = withContext(context) {
 
         if (uri.authority != MediaStore.AUTHORITY && uri.lastPathSegment != null) {
             return@withContext Result.failure(Exceptions.UnsupportedMediaUriException(uri))
