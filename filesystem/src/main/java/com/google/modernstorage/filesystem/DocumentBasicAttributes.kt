@@ -42,4 +42,8 @@ class DocumentBasicAttributes internal constructor(
     override fun size() = size
 
     override fun fileKey() = null
+
+    override fun toString() =
+        "DocumentBasicAttributes{mimeType:$mimeType, size:$size, isFolder:$isFolder, " +
+            "lastModifiedTime=$lastModifiedTime}"
 }

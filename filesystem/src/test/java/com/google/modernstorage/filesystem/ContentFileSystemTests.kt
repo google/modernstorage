@@ -15,40 +15,53 @@
  */
 package com.google.modernstorage.filesystem
 
+import android.provider.DocumentsContract.Document.MIME_TYPE_DIR
 import com.google.modernstorage.filesystem.internal.TestContract
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
+import java.io.File
 import java.net.URI
+import java.nio.file.Files
 
 /**
  * Unit tests for [ContentFileSystemProvider], and [ContentFileSystem].
  */
 class ContentFileSystemTests {
+    private lateinit var fileSystem: ContentFileSystem
+    private lateinit var contract: TestContract
 
     @Before
     fun setup() {
-        AndroidFileSystems.initialize(TestContract())
+        contract = TestContract()
+        AndroidFileSystems.initialize(contract)
+        val testUri = URI("content://unit.test/tree/root")
+        fileSystem = AndroidFileSystems.getFileSystem(testUri) as ContentFileSystem
     }
 
     @Test
     fun testGetRootDirectories_registeredUris() {
         val roots = listOf(
-            "content://com.android.externalstorage.documents/tree/primary%3ATest",
-            "content://com.android.externalstorage.documents/tree/primary%3ADocuments/One",
-            "content://com.android.externalstorage.documents/tree/primary%3ADocuments/Two",
-        ).map { URI(it) }
+            DocumentPath(fileSystem, "primary"),
+            DocumentPath(fileSystem, "secondary")
+        )
 
-        val expectedRoots = roots.map { root ->
-            // Register each root
-            AndroidFileSystems.getFileSystem(root)
-            // Get a ContentPath representation (to check later)
-            AndroidPaths.get(root)
-        }.toMutableSet()
+        // Request a series of paths
+        listOf(
+            listOf("primary", "FolderA"),
+            listOf("primary", "FolderB"),
+            listOf("primary", "FolderB", "Document"),
+            listOf("secondary", "Document")
+        ).forEach { pathData ->
+            fileSystem.getPath(pathData[0], *pathData.subList(1, pathData.size).toTypedArray())
+        }
 
-        // Get the ContentFileSystem for the provider
-        val fileSystem = AndroidFileSystems.getFileSystem(roots[0])
+        val expectedRoots = roots.toMutableSet()
 
         // Check all roots are registered
         fileSystem.rootDirectories.forEach { rootPath ->
@@ -56,7 +69,82 @@ class ContentFileSystemTests {
                 fail("Root found that wasn't registered: ${rootPath.toUri()}")
             }
         }
-        expectedRoots.forEach { root -> println("Root remains: $root") }
         assertTrue("Not all roots enumerated", expectedRoots.isEmpty())
+    }
+
+    @Test
+    fun createFile_callsPlatform() {
+        val path = DocumentPath(fileSystem, "tree", "parent", "child.txt")
+
+        // Create depends on a few functions
+        contract.existsImpl = { _ -> false }
+        contract.openByteChannelImpl = { _, _ ->
+            val tempFile = File.createTempFile("unit", "test").apply {
+                deleteOnExit()
+            }.toPath()
+            Files.newByteChannel(tempFile)
+        }
+
+        // When the test is run, the parameter should be the path and a null mime type, since
+        // mime type resolution is platform dependent.
+        contract.createDocumentImpl = { createPath, mimeType ->
+            assertSame(path, createPath)
+            assertNull(mimeType)
+            true
+        }
+
+        // Ask the OpenJDK to create the document.
+        Files.createFile(path)
+    }
+
+    @Test
+    fun createDirectory_callsPlatform() {
+        val path = DocumentPath(fileSystem, "tree", "parent", "childDir")
+
+        // Create depends on a few functions
+        contract.existsImpl = { _ -> false }
+
+        // When the test is run, the parameter should be the path and a null mime type, since
+        // mime type resolution is platform dependent.
+        contract.createDocumentImpl = { createPath, mimeType ->
+            assertSame(path, createPath)
+            assertEquals(MIME_TYPE_DIR, mimeType)
+            true
+        }
+
+        // Ask the OpenJDK to create the directory.
+        Files.createDirectory(path)
+    }
+
+    @Test
+    fun isSameFileTests_sameFiles() {
+        val pathA = DocumentPath(fileSystem, "tree", "parent", "childDir")
+        val pathB = DocumentPath(fileSystem, "tree", "parent", "childDir")
+
+        // Paths are the same, so it's the same file
+        assertTrue(Files.isSameFile(pathA, pathB))
+
+        // Paths point to the same document, but one is the 'absolute path'
+        val pathC = DocumentPath(fileSystem, "tree", "parent", "child.txt")
+        val pathD = DocumentPath(fileSystem, "tree", "grandparent", "parent", "child.txt")
+        assertTrue(Files.isSameFile(pathC, pathD))
+    }
+
+    @Test
+    fun isSameFileTests_failCases() {
+        val testUriA = URI("content://unit.test.a/tree/root")
+        val fsA = AndroidFileSystems.getFileSystem(testUriA) as ContentFileSystem
+        val testUriB = URI("content://unit.test.b/tree/root")
+        val fsB = AndroidFileSystems.getFileSystem(testUriB) as ContentFileSystem
+
+        val pathA = DocumentPath(fsA, "tree", "parent", "child")
+        val pathB = DocumentPath(fsB, "tree", "parent", "child")
+        val pathB2 = DocumentPath(fsB, "tree2", "parent", "child")
+
+        // Paths from different providers is false
+        assertFalse(Files.isSameFile(pathA, pathB))
+
+        // Paths from same provider, different trees
+        assertFalse(Files.isSameFile(pathB, pathB2))
     }
 }

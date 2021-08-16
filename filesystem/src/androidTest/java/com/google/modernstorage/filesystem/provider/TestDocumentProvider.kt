@@ -19,18 +19,22 @@ import android.database.Cursor
 import android.database.MatrixCursor
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
+import android.os.ParcelFileDescriptor.parseMode
+import android.provider.DocumentsContract
 import android.provider.DocumentsContract.Document
 import android.provider.DocumentsContract.Root
 import android.provider.DocumentsProvider
+import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileWriter
-import kotlin.concurrent.thread
 
 class TestDocumentProvider : DocumentsProvider() {
 
     companion object {
-        private val testRoots = mutableListOf<TestDocument>()
-        private val docIdsToDoc = mutableMapOf<String, TestDocument>()
+        val testRoots = mutableListOf<TestDocument>()
+        val docIdsToDoc = mutableMapOf<String, TestDocument>()
+        private val docIdsToFile = mutableMapOf<String, File>()
+        var supportFindDocumentPath = true
 
         fun clearAll() {
             testRoots.clear()
@@ -40,18 +44,19 @@ class TestDocumentProvider : DocumentsProvider() {
         fun addRoot(root: TestDocument) {
             if (root !in testRoots) {
                 testRoots += root
-                updateMap(null, root)
+                updateMap(root)
             }
         }
 
-        private fun updateMap(root: String?, doc: TestDocument) {
-            val fullDocId = if (root != null) "$root/${doc.docId}" else doc.docId
-            if (docIdsToDoc[fullDocId] == null) {
-                docIdsToDoc[fullDocId] = doc
+        fun getFile(documentId: String?) = docIdsToFile[documentId]
+
+        private fun updateMap(doc: TestDocument) {
+            if (docIdsToDoc[doc.docId] == null) {
+                docIdsToDoc[doc.docId] = doc
             }
-            if (doc.children?.isNotEmpty() == true) {
+            if (doc.children.isNotEmpty()) {
                 doc.children.forEach { childDocument ->
-                    updateMap(fullDocId, childDocument)
+                    updateMap(childDocument)
                 }
             }
         }
@@ -123,10 +128,11 @@ class TestDocumentProvider : DocumentsProvider() {
         val useProjection = projection ?: defaultRootProjection
 
         val cursor = MatrixCursor(useProjection)
-        parentDocument.children?.forEach { childDocument ->
+        parentDocument.children.filter { childDocument ->
+            childDocument.docId != "."
+        }.forEach { childDocument ->
             cursor.newRow().apply {
-                val fullDocId = "$parentDocumentId/${childDocument.docId}"
-                add(Document.COLUMN_DOCUMENT_ID, fullDocId)
+                add(Document.COLUMN_DOCUMENT_ID, childDocument.docId)
                 add(Document.COLUMN_MIME_TYPE, childDocument.mimeType)
                 add(Document.COLUMN_DISPLAY_NAME, childDocument.displayName)
                 add(Document.COLUMN_LAST_MODIFIED, 0)
@@ -139,24 +145,106 @@ class TestDocumentProvider : DocumentsProvider() {
     }
 
     override fun isChildDocument(parentDocumentId: String?, documentId: String?): Boolean {
-        // The actual check can be multiple levels down, so root -> dirA -> dir2, and this would
-        // ask, "is dir2 a child of root?" -- In a real system you'd probably want to actually
-        // do this check, but here it's a lot of work for something that's good enough for
-        // the test cases.
-        return docIdsToDoc[documentId] != null
+        parentDocumentId ?: return false
+        documentId ?: return false
+        return documentId.startsWith(parentDocumentId)
     }
 
+    override fun findDocumentPath(
+        parentDocumentId: String?,
+        childDocumentId: String?
+    ): DocumentsContract.Path? {
+        // If we don't support this, the super class throws.
+        if (!supportFindDocumentPath) {
+            return super.findDocumentPath(parentDocumentId, childDocumentId)
+        }
+
+        val path = mutableListOf<String>()
+        var child: TestDocument? = docIdsToDoc[childDocumentId]
+        while (child != null) {
+            path.add(child.docId)
+            child = docIdsToDoc[child.parentDocId]
+        }
+        return if (path.isEmpty()) null else DocumentsContract.Path(null, path.reversed())
+    }
+
+    /**
+     * A very naive implementation of [createDocument].
+     *
+     * This doesn't handle creating two documents with the same [displayName] like a standard
+     * [DocumentsProvider] would. For tests this isn't as big of a problem, but could be added.
+     */
+    override fun createDocument(
+        parentDocumentId: String?,
+        mimeType: String?,
+        displayName: String?
+    ): String {
+        val parent = docIdsToDoc[parentDocumentId] ?: throw FileNotFoundException()
+        val docId = "$parentDocumentId/$displayName"
+        val newDoc = TestDocument(docId, parentDocumentId)
+        if (mimeType == Document.MIME_TYPE_DIR) {
+            /*
+             * Because of the questionable way directories are handled in the test provider,
+             * (mime types in general), a directory has to have a child or it is reported as a
+             * generic file. Add in a "." child (which is filtered out of the list if/when the
+             * children are requested).
+             */
+            newDoc.children.add(TestDocument(".", newDoc.docId))
+        }
+        // Add the child to the parent, and make a mapping of doc ID -> TestDocument.
+        parent.children.add(newDoc)
+        docIdsToDoc[docId] = newDoc
+        return docId
+    }
+
+    /**
+     * This implementation of [openDocument] only supports reading from documents.
+     * TODO: Support writing so it's possible to test writing to paths.
+     */
     override fun openDocument(
-        documentId: String?,
-        mode: String?,
+        documentId: String,
+        mode: String,
         signal: CancellationSignal?
     ): ParcelFileDescriptor {
         val document = docIdsToDoc[documentId] ?: throw FileNotFoundException()
-        val (readFd, writeFd) = ParcelFileDescriptor.createPipe()
-        thread(name = "io") {
-            FileWriter(writeFd.fileDescriptor).apply { write((document.content)) }
-            writeFd.close()
-        }
-        return readFd
+
+        val file = docIdsToFile[documentId]
+            ?: if (document.children.isEmpty()) {
+                File.createTempFile("tdp", null, context!!.cacheDir).also { tmp ->
+                    if (!mode.contains('t') && !document.content.isNullOrEmpty()) {
+                        FileWriter(tmp).write(document.content)
+                    }
+                    tmp.deleteOnExit()
+                }
+            } else {
+                // It's actually a directory, so just use one that exists... (it's an error anyway)
+                context!!.filesDir
+            }
+        docIdsToFile[documentId] = file
+        return ParcelFileDescriptor.open(file, parseMode(mode))
+    }
+
+    /**
+     * Bare-bones implementation of [removeDocument] -- simply removes the entry from the map,
+     * since that's the only way to find it. :)
+     */
+    override fun removeDocument(documentId: String?, parentDocumentId: String?) {
+        val parent = docIdsToDoc[parentDocumentId] ?: throw FileNotFoundException()
+        val document = docIdsToDoc[documentId] ?: throw FileNotFoundException()
+        if (document !in parent.children) throw FileNotFoundException()
+
+        // Checks done -- remove it
+        parent.children.remove(document)
+        docIdsToDoc.remove(documentId)
+    }
+
+    /**
+     * Even more bare-bones. This should only ever be called on a document that doesn't exist,
+     * since documents that _do_ exist would have a parent, and the code should call through to
+     * [removeDocument] instead.
+     */
+    override fun deleteDocument(documentId: String?) {
+        docIdsToDoc[documentId] ?: throw FileNotFoundException()
+        throw IllegalStateException("deleteDocument called instead of removeDocument!")
     }
 }

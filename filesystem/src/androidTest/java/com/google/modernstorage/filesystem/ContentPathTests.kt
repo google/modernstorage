@@ -22,12 +22,15 @@ import com.google.modernstorage.filesystem.provider.TestDocumentProvider
 import com.google.modernstorage.filesystem.provider.document
 import org.junit.After
 import org.junit.Assert
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import java.io.FileNotFoundException
+import java.io.FileReader
+import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Files
 
-class DocumentPathTests {
+class ContentPathTests {
     private val context = ApplicationProvider.getApplicationContext<Context>()
     private val testUri =
         Uri.parse("content://${context.packageName}.documents/document/test.txt")
@@ -67,10 +70,38 @@ class DocumentPathTests {
     fun readSingleDocument_documentDoesNotExist() {
         val testPath = AndroidPaths.get(testNonExistingUri)
         try {
-            val lines = Files.readAllLines(testPath)
-            Assert.fail("Opened non-existing file?")
+            Files.readAllLines(testPath).forEach { println(it) }
+            fail("Opened non-existing file?")
         } catch (fileNotFound: FileNotFoundException) {
             // Test pass
+        }
+    }
+
+    @Test
+    fun createNewDocument_failsIfExists() {
+        val existingPath = AndroidPaths.get(testUri)
+        try {
+            Files.createFile(existingPath)
+            fail()
+        } catch (_: FileAlreadyExistsException) {
+            // Test pass!
+        }
+    }
+
+    @Test
+    fun writeSingleDocument_documentExists() {
+        val testPath = AndroidPaths.get(testUri)
+        val newContent = listOf(
+            "This is new content for the file.",
+            "Also multiple lines."
+        )
+        Files.write(testPath, newContent)
+
+        val file = TestDocumentProvider.getFile("test.txt")!!
+        var index = 0
+        FileReader(file).forEachLine { line ->
+            Assert.assertEquals(newContent[index], line)
+            index += 1
         }
     }
 }

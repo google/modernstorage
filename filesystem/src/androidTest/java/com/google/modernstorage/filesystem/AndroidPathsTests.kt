@@ -37,7 +37,7 @@ class AndroidPathsTests {
 
     @Test
     fun constructPath_UriMatchesURI() {
-        val mediaUriString = "content://media/external/files/media/1"
+        val mediaUriString = "content://${context.packageName}.documents/document/test.txt"
 
         val mediaPathFromUri = AndroidPaths.get(Uri.parse(mediaUriString))
         val mediaPathFromURI = AndroidPaths.get(URI(mediaUriString))
