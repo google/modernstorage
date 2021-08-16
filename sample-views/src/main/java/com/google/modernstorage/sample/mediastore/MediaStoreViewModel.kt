@@ -23,6 +23,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.getOrElse
+import com.github.kittinunf.result.getOrNull
+import com.github.kittinunf.result.onFailure
+import com.github.kittinunf.result.onSuccess
 import com.google.modernstorage.mediastore.FileResource
 import com.google.modernstorage.mediastore.FileType
 import com.google.modernstorage.mediastore.MediaStoreRepository
@@ -185,7 +190,7 @@ class MediaStoreViewModel(
         }
     }
 
-    private suspend fun createMediaUriForCamera(type: FileType): Result<Uri> {
+    private suspend fun createMediaUriForCamera(type: FileType): Result<Uri, Exception> {
         return when (type) {
             FileType.IMAGE -> mediaStore.createMediaUri(
                 filename = generateFilename(MediaSource.CAMERA, "jpg"),

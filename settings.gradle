@@ -15,6 +15,6 @@
  */
 
 include ':mediastore'
-include ':sample'
+include ':sample-views'
 rootProject.name = "ModernStorage"
 include ':filesystem'
