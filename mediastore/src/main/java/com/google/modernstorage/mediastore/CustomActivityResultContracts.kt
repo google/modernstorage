@@ -62,12 +62,12 @@ class TakeVideo : ActivityResultContract<Uri, Uri?>() {
 }
 
 /**
- * An [ActivityResultContract] to delete a [FileResource]
+ * An [ActivityResultContract] to delete a shared [FileResource]
  *
  * @return a successful [Result] without value if the [FileResource] has been deleted. A failed
  * [Result] means the system couldn't delete the file or the user denied the request (from API 30+)
  */
-class DeleteSharedResource : ActivityResultContract<FileResource, Result<Unit>>() {
+class DeleteFileResource : ActivityResultContract<FileResource, Result<Unit>>() {
 
     override fun createIntent(context: Context, input: FileResource): Intent {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -113,6 +113,49 @@ class DeleteSharedResource : ActivityResultContract<FileResource, Result<Unit>>(
             Result.success(Unit)
         } else {
             Result.failure(Exceptions.UriOperationDeniedException("delete"))
+        }
+    }
+}
+
+/**
+ * An [ActivityResultContract] to request the modification of a shared [FileResource]
+ *
+ * @return a successful [Result] without value if the [FileResource] has been deleted. A failed
+ * [Result] means the system couldn't deleted the file or the user denied the request (from API 30+)
+ */
+class ModifyFileResourceRequest : ActivityResultContract<FileResource, Result<Unit>>() {
+
+    override fun createIntent(context: Context, input: FileResource): Intent {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Intent(StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST)
+                .putExtra(
+                    StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST,
+                    IntentSenderRequest.Builder(
+                        MediaStore.createDeleteRequest(
+                            context.contentResolver,
+                            listOf(input.uri)
+                        ).intentSender
+                    ).build()
+                )
+        } else {
+            Intent()
+        }
+    }
+
+    override fun getSynchronousResult(context: Context, input: FileResource):
+        SynchronousResult<Result<Unit>>? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            null
+        } else {
+            SynchronousResult(Result.success(Unit))
+        }
+    }
+
+    override fun parseResult(resultCode: Int, intent: Intent?): Result<Unit> {
+        return if (resultCode == Activity.RESULT_OK) {
+            Result.success(Unit)
+        } else {
+            Result.failure(Exceptions.UriOperationDeniedException("modify"))
         }
     }
 }
