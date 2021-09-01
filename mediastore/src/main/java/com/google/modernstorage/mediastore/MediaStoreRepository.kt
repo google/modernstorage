@@ -262,6 +262,33 @@ class MediaStoreRepository(private val appContext: Context) {
     }
 
     /**
+     * Modify a media file content in [MediaStore] from an [InputStream] and returns its content [Uri].
+     *
+     * The file will be scanned by MediaScanner once its content is saved and returns its [Uri],
+     * even if the scan fails.
+     *
+     * @param resource file resource.
+     * @param inputStream media content.
+     * @param context [CoroutineContext] where the method will run on, default to [Dispatchers.IO].
+     */
+    suspend fun modifyResourceFromStream(
+        resource: FileResource,
+        inputStream: InputStream,
+        context: CoroutineContext = Dispatchers.IO
+    ): Result<Uri> = withContext(context) {
+        contentResolver.openOutputStream(resource.uri, "w").use { outputStream ->
+            if (outputStream == null) {
+                return@withContext Result.failure(Exceptions.UnopenableOutputStreamException(resource.uri))
+            } else {
+                inputStream.copyTo(outputStream)
+            }
+        }
+
+        scanFilePath(path = resource.path, mimeType = resource.mimeType)
+        Result.success(resource.uri)
+    }
+
+    /**
      * Scan file path in [MediaStore] using [MediaScannerConnection]
      *
      * When adding a file (using java.io or ContentResolver APIs), MediaStore might not be aware of
