@@ -35,7 +35,7 @@
     </fragment>
     <fragment
         android:id="@+id/mediaStoreFragment"
-        android:name="com.google.modernstorage.sample.mediastore.MediaStoreFragment"
+        android:name="com.google.modernstorage.sample.mediastore.AddMediaFragment"
         android:label="@string/mediastore_fragment_label" />
     <fragment
         android:id="@+id/fileSystemFragment"
