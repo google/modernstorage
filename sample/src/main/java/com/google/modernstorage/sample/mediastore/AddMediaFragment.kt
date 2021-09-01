@@ -24,26 +24,26 @@ import androidx.activity.result.contract.ActivityResultContracts.RequestPermissi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
-import com.google.modernstorage.mediastore.CustomTakePicture
-import com.google.modernstorage.mediastore.CustomTakeVideo
 import com.google.modernstorage.mediastore.FileType
+import com.google.modernstorage.mediastore.TakePicture
+import com.google.modernstorage.mediastore.TakeVideo
 import com.google.modernstorage.sample.R
 import com.google.modernstorage.sample.databinding.FragmentMediastoreBinding
 
-class MediaStoreFragment : Fragment() {
+class AddMediaFragment : Fragment() {
     private var _binding: FragmentMediastoreBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: MediaStoreViewModel by viewModels()
+    private val viewModel: AddMediaViewModel by viewModels()
 
     private val actionRequestPermission = registerForActivityResult(RequestPermission()) {
         handlePermissionSectionVisibility()
     }
 
-    private val actionTakeImage = registerForActivityResult(CustomTakePicture()) { success ->
+    private val actionTakeImage = registerForActivityResult(TakePicture()) { success ->
         viewModel.onPhotoCapture(success)
     }
 
-    private val actionTakeVideo = registerForActivityResult(CustomTakeVideo()) { uri ->
+    private val actionTakeVideo = registerForActivityResult(TakeVideo()) { uri ->
         viewModel.onVideoCapture(uri)
     }
 

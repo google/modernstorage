@@ -39,18 +39,14 @@ data class FileResource(
     val size: Long,
     val type: FileType,
     val mimeType: String,
-    val path: String?,
+    val path: String,
 ) : Parcelable {
 
     /**
      * Returns a [File] if the [FileResource] path property isn't null.
      */
-    fun getFile(): File? {
-        if (path !== null) {
-            return File(path)
-        }
-
-        return null
+    fun getFile(): File {
+        return File(path)
     }
 }
 

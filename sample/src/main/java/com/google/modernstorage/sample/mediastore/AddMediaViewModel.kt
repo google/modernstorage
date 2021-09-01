@@ -38,7 +38,7 @@ import okhttp3.Request
 const val CURRENT_MEDIA_KEY = "currentMedia"
 const val TEMPORARY_CAMERA_IMAGE_URI_KEY = "temporaryCameraImageUri"
 
-class MediaStoreViewModel(
+class AddMediaViewModel(
     application: Application,
     private val savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application) {

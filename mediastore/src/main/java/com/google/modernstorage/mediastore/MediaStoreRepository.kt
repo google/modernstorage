@@ -196,24 +196,24 @@ class MediaStoreRepository(private val appContext: Context) {
     /**
      * Get file path from a [MediaStore] [Uri].
      *
-     * @param mediaUri [Uri] representing the MediaStore entry.
+     * @param uri [Uri] representing the MediaStore entry.
      * @param context [CoroutineContext] where the method will run on, default to [Dispatchers.IO].
      */
     private suspend fun getPathByUri(
-        mediaUri: Uri,
+        uri: Uri,
         context: CoroutineContext = Dispatchers.IO
     ): Result<String> = withContext(context) {
         val cursor = contentResolver.query(
-            mediaUri,
+            uri,
             arrayOf(FileColumns.DATA),
             null,
             null,
             null
-        ) ?: return@withContext Result.failure(Exceptions.UriNotFoundException(mediaUri))
+        ) ?: return@withContext Result.failure(Exceptions.UriNotFoundException(uri))
 
         cursor.use {
             if (!cursor.moveToFirst()) {
-                return@withContext Result.failure(Exceptions.UriNotFoundException(mediaUri))
+                return@withContext Result.failure(Exceptions.UriNotFoundException(uri))
             }
 
             Result.success(cursor.getString(cursor.getColumnIndexOrThrow(FileColumns.DATA)))
@@ -259,6 +259,33 @@ class MediaStoreRepository(private val appContext: Context) {
         }
 
         Result.success(uri)
+    }
+
+    /**
+     * Modify a media file content in [MediaStore] from an [InputStream] and returns its content [Uri].
+     *
+     * The file will be scanned by MediaScanner once its content is saved and returns its [Uri],
+     * even if the scan fails.
+     *
+     * @param resource file resource.
+     * @param inputStream media content.
+     * @param context [CoroutineContext] where the method will run on, default to [Dispatchers.IO].
+     */
+    suspend fun modifyResourceFromStream(
+        resource: FileResource,
+        inputStream: InputStream,
+        context: CoroutineContext = Dispatchers.IO
+    ): Result<Uri> = withContext(context) {
+        contentResolver.openOutputStream(resource.uri, "w").use { outputStream ->
+            if (outputStream == null) {
+                return@withContext Result.failure(Exceptions.UnopenableOutputStreamException(resource.uri))
+            } else {
+                inputStream.copyTo(outputStream)
+            }
+        }
+
+        scanFilePath(path = resource.path, mimeType = resource.mimeType)
+        Result.success(resource.uri)
     }
 
     /**

@@ -27,7 +27,7 @@ import com.google.modernstorage.sample.databinding.FragmentDemoListBinding
 private val apiList = arrayOf(
     Demo(
         R.drawable.ic_baseline_collections_24,
-        R.string.demo_mediastore,
+        R.string.demo_add_media,
         R.id.action_mainFragment_to_mediaStoreFragment,
         Build.VERSION_CODES.LOLLIPOP
     ),

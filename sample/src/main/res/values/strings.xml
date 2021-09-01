@@ -16,7 +16,7 @@
 
 <resources>
     <string name="app_name">ModernStorage Sample</string>
-    <string name="demo_mediastore">MediaStore</string>
+    <string name="demo_add_media">Add media</string>
     <string name="demo_filesystem">FileSystem</string>
 
     <!-- Fragment labels -->

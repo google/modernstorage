@@ -17,6 +17,7 @@ package com.google.modernstorage.mediastore
 
 import android.net.Uri
 import android.os.RemoteException
+import android.util.AndroidException
 import java.io.FileNotFoundException
 import java.io.IOException
 
@@ -42,5 +43,13 @@ internal object Exceptions {
 
     class UnsupportedMediaUriException(uri: Uri) : IllegalArgumentException() {
         override val message = "Uri $uri is not a Media Uri"
+    }
+
+    class UriNotDeletedException(uri: Uri) : RemoteException() {
+        override val message = "Uri $uri could not be deleted"
+    }
+
+    class UriOperationDeniedException(operation: String) : AndroidException() {
+        override val message = "User has denied the $operation operation"
     }
 }
