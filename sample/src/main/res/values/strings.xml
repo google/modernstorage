@@ -1,46 +1,19 @@
 <!--
-  ~ Copyright 2021 Google LLC
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~     https://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
+  Copyright 2021 Google LLC
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
   -->
 
 <resources>
-    <string name="app_name">ModernStorage Sample</string>
-    <string name="demo_add_media">Add media</string>
-    <string name="demo_filesystem">FileSystem</string>
-
-    <!-- Fragment labels -->
-    <string name="fragment_main_label">ModernStorage Demos</string>
-    <string name="mediastore_fragment_label">MediaStore Demo</string>
-    <string name="filesystem_fragment_label">FileSystem Demo</string>
-    <string name="min_sdk_version_requirement">This demo requires API %1$d</string>
-
-    <!-- MediaStore demo -->
-    <string name="mediastore_permission_message">To add files, we need to request the storage permission</string>
-    <string name="mediastore_permission_label">Request Permission</string>
-    <string name="mediastore_type_label">Type</string>
-    <string name="mediastore_source_label">Source</string>
-    <string name="mediastore_add_media_label">Add media</string>
-    <string name="mediastore_type_image">Image</string>
-    <string name="mediastore_type_video">Video</string>
-    <string name="mediastore_source_internet">Internet</string>
-    <string name="mediastore_source_camera">Camera</string>
-
-    <!-- FileSystem demo -->
-    <string name="filesystem_open_text_file_label">Open text file</string>
-    <string name="filesystem_open_image_file_label">Open image file</string>
-    <string name="filesystem_create_text_file_label">Create text file</string>
-    <string name="filesystem_create_image_file_label">Create image file</string>
-    <string name="filesystem_not_available_yet">This functionality is not available yet</string>
-    <string name="filesystem_size">File size: %1$s</string>
+    <string name="app_name">Sample</string>
 </resources>
