@@ -137,6 +137,6 @@ val mediaDetails = mediaStore.getResourceByUri(mediaUri).getOrElse { reason ->
 
 [mediastore_api]: https://developer.android.com/reference/kotlin/android/provider/MediaStore
 [manage_3rd_party_media_files]: https://developer.android.com/training/data-storage/use-cases#modify-delete-media
-[api_reference]: /api/mediastore
-[mediastore_repository]: /api/mediastore/
+[api_reference]: /modernstorage/api/mediastore
+[mediastore_repository]: /modernstorage/api/mediastore/
 [intent_action_image_capture]: https://developer.android.com/reference/kotlin/android/provider/MediaStore#action_image_capture

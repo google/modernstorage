@@ -127,5 +127,5 @@ val bitmap = BitmapFactory.decodeStream(inputStream)
 [DocumentFile_api]: https://developer.android.com/reference/kotlin/androidx/documentfile/provider/DocumentFile
 [java.nio_api]: https://developer.android.com/reference/java/nio/package-summary
 [Uri_api]: https://developer.android.com/reference/kotlin/android/net/Uri
-[api_reference]: /api/filesystem
+[api_reference]: /modernstorage/api/filesystem/
 [InputStream_api]: https://developer.android.com/reference/kotlin/java/io/InputStream
