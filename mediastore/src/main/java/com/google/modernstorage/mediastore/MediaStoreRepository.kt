@@ -284,7 +284,7 @@ class MediaStoreRepository(private val appContext: Context) {
             }
         }
 
-        scanFilePath(path = resource.path, mimeType = resource.mimeType)
+        resource.path?.let { scanFilePath(path = it, mimeType = resource.mimeType) }
         Result.success(resource.uri)
     }
 
@@ -430,7 +430,6 @@ class MediaStoreRepository(private val appContext: Context) {
                 return@withContext Result.failure(Exceptions.UriNotFoundException(uri))
             }
 
-            val idColumn = cursor.getColumnIndexOrThrow(FileColumns._ID)
             val displayNameColumn = cursor.getColumnIndexOrThrow(FileColumns.DISPLAY_NAME)
             val sizeColumn = cursor.getColumnIndexOrThrow(FileColumns.SIZE)
             val mediaTypeColumn = cursor.getColumnIndexOrThrow(FileColumns.MEDIA_TYPE)
@@ -439,7 +438,6 @@ class MediaStoreRepository(private val appContext: Context) {
 
             Result.success(
                 FileResource(
-                    id = cursor.getInt(idColumn),
                     uri = contentUri,
                     filename = cursor.getString(displayNameColumn),
                     size = cursor.getLong(sizeColumn),
