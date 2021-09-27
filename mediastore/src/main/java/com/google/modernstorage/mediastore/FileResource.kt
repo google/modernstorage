@@ -24,7 +24,6 @@ import java.io.File
 /**
  * Represents an [android.provider.MediaStore] entry.
  *
- * @property id Entry MediaStore id.
  * @property uri Entry MediaStore uri.
  * @property filename File name with extension.
  * @property size Size of the file in bytes.
@@ -33,20 +32,19 @@ import java.io.File
  */
 @Parcelize
 data class FileResource(
-    val id: Int,
     val uri: Uri,
     val filename: String,
     val size: Long,
     val type: FileType,
     val mimeType: String,
-    val path: String,
+    val path: String?,
 ) : Parcelable {
 
     /**
      * Returns a [File] if the [FileResource] path property isn't null.
      */
-    fun getFile(): File {
-        return File(path)
+    fun getFile(): File? {
+        return if (path != null) File(path) else null
     }
 }
 
