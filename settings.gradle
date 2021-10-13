@@ -18,3 +18,4 @@ include ':mediastore'
 include ':sampleviews'
 rootProject.name = "ModernStorage"
 include ':filesystem'
+include ':storage'
