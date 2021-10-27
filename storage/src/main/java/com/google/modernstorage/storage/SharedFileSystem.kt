@@ -10,10 +10,10 @@ import okio.Sink
 import okio.Source
 
 @ExperimentalFileSystem
-class AndroidFileSystem(context: Context): FileSystem() {
+class SharedFileSystem(context: Context): FileSystem() {
     private val contentResolver = context.contentResolver
 
-    override fun appendingSink(file: Path): Sink {
+    override fun appendingSink(file: Path, mustExist: Boolean): Sink {
         TODO("Not yet implemented")
     }
 
@@ -29,11 +29,19 @@ class AndroidFileSystem(context: Context): FileSystem() {
         TODO("Not yet implemented")
     }
 
+    override fun createSymlink(source: Path, target: Path) {
+        TODO("Not yet implemented")
+    }
+
     override fun delete(path: Path) {
         TODO("Not yet implemented")
     }
 
     override fun list(dir: Path): List<Path> {
+        TODO("Not yet implemented")
+    }
+
+    override fun listOrNull(dir: Path): List<Path>? {
         TODO("Not yet implemented")
     }
 
@@ -45,11 +53,11 @@ class AndroidFileSystem(context: Context): FileSystem() {
         TODO("Not yet implemented")
     }
 
-    override fun openReadWrite(file: Path): FileHandle {
+    override fun openReadWrite(file: Path, mustCreate: Boolean, mustExist: Boolean): FileHandle {
         TODO("Not yet implemented")
     }
 
-    override fun sink(file: Path): Sink {
+    override fun sink(file: Path, mustCreate: Boolean): Sink {
         TODO("Not yet implemented")
     }
 
