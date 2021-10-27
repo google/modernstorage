@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-include ':mediastore'
-include ':sampleviews'
 rootProject.name = "ModernStorage"
+include ':mediastore'
 include ':filesystem'
 include ':storage'
+include ':sample_compose'
