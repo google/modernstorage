@@ -1,15 +1,15 @@
 package com.google.modernstorage.storage
 
 import android.content.Context
-import okio.ExperimentalFileSystem
+import android.net.Uri
 import okio.FileHandle
 import okio.FileMetadata
 import okio.FileSystem
 import okio.Path
 import okio.Sink
 import okio.Source
+import okio.source
 
-@ExperimentalFileSystem
 class SharedFileSystem(context: Context): FileSystem() {
     private val contentResolver = context.contentResolver
 
@@ -62,6 +62,11 @@ class SharedFileSystem(context: Context): FileSystem() {
     }
 
     override fun source(file: Path): Source {
-        TODO("Not yet implemented")
+        val uri = file.toUri()
+        val inputStream = contentResolver.openInputStream(uri)
+
+        checkNotNull(inputStream) { "Couldn't open an InputStream for this Uri ($uri)" }
+
+        return inputStream.source()
     }
 }
