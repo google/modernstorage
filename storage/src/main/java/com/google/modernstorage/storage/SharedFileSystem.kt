@@ -1,14 +1,15 @@
 package com.google.modernstorage.storage
 
 import android.content.Context
-import android.net.Uri
 import okio.FileHandle
 import okio.FileMetadata
 import okio.FileSystem
 import okio.Path
 import okio.Sink
 import okio.Source
+import okio.sink
 import okio.source
+import java.io.IOException
 
 class SharedFileSystem(context: Context): FileSystem() {
     private val contentResolver = context.contentResolver
@@ -22,18 +23,18 @@ class SharedFileSystem(context: Context): FileSystem() {
     }
 
     override fun canonicalize(path: Path): Path {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException("Paths can't be canonicalized in SharedFileSystem")
     }
 
-    override fun createDirectory(dir: Path) {
+    override fun createDirectory(dir: Path, mustCreate: Boolean) {
         TODO("Not yet implemented")
     }
 
     override fun createSymlink(source: Path, target: Path) {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException("Symlinks  can't be created in SharedFileSystem")
     }
 
-    override fun delete(path: Path) {
+    override fun delete(path: Path, mustExist: Boolean) {
         TODO("Not yet implemented")
     }
 
@@ -58,15 +59,28 @@ class SharedFileSystem(context: Context): FileSystem() {
     }
 
     override fun sink(file: Path, mustCreate: Boolean): Sink {
-        TODO("Not yet implemented")
+        if(mustCreate) {
+            throw IOException("Path creation isn't supported ($file)")
+        }
+
+        val uri = file.toUri()
+        val outputStream = contentResolver.openOutputStream(uri)
+
+        if (outputStream == null) {
+            throw IOException("Couldn't open an OutputStream ($file)")
+        } else {
+            return outputStream.sink()
+        }
     }
 
     override fun source(file: Path): Source {
         val uri = file.toUri()
         val inputStream = contentResolver.openInputStream(uri)
 
-        checkNotNull(inputStream) { "Couldn't open an InputStream for this Uri ($uri)" }
-
-        return inputStream.source()
+        if (inputStream == null) {
+            throw IOException("Couldn't open an InputStream ($file)")
+        } else {
+            return inputStream.source()
+        }
     }
 }
