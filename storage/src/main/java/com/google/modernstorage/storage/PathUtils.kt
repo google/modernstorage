@@ -22,11 +22,17 @@ import okio.Path.Companion.toPath
 fun Path.toUri(): Uri {
     // TODO: Add proper verification
     // TODO: Check if URI authority is compatible with our API
-    return Uri.parse(this.toString())
+    val str = this.toString()
+
+    if(str.startsWith("content:/")) {
+        return Uri.parse(str.replace("content:/", "content://"))
+    }
+
+    return Uri.parse(str)
 }
 
 fun Uri.toPath(): Path {
     // TODO: Add proper verification
     // TODO: Check if URI authority is compatible with our API
-    return this.toString().toPath()
+    return this.toString().toPath(false)
 }

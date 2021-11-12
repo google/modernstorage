@@ -16,6 +16,11 @@
 package com.google.modernstorage.storage
 
 import android.content.Context
+import android.net.Uri
+import android.os.Build
+import android.provider.DocumentsContract
+import android.provider.MediaStore
+import android.provider.MediaStore.Files.FileColumns
 import okio.FileHandle
 import okio.FileMetadata
 import okio.FileSystem
@@ -62,7 +67,136 @@ class SharedFileSystem(context: Context) : FileSystem() {
     }
 
     override fun metadataOrNull(path: Path): FileMetadata? {
-        TODO("Not yet implemented")
+        val uri = path.toUri()
+
+        return when(uri.authority) {
+            MediaStore.AUTHORITY -> fetchMetadataFromMediaStore(path, uri)
+            else -> fetchMetadataFromDocumentProvider(path, uri)
+        }
+    }
+
+    /**
+     * Convert a media [Uri] to a content [Uri] to be used when requesting [FileColumns] values.
+     *
+     * Some columns are only available on the [MediaStore.Files] collection and this method converts
+     * [Uri] from other MediaStore collections (e.g. [MediaStore.Images])
+     *
+     * @param uri [Uri] representing the MediaStore entry.
+     */
+    private fun convertMediaUriToContentUri(uri: Uri): Uri {
+        if (uri.authority != MediaStore.AUTHORITY) {
+            error { "Uri $uri is not a Media Uri" }
+        }
+
+        val entryId = uri.lastPathSegment ?: error { "Uri $uri is not a Media Uri" }
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            MediaStore.Files.getContentUri(MediaStore.getVolumeName(uri), entryId.toLong())
+        } else {
+            MediaStore.Files.getContentUri(uri.pathSegments[0], entryId.toLong())
+        }
+    }
+
+    private fun fetchMetadataFromMediaStore(path: Path, uri: Uri): FileMetadata? {
+        // Convert generic media uri to content uri to get FileColumns.MEDIA_TYPE value
+        val contentUri = convertMediaUriToContentUri(uri)
+
+        val cursor = contentResolver.query(
+            contentUri,
+            arrayOf(
+                FileColumns.DATE_MODIFIED,
+                FileColumns.DISPLAY_NAME,
+                FileColumns.MIME_TYPE,
+                FileColumns.SIZE,
+                FileColumns.DATA,
+            ),
+            null,
+            null,
+            null
+        ) ?: return null
+
+        cursor.use { cursor ->
+            if (!cursor.moveToNext()) {
+                return null
+            }
+
+            // FileColumns.DATE_MODIFIED
+            val lastModifiedTime = cursor.getLong(0)
+            // FileColumns.DISPLAY_NAME
+            val displayName = cursor.getString(1)
+            // FileColumns.MIME_TYPE
+            val mimeType = cursor.getString(2)
+            // FileColumns.SIZE
+            val size = cursor.getLong(3)
+            // FileColumns.DATA
+            val filePath = cursor.getString(4)
+
+            return FileMetadata(
+                isRegularFile = true,
+                isDirectory = false,
+                symlinkTarget = null,
+                size = size,
+                createdAtMillis = null,
+                lastModifiedAtMillis = lastModifiedTime,
+                lastAccessedAtMillis = null,
+                extras = mapOf(
+                    PathExtra::class to path,
+                    UriExtra::class to uri,
+                    DisplayNameExtra::class to DisplayNameExtra(displayName),
+                    MimeTypeExtra::class to mimeType,
+                    FilePath::class to filePath
+                )
+            )
+        }
+    }
+
+    private fun fetchMetadataFromDocumentProvider(path: Path, uri: Uri): FileMetadata? {
+        val cursor = contentResolver.query(
+            uri,
+            arrayOf(
+                DocumentsContract.Document.COLUMN_LAST_MODIFIED,
+                DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                DocumentsContract.Document.COLUMN_MIME_TYPE,
+                DocumentsContract.Document.COLUMN_SIZE
+            ),
+            null,
+            null,
+            null
+        ) ?: return null
+
+        cursor.use { cursor ->
+            if (!cursor.moveToNext()) {
+                return null
+            }
+
+            // DocumentsContract.Document.COLUMN_LAST_MODIFIED
+            val lastModifiedTime = cursor.getLong(0)
+            // DocumentsContract.Document.COLUMN_DISPLAY_NAME
+            val displayName = cursor.getString(1)
+            // DocumentsContract.Document.COLUMN_MIME_TYPE
+            val mimeType = cursor.getString(2)
+            // DocumentsContract.Document.COLUMN_SIZE
+            val size = cursor.getLong(3)
+
+            val isFolder = mimeType == DocumentsContract.Document.MIME_TYPE_DIR ||
+                mimeType == DocumentsContract.Root.MIME_TYPE_ITEM
+
+            return FileMetadata(
+                isRegularFile = !isFolder,
+                isDirectory = isFolder,
+                symlinkTarget = null,
+                size = size,
+                createdAtMillis = null,
+                lastModifiedAtMillis = lastModifiedTime,
+                lastAccessedAtMillis = null,
+                extras = mapOf(
+                    PathExtra::class to path,
+                    UriExtra::class to uri,
+                    DisplayNameExtra::class to DisplayNameExtra(displayName),
+                    MimeTypeExtra::class to mimeType
+                )
+            )
+        }
     }
 
     override fun openReadOnly(file: Path): FileHandle {
@@ -99,3 +233,11 @@ class SharedFileSystem(context: Context) : FileSystem() {
         }
     }
 }
+
+@JvmInline
+value class DisplayNameExtra(val value: String)
+
+typealias PathExtra = Path
+typealias UriExtra = String
+typealias MimeTypeExtra = String
+typealias FilePath = String
