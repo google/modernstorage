@@ -58,12 +58,43 @@ class SharedFileSystem(context: Context) : FileSystem() {
         TODO("Not yet implemented")
     }
 
-    override fun list(dir: Path): List<Path> {
-        TODO("Not yet implemented")
-    }
+    override fun list(dir: Path): List<Path> = list(dir, throwOnFailure = true)!!
 
-    override fun listOrNull(dir: Path): List<Path>? {
-        TODO("Not yet implemented")
+    override fun listOrNull(dir: Path): List<Path>? = list(dir, throwOnFailure = false)
+
+    private fun list(dir: Path, throwOnFailure: Boolean): List<Path>? {
+        // TODO: Verify path is a directory
+        val rootUri = dir.toUri()
+        val documentId = DocumentsContract.getDocumentId(rootUri)
+        val treeUri = DocumentsContract.buildChildDocumentsUriUsingTree(rootUri, documentId)
+
+        val cursor = contentResolver.query(
+            treeUri,
+            arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID),
+            null,
+            null,
+            null,
+            null
+        )
+
+        if(cursor == null) {
+            if (throwOnFailure) {
+                throw IOException("failed to list $dir")
+            } else {
+                return null
+            }
+        }
+
+
+        val result = mutableListOf<Path>()
+
+        cursor.use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(DocumentsContract.buildDocumentUriUsingTree(rootUri, documentId).toPath())
+            }
+        }
+
+        return result
     }
 
     override fun metadataOrNull(path: Path): FileMetadata? {
