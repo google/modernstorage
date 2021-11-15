@@ -69,7 +69,7 @@ class SharedFileSystem(context: Context) : FileSystem() {
     override fun metadataOrNull(path: Path): FileMetadata? {
         val uri = path.toUri()
 
-        return when(uri.authority) {
+        return when (uri.authority) {
             MediaStore.AUTHORITY -> fetchMetadataFromMediaStore(path, uri)
             else -> fetchMetadataFromDocumentProvider(path, uri)
         }

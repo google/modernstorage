@@ -24,7 +24,7 @@ fun Path.toUri(): Uri {
     // TODO: Check if URI authority is compatible with our API
     val str = this.toString()
 
-    if(str.startsWith("content:/")) {
+    if (str.startsWith("content:/")) {
         return Uri.parse(str.replace("content:/", "content://"))
     }
 
