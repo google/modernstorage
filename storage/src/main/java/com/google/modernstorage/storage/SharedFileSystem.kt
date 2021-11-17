@@ -77,14 +77,13 @@ class SharedFileSystem(context: Context) : FileSystem() {
             null
         )
 
-        if(cursor == null) {
+        if (cursor == null) {
             if (throwOnFailure) {
                 throw IOException("failed to list $dir")
             } else {
                 return null
             }
         }
-
 
         val result = mutableListOf<Path>()
 
