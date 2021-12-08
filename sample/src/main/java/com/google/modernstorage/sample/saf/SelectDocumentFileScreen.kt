@@ -15,6 +15,7 @@
  */
 package com.google.modernstorage.sample.saf
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -40,13 +41,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.modernstorage.photopicker.PhotoPicker
 import com.google.modernstorage.sample.Demos
 import com.google.modernstorage.sample.HomeRoute
 import com.google.modernstorage.sample.R
 import com.google.modernstorage.sample.ui.theme.DocumentFilePreviewCard
 import com.google.modernstorage.sample.ui.theme.IntroCard
-import com.google.modernstorage.storage.PhotoPickerArgs
-import com.google.modernstorage.storage.PreferredPhotoPicker
 import com.google.modernstorage.storage.SharedFileSystem
 import com.google.modernstorage.storage.toPath
 import okio.FileMetadata
@@ -57,6 +57,7 @@ const val ZIP_MIMETYPE = "application/zip"
 const val IMAGE_MIMETYPE = "image/*"
 const val VIDEO_MIMETYPE = "video/*"
 
+@SuppressLint("UnsafeOptInUsageError")
 @ExperimentalFoundationApi
 @Composable
 fun SelectDocumentFileScreen(navController: NavController) {
@@ -69,7 +70,7 @@ fun SelectDocumentFileScreen(navController: NavController) {
         }
 
     val photoPicker =
-        rememberLauncherForActivityResult(PreferredPhotoPicker()) { uris ->
+        rememberLauncherForActivityResult(PhotoPicker()) { uris ->
             println(uris)
         }
 
@@ -131,7 +132,7 @@ fun SelectDocumentFileScreen(navController: NavController) {
                     item {
                         Button(
                             modifier = Modifier.padding(4.dp),
-                            onClick = { photoPicker.launch(PhotoPickerArgs(limit = 5)) }
+                            onClick = { photoPicker.launch(PhotoPicker.Args(PhotoPicker.VIDEO_ONLY, 5)) }
                         ) {
                             Text(stringResource(R.string.demo_select_photo_picker))
                         }

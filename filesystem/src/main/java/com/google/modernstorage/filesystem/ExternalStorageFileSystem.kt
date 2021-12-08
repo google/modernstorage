@@ -15,7 +15,6 @@
  */
 package com.google.modernstorage.filesystem
 
-import java.lang.NullPointerException
 import java.net.URI
 import java.nio.file.Path
 
