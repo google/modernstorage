@@ -45,6 +45,8 @@ import com.google.modernstorage.sample.HomeRoute
 import com.google.modernstorage.sample.R
 import com.google.modernstorage.sample.ui.theme.DocumentFilePreviewCard
 import com.google.modernstorage.sample.ui.theme.IntroCard
+import com.google.modernstorage.storage.PhotoPickerArgs
+import com.google.modernstorage.storage.PreferredPhotoPicker
 import com.google.modernstorage.storage.SharedFileSystem
 import com.google.modernstorage.storage.toPath
 import okio.FileMetadata
@@ -52,6 +54,8 @@ import okio.FileMetadata
 const val GENERIC_MIMETYPE = "*/*"
 const val PDF_MIMETYPE = "application/pdf"
 const val ZIP_MIMETYPE = "application/zip"
+const val IMAGE_MIMETYPE = "image/*"
+const val VIDEO_MIMETYPE = "video/*"
 
 @ExperimentalFoundationApi
 @Composable
@@ -62,6 +66,11 @@ fun SelectDocumentFileScreen(navController: NavController) {
     val selectFile =
         rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
             uri?.let { fileMetadata = fileSystem.metadataOrNull(uri.toPath()) }
+        }
+
+    val photoPicker =
+        rememberLauncherForActivityResult(PreferredPhotoPicker()) { uris ->
+            println(uris)
         }
 
     Scaffold(
@@ -109,6 +118,22 @@ fun SelectDocumentFileScreen(navController: NavController) {
                             onClick = { selectFile.launch(arrayOf(ZIP_MIMETYPE)) }
                         ) {
                             Text(stringResource(R.string.demo_select_zip_document))
+                        }
+                    }
+                    item {
+                        Button(
+                            modifier = Modifier.padding(4.dp),
+                            onClick = { selectFile.launch(arrayOf(IMAGE_MIMETYPE, VIDEO_MIMETYPE)) }
+                        ) {
+                            Text(stringResource(R.string.demo_select_image_and_video_document))
+                        }
+                    }
+                    item {
+                        Button(
+                            modifier = Modifier.padding(4.dp),
+                            onClick = { photoPicker.launch(PhotoPickerArgs(limit = 5)) }
+                        ) {
+                            Text(stringResource(R.string.demo_select_photo_picker))
                         }
                     }
                 }
