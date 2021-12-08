@@ -16,6 +16,17 @@ class StoragePermissions(private val context: Context) {
     companion object {
         private const val VISUAL_PERMISSION = "READ_MEDIA_IMAGES_VIDEO"
         private const val AUDIO_PERMISSION = "READ_MEDIA_AUDIO"
+
+        // File Types
+        const val IMAGES = 1
+        const val VIDEO = 2
+        const val AUDIO = 3
+        const val DOCUMENTS = 4
+
+        // Ownership type
+        const val SELF = 1
+        const val OTHER_APPS = 2
+        const val ALL = 3
     }
 
     private fun checkPermission(permission: String): Boolean {
@@ -28,28 +39,22 @@ class StoragePermissions(private val context: Context) {
     }
 
     /**
-     * Check if app can read its own visual media files (images & video)
+     * Check if app can read files
      */
-    fun canReadOwnVisualMedia(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            true
-        } else {
-            checkPermission(READ_EXTERNAL_STORAGE) || checkPermission(WRITE_EXTERNAL_STORAGE)
-        }
+    fun canReadFiles(types: List<Int>, ownership: Int): Boolean {
+        TODO("Not implemented yet")
     }
-    fun requestReadOwnVisualMediaPermission(): ActivityResult = TODO("Have to do it")
 
     /**
-     * Check if app can read its own audio media files
+     * Check if app can read its own document files
      */
-    fun canReadOwnAudioMedia(): Boolean {
+    fun canReadOwnDocumentFiles(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             true
         } else {
             checkPermission(READ_EXTERNAL_STORAGE) || checkPermission(WRITE_EXTERNAL_STORAGE)
         }
     }
-    fun requestReadOwnAudioMediaPermission(): ActivityResult = TODO("Have to do it")
 
     /**
      * Check if app can read shared visual media files (images & video)
