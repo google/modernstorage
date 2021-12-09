@@ -37,7 +37,7 @@ class StoragePermissions(private val context: Context) {
         }
 
         // Ownership type
-        enum class Ownership {
+        enum class CreatedBy {
             Self, AllApps
         }
 
@@ -59,14 +59,14 @@ class StoragePermissions(private val context: Context) {
     /**
      * Check if app can read shared files
      */
-    fun canAccessFiles(action: Action, types: List<FileType>, ownership: Ownership): Boolean {
+    private fun canAccessFiles(action: Action, types: List<FileType>, createdBy: CreatedBy): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && checkFullStoragePermission()) {
             return true
         }
 
         val conditions = mutableListOf<Boolean>()
-        when (ownership) {
-            Ownership.Self -> {
+        when (createdBy) {
+            CreatedBy.Self -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     conditions.add(true)
                 } else {
@@ -76,7 +76,7 @@ class StoragePermissions(private val context: Context) {
                     }
                 }
             }
-            Ownership.AllApps -> {
+            CreatedBy.AllApps -> {
                 if (types.contains(FileType.Image)) {
                     when {
                         BuildCompat.isAtLeastT() -> {
@@ -145,5 +145,19 @@ class StoragePermissions(private val context: Context) {
         }
 
         return conditions.all { it }
+    }
+
+    /**
+     * Check if app can read shared files
+     */
+    fun canReadFiles(types: List<FileType>, createdBy: CreatedBy): Boolean {
+        return canAccessFiles(Action.READ, types, createdBy)
+    }
+
+    /**
+     * Check if app can write shared files
+     */
+    fun canReadAndWriteFiles(types: List<FileType>, createdBy: CreatedBy): Boolean {
+        return canAccessFiles(Action.READ_AND_WRITE, types, createdBy)
     }
 }
