@@ -47,7 +47,7 @@ class StoragePermissions(private val context: Context) {
         }
     }
 
-    private fun checkPermission(permission: String): Boolean {
+    private fun hasPermission(permission: String): Boolean {
         return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
     }
 
@@ -66,8 +66,8 @@ class StoragePermissions(private val context: Context) {
                     conditions.add(true)
                 } else {
                     when (action) {
-                        Action.READ -> conditions.add(checkPermission(READ_EXTERNAL_STORAGE) || checkPermission(WRITE_EXTERNAL_STORAGE))
-                        Action.READ_AND_WRITE -> conditions.add(checkPermission(WRITE_EXTERNAL_STORAGE))
+                        Action.READ -> conditions.add(hasPermission(READ_EXTERNAL_STORAGE) || hasPermission(WRITE_EXTERNAL_STORAGE))
+                        Action.READ_AND_WRITE -> conditions.add(hasPermission(WRITE_EXTERNAL_STORAGE))
                     }
                 }
             }
@@ -75,12 +75,12 @@ class StoragePermissions(private val context: Context) {
                 if (types.contains(FileType.Image)) {
                     when {
                         Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                            conditions.add(checkPermission(READ_EXTERNAL_STORAGE))
+                            conditions.add(hasPermission(READ_EXTERNAL_STORAGE))
                         }
                         else -> {
                             when (action) {
-                                Action.READ -> conditions.add(checkPermission(READ_EXTERNAL_STORAGE) || checkPermission(WRITE_EXTERNAL_STORAGE))
-                                Action.READ_AND_WRITE -> conditions.add(checkPermission(WRITE_EXTERNAL_STORAGE))
+                                Action.READ -> conditions.add(hasPermission(READ_EXTERNAL_STORAGE) || hasPermission(WRITE_EXTERNAL_STORAGE))
+                                Action.READ_AND_WRITE -> conditions.add(hasPermission(WRITE_EXTERNAL_STORAGE))
                             }
                         }
                     }
@@ -89,12 +89,12 @@ class StoragePermissions(private val context: Context) {
                 if (types.contains(FileType.Video)) {
                     when {
                         Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                            conditions.add(checkPermission(READ_EXTERNAL_STORAGE))
+                            conditions.add(hasPermission(READ_EXTERNAL_STORAGE))
                         }
                         else -> {
                             when (action) {
-                                Action.READ -> conditions.add(checkPermission(READ_EXTERNAL_STORAGE) || checkPermission(WRITE_EXTERNAL_STORAGE))
-                                Action.READ_AND_WRITE -> conditions.add(checkPermission(WRITE_EXTERNAL_STORAGE))
+                                Action.READ -> conditions.add(hasPermission(READ_EXTERNAL_STORAGE) || hasPermission(WRITE_EXTERNAL_STORAGE))
+                                Action.READ_AND_WRITE -> conditions.add(hasPermission(WRITE_EXTERNAL_STORAGE))
                             }
                         }
                     }
@@ -103,12 +103,12 @@ class StoragePermissions(private val context: Context) {
                 if (types.contains(FileType.Audio)) {
                     when {
                         Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                            conditions.add(checkPermission(READ_EXTERNAL_STORAGE))
+                            conditions.add(hasPermission(READ_EXTERNAL_STORAGE))
                         }
                         else -> {
                             when (action) {
-                                Action.READ -> conditions.add(checkPermission(READ_EXTERNAL_STORAGE) || checkPermission(WRITE_EXTERNAL_STORAGE))
-                                Action.READ_AND_WRITE -> conditions.add(checkPermission(WRITE_EXTERNAL_STORAGE))
+                                Action.READ -> conditions.add(hasPermission(READ_EXTERNAL_STORAGE) || hasPermission(WRITE_EXTERNAL_STORAGE))
+                                Action.READ_AND_WRITE -> conditions.add(hasPermission(WRITE_EXTERNAL_STORAGE))
                             }
                         }
                     }
@@ -121,8 +121,8 @@ class StoragePermissions(private val context: Context) {
                         }
                         else -> {
                             when (action) {
-                                Action.READ -> conditions.add(checkPermission(READ_EXTERNAL_STORAGE) || checkPermission(WRITE_EXTERNAL_STORAGE))
-                                Action.READ_AND_WRITE -> conditions.add(checkPermission(WRITE_EXTERNAL_STORAGE))
+                                Action.READ -> conditions.add(hasPermission(READ_EXTERNAL_STORAGE) || hasPermission(WRITE_EXTERNAL_STORAGE))
+                                Action.READ_AND_WRITE -> conditions.add(hasPermission(WRITE_EXTERNAL_STORAGE))
                             }
                         }
                     }
