@@ -82,7 +82,6 @@ class PhotoPicker : ActivityResultContract<PhotoPicker.Args, List<Uri>>() {
             return intent
         } else {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                // TODO: Check if this parameter is needed
                 type = "*/*"
 
                 if (input.maxItems > 1) {
