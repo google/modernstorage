@@ -21,27 +21,27 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import androidx.core.os.BuildCompat
 
-@BuildCompat.PrereleaseSdkCheck
 class StoragePermissions(private val context: Context) {
     companion object {
-        private const val VISUAL_PERMISSION = "READ_MEDIA_IMAGES_VIDEO"
-        private const val AUDIO_PERMISSION = "READ_MEDIA_AUDIO"
-
-        // File Types
+        /**
+         * Type of files
+         */
         enum class FileType {
             Image, Video, Audio, Document
         }
 
-        // Ownership type
+        /**
+         * Type of file ownership
+         */
         enum class CreatedBy {
             Self, AllApps
         }
 
-        // Ownership type
+        /**
+         * Type of file actions
+         */
         enum class Action {
             READ, READ_AND_WRITE
         }
@@ -51,16 +51,11 @@ class StoragePermissions(private val context: Context) {
         return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
     }
 
-    @RequiresApi(Build.VERSION_CODES.R)
-    private fun checkFullStoragePermission(): Boolean {
-        return Environment.isExternalStorageManager()
-    }
-
     /**
      * Check if app can read shared files
      */
     private fun canAccessFiles(action: Action, types: List<FileType>, createdBy: CreatedBy): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && checkFullStoragePermission()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager()) {
             return true
         }
 
@@ -79,9 +74,6 @@ class StoragePermissions(private val context: Context) {
             CreatedBy.AllApps -> {
                 if (types.contains(FileType.Image)) {
                     when {
-                        BuildCompat.isAtLeastT() -> {
-                            conditions.add(checkPermission(VISUAL_PERMISSION))
-                        }
                         Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
                             conditions.add(checkPermission(READ_EXTERNAL_STORAGE))
                         }
@@ -96,9 +88,6 @@ class StoragePermissions(private val context: Context) {
 
                 if (types.contains(FileType.Video)) {
                     when {
-                        BuildCompat.isAtLeastT() -> {
-                            conditions.add(checkPermission(VISUAL_PERMISSION))
-                        }
                         Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
                             conditions.add(checkPermission(READ_EXTERNAL_STORAGE))
                         }
@@ -113,9 +102,6 @@ class StoragePermissions(private val context: Context) {
 
                 if (types.contains(FileType.Audio)) {
                     when {
-                        BuildCompat.isAtLeastT() -> {
-                            conditions.add(checkPermission(AUDIO_PERMISSION))
-                        }
                         Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
                             conditions.add(checkPermission(READ_EXTERNAL_STORAGE))
                         }
