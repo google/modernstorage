@@ -1,0 +1,32 @@
+// Signature format: 4.0
+package com.google.modernstorage.permissions {
+
+  public final class StoragePermissions {
+    ctor public StoragePermissions(android.content.Context context);
+    method public boolean canReadAndWriteFiles(java.util.List<? extends com.google.modernstorage.permissions.StoragePermissions.Companion.FileType> types, com.google.modernstorage.permissions.StoragePermissions.Companion.CreatedBy createdBy);
+    method public boolean canReadFiles(java.util.List<? extends com.google.modernstorage.permissions.StoragePermissions.Companion.FileType> types, com.google.modernstorage.permissions.StoragePermissions.Companion.CreatedBy createdBy);
+    field public static final com.google.modernstorage.permissions.StoragePermissions.Companion Companion;
+  }
+
+  public static final class StoragePermissions.Companion {
+  }
+
+  public enum StoragePermissions.Companion.Action {
+    enum_constant public static final com.google.modernstorage.permissions.StoragePermissions.Companion.Action READ;
+    enum_constant public static final com.google.modernstorage.permissions.StoragePermissions.Companion.Action READ_AND_WRITE;
+  }
+
+  public enum StoragePermissions.Companion.CreatedBy {
+    enum_constant public static final com.google.modernstorage.permissions.StoragePermissions.Companion.CreatedBy AllApps;
+    enum_constant public static final com.google.modernstorage.permissions.StoragePermissions.Companion.CreatedBy Self;
+  }
+
+  public enum StoragePermissions.Companion.FileType {
+    enum_constant public static final com.google.modernstorage.permissions.StoragePermissions.Companion.FileType Audio;
+    enum_constant public static final com.google.modernstorage.permissions.StoragePermissions.Companion.FileType Document;
+    enum_constant public static final com.google.modernstorage.permissions.StoragePermissions.Companion.FileType Image;
+    enum_constant public static final com.google.modernstorage.permissions.StoragePermissions.Companion.FileType Video;
+  }
+
+}
+

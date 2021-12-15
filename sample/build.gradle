@@ -79,7 +79,7 @@ dependencies {
     implementation project(":photopicker")
     implementation project(":storage")
 
-    implementation "com.github.skydoves:landscapist-glide:1.4.1"
+    implementation 'com.github.skydoves:landscapist-glide:1.4.4'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
