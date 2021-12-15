@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.modernstorage.sample.ui.theme
+package com.google.modernstorage.sample.ui.shared
 
 import android.text.format.Formatter
 import androidx.compose.foundation.BorderStroke
@@ -28,42 +28,16 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.modernstorage.storage.MetadataExtras.DisplayName
 import com.google.modernstorage.storage.MetadataExtras.MimeType
+import com.google.modernstorage.storage.toUri
+import com.skydoves.landscapist.glide.GlideImage
 import okio.FileMetadata
+import okio.Path
 
-// @Composable
-// fun MediaFilePreviewCard(resource: FileResource) {
-//    val context = LocalContext.current
-//    val formattedFileSize = Formatter.formatShortFileSize(context, resource.size)
-//    val fileMetadata = "${resource.mimeType} - $formattedFileSize"
-//
-//    Card(
-//        elevation = 0.dp,
-//        border = BorderStroke(width = 1.dp, color = Color.DarkGray),
-//        modifier = Modifier
-//            .padding(16.dp)
-//            .fillMaxWidth()
-//    ) {
-//        Column {
-//            GlideImage(
-//                imageModel = resource.uri,
-//                contentScale = ContentScale.FillWidth,
-//                contentDescription = null
-//            )
-//            Column(modifier = Modifier.padding(16.dp)) {
-//                Text(text = resource.filename, style = MaterialTheme.typography.subtitle2)
-//                Spacer(modifier = Modifier.height(4.dp))
-//                Text(text = fileMetadata, style = MaterialTheme.typography.caption)
-//                Spacer(modifier = Modifier.height(12.dp))
-//                resource.path?.let { Text(text = it, style = MaterialTheme.typography.caption) }
-//            }
-//        }
-//    }
-// }
-//
 @Composable
 fun DocumentFilePreviewCard(metadata: FileMetadata) {
     val context = LocalContext.current
@@ -95,6 +69,39 @@ fun DocumentFilePreviewCard(metadata: FileMetadata) {
                 Spacer(modifier = Modifier.height(12.dp))
 //                resource.path?.let { Text(text = it, style = MaterialTheme.typography.caption) }
             }
+        }
+    }
+}
+
+@Composable
+fun MediaPreviewCard(path: Path, metadata: FileMetadata) {
+    val context = LocalContext.current
+
+    val formattedFileSize = Formatter.formatShortFileSize(context, metadata.size ?: -1)
+    val fileDetails = "${metadata.extra(MimeType::class)} - $formattedFileSize"
+
+    Card(
+        elevation = 0.dp,
+        border = BorderStroke(width = 1.dp, color = Color.DarkGray),
+        modifier = Modifier.padding(16.dp)
+    ) {
+        Column {
+            Column(modifier = Modifier.padding(16.dp)) {
+                metadata.extra(DisplayName::class)?.let {
+                    Text(text = it.value, style = MaterialTheme.typography.subtitle2)
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(text = fileDetails, style = MaterialTheme.typography.caption)
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(text = path.toUri().toString(), style = MaterialTheme.typography.caption)
+            }
+
+            GlideImage(
+                modifier = Modifier.height(200.dp),
+                imageModel = path.toUri(),
+                contentScale = ContentScale.FillWidth
+            )
         }
     }
 }

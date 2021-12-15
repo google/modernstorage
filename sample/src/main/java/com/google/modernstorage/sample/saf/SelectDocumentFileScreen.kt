@@ -45,7 +45,7 @@ import com.google.modernstorage.photopicker.PhotoPicker
 import com.google.modernstorage.sample.Demos
 import com.google.modernstorage.sample.HomeRoute
 import com.google.modernstorage.sample.R
-import com.google.modernstorage.sample.ui.theme.DocumentFilePreviewCard
+import com.google.modernstorage.sample.ui.shared.DocumentFilePreviewCard
 import com.google.modernstorage.sample.ui.theme.IntroCard
 import com.google.modernstorage.storage.SharedFileSystem
 import com.google.modernstorage.storage.toPath

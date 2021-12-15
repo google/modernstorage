@@ -17,10 +17,8 @@ package com.google.modernstorage.storage
 
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import android.provider.MediaStore.Files.FileColumns
 import okio.FileHandle
 import okio.FileMetadata
 import okio.FileSystem
@@ -114,40 +112,15 @@ class SharedFileSystem(context: Context) : FileSystem() {
         }
     }
 
-    /**
-     * Convert a media [Uri] to a content [Uri] to be used when requesting [FileColumns] values.
-     *
-     * Some columns are only available on the [MediaStore.Files] collection and this method converts
-     * [Uri] from other MediaStore collections (e.g. [MediaStore.Images])
-     *
-     * @param uri [Uri] representing the MediaStore entry.
-     */
-    private fun convertMediaUriToContentUri(uri: Uri): Uri {
-        if (uri.authority != MediaStore.AUTHORITY) {
-            error { "Uri $uri is not a Media Uri" }
-        }
-
-        val entryId = uri.lastPathSegment ?: error { "Uri $uri is not a Media Uri" }
-
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            MediaStore.Files.getContentUri(MediaStore.getVolumeName(uri), entryId.toLong())
-        } else {
-            MediaStore.Files.getContentUri(uri.pathSegments[0], entryId.toLong())
-        }
-    }
-
     private fun fetchMetadataFromMediaStore(path: Path, uri: Uri): FileMetadata? {
-        // Convert media collection uri to a generic content uri to access FileColumns data
-        val contentUri = convertMediaUriToContentUri(uri)
-
         val cursor = contentResolver.query(
-            contentUri,
+            uri,
             arrayOf(
-                FileColumns.DATE_MODIFIED,
-                FileColumns.DISPLAY_NAME,
-                FileColumns.MIME_TYPE,
-                FileColumns.SIZE,
-                FileColumns.DATA,
+                MediaStore.MediaColumns.DATE_MODIFIED,
+                MediaStore.MediaColumns.DISPLAY_NAME,
+                MediaStore.MediaColumns.MIME_TYPE,
+                MediaStore.MediaColumns.SIZE,
+                MediaStore.MediaColumns.DATA,
             ),
             null,
             null,

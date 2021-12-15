@@ -38,7 +38,31 @@ import com.google.modernstorage.storage.SharedFileSystem
 val fileSystem = SharedFileSystem(context)
 ```
 
-## Read a Uri returned by the Storage Access Framework
+## Get Path from Uri
+Call `toPath` to get a `Path` from a `Uri`:
+
+```kotlin
+val path = uri.toPath()
+```
+
+## Get file metadata
+You can get the file size by using the method `metadataOrNull`:
+
+```kotlin
+import com.google.modernstorage.storage.MetadataExtras.DisplayName
+import com.google.modernstorage.storage.MetadataExtras.MimeType
+
+val fileMetadata = fileSystem.metadataOrNull(uri.toPath())
+Log.d("ModernStorage/uri", uri.toString())
+Log.d("ModernStorage/isRegularFile", metadata.isRegularFile.toString())
+Log.d("ModernStorage/isDirectory", metadata.isDirectory.toString())
+Log.d("ModernStorage/size", metadata.size.toString())
+Log.d("ModernStorage/lastModifiedAtMillis", metadata.lastModifiedAtMillis.toString())
+Log.d("ModernStorage/displayName", metadata.extra(DisplayName::class).value)
+Log.d("ModernStorage/mimeType", metadata.extra(MimeType::class).value)
+```
+
+## Read a Text file Uri from the Storage Access Framework
 ```kotlin
 /**
  * We register first an ActivityResult handler for Intent.ACTION_OPEN_DOCUMENT
@@ -48,7 +72,7 @@ val actionOpenTextFile = registerForActivityResult(OpenDocument()) { uri ->
     if(uri != null) {
         // textPath is an instance of okio.Path
         val textPath = uri.toPath()
-        Log.d("ModernStorage/metadata", fileSystem.metadataOrNull(textPath))
+        Log.d("ModernStorage/metadata", fileSystem.metadataOrNull(textPath).toString())
         Log.d("ModernStorage/content", fileSystem.source(textPath).buffer().readUtf8())
     }
 }

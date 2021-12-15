@@ -16,6 +16,8 @@
 package com.google.modernstorage.sample
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,6 +31,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 const val HomeRoute = "home"
@@ -50,6 +53,9 @@ fun HomeScreen(navController: NavController) {
                         icon = { Icon(demo.icon, contentDescription = null) }
                     )
                     Divider()
+                }
+                item {
+                    Spacer(Modifier.height(20.dp))
                 }
             }
         }

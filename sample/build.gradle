@@ -75,8 +75,9 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.4.0'
     implementation "androidx.navigation:navigation-compose:2.4.0-beta02"
 
-    implementation "com.squareup.okio:okio:3.0.0"
+    implementation project(":permissions")
     implementation project(":photopicker")
+    implementation "com.squareup.okio:okio:3.0.0"
     implementation project(":storage")
 
     implementation 'com.github.skydoves:landscapist-glide:1.4.4'

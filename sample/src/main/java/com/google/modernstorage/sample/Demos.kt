@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ImageSearch
 import androidx.compose.material.icons.filled.NoteAdd
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.ui.graphics.vector.ImageVector
 
 data class Demo(
@@ -77,6 +78,13 @@ object Demos {
         icon = Icons.Filled.ImageSearch,
     )
 
+    val PickVisualMedia = Demo(
+        route = "demo_pick_visual_media",
+        name = R.string.demo_pick_visual_media_name,
+        description = R.string.demo_pick_visual_media_description,
+        icon = Icons.Filled.PhotoLibrary,
+    )
+
     val SelectDocumentFile = Demo(
         route = "demo_select_document_file",
         name = R.string.demo_select_document_file_name,
@@ -84,18 +92,11 @@ object Demos {
         icon = Icons.Filled.AttachFile,
     )
 
-    val CreateDocumentFile = Demo(
-        route = "demo_create_document_file",
-        name = R.string.demo_create_document_file_name,
-        description = R.string.demo_create_document_file_description,
-        icon = Icons.Filled.NoteAdd,
-    )
-
     val EditDocumentFile = Demo(
         route = "demo_edit_document_file",
         name = R.string.demo_edit_document_file_name,
         description = R.string.demo_edit_document_file_description,
-        icon = Icons.Filled.Edit,
+        icon = Icons.Filled.NoteAdd,
     )
 
     val list = listOf(
@@ -105,8 +106,8 @@ object Demos {
         EditMediaFile,
         DeleteMediaFile,
         ListMediaFiles,
+        PickVisualMedia,
         SelectDocumentFile,
-        CreateDocumentFile,
         EditDocumentFile,
     )
 }

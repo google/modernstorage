@@ -34,27 +34,6 @@ class PhotoPicker : ActivityResultContract<PhotoPicker.Args, List<Uri>>() {
 
         private const val INTENT_PICK_IMAGES = "android.provider.action.PICK_IMAGES"
         private const val EXTRA_PICK_IMAGES_MAX = "android.provider.extra.PICK_IMAGES_MAX"
-
-        private fun getClipDataUris(intent: Intent): List<Uri> {
-            // Use a LinkedHashSet to maintain any ordering that may be
-            // present in the ClipData
-            val resultSet = LinkedHashSet<Uri>()
-            if (intent.data != null) {
-                resultSet.add(intent.data!!)
-            }
-            val clipData = intent.clipData
-            if (clipData == null && resultSet.isEmpty()) {
-                return emptyList()
-            } else if (clipData != null) {
-                for (i in 0 until clipData.itemCount) {
-                    val uri = clipData.getItemAt(i).uri
-                    if (uri != null) {
-                        resultSet.add(uri)
-                    }
-                }
-            }
-            return ArrayList(resultSet)
-        }
     }
 
     enum class Type {
@@ -67,7 +46,10 @@ class PhotoPicker : ActivityResultContract<PhotoPicker.Args, List<Uri>>() {
     override fun createIntent(context: Context, input: Args): Intent {
         if (isPhotoPickerAvailable()) {
             val intent = Intent(INTENT_PICK_IMAGES).apply {
-                putExtra(EXTRA_PICK_IMAGES_MAX, input.maxItems)
+                if (input.maxItems > 1) {
+                    putExtra(EXTRA_PICK_IMAGES_MAX, input.maxItems)
+                }
+
                 when (input.type) {
                     Type.IMAGES_ONLY ->
                         putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*"))
@@ -110,5 +92,26 @@ class PhotoPicker : ActivityResultContract<PhotoPicker.Args, List<Uri>>() {
         //  ACTION_OPEN_DOCUMENT
 
         return if (resultCode != Activity.RESULT_OK || intent == null) emptyList() else getClipDataUris(intent)
+    }
+
+    private fun getClipDataUris(intent: Intent): List<Uri> {
+        // Use a LinkedHashSet to maintain any ordering that may be
+        // present in the ClipData
+        val resultSet = LinkedHashSet<Uri>()
+        if (intent.data != null) {
+            resultSet.add(intent.data!!)
+        }
+        val clipData = intent.clipData
+        if (clipData == null && resultSet.isEmpty()) {
+            return emptyList()
+        } else if (clipData != null) {
+            for (i in 0 until clipData.itemCount) {
+                val uri = clipData.getItemAt(i).uri
+                if (uri != null) {
+                    resultSet.add(uri)
+                }
+            }
+        }
+        return ArrayList(resultSet)
     }
 }

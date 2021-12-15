@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.modernstorage.sample.photopicker.PickVisualMediaScreen
 import com.google.modernstorage.sample.saf.SelectDocumentFileScreen
 import com.google.modernstorage.sample.ui.theme.ModernStorageTheme
 
@@ -45,7 +46,7 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = Demos.SelectDocumentFile.route
+                    startDestination = HomeRoute
                 ) {
                     composable(HomeRoute) {
                         HomeScreen(navController)
@@ -70,12 +71,18 @@ class MainActivity : ComponentActivity() {
 //                    }
 
                     /**
+                     * Photo Picker demos
+                     */
+                    composable(Demos.PickVisualMedia.route) {
+                        PickVisualMediaScreen(navController)
+                    }
+
+                    /**
                      * Storage Access Framework demos
                      */
                     composable(Demos.SelectDocumentFile.route) {
                         SelectDocumentFileScreen(navController)
                     }
-                    composable(Demos.CreateDocumentFile.route) { NotAvailableYetScreen() }
                     composable(Demos.EditDocumentFile.route) { NotAvailableYetScreen() }
                 }
             }
