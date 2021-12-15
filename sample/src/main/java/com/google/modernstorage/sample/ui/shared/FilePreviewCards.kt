@@ -19,7 +19,6 @@ import android.text.format.Formatter
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
@@ -37,41 +36,6 @@ import com.google.modernstorage.storage.toUri
 import com.skydoves.landscapist.glide.GlideImage
 import okio.FileMetadata
 import okio.Path
-
-@Composable
-fun DocumentFilePreviewCard(metadata: FileMetadata) {
-    val context = LocalContext.current
-    val formattedFileSize = Formatter.formatShortFileSize(context, metadata.size ?: -1)
-    val fileMetadata = "${metadata.extra(MimeType::class)} - $formattedFileSize"
-//    val uri = metadata.extra(UriExtra::class)!!
-
-//    val thumbnail by produceState<Bitmap?>(null, uri) {
-//        value = SafUtils.getThumbnail(context, uri)
-//    }
-
-    Card(
-        elevation = 0.dp,
-        border = BorderStroke(width = 1.dp, color = Color.DarkGray),
-        modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()
-    ) {
-        Column {
-//            thumbnail?.let { Image(bitmap = it.asImageBitmap(), contentDescription = null) }
-
-            Column(modifier = Modifier.padding(16.dp)) {
-                metadata.extra(DisplayName::class)?.let {
-                    Text(text = it.value, style = MaterialTheme.typography.subtitle2)
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(text = fileMetadata, style = MaterialTheme.typography.caption)
-                Spacer(modifier = Modifier.height(12.dp))
-//                resource.path?.let { Text(text = it, style = MaterialTheme.typography.caption) }
-            }
-        }
-    }
-}
 
 @Composable
 fun MediaPreviewCard(path: Path, metadata: FileMetadata) {

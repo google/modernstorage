@@ -15,7 +15,7 @@
  */
 package com.google.modernstorage.sample.saf
 
-import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -41,12 +41,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.google.modernstorage.photopicker.PhotoPicker
 import com.google.modernstorage.sample.Demos
 import com.google.modernstorage.sample.HomeRoute
 import com.google.modernstorage.sample.R
-import com.google.modernstorage.sample.ui.shared.DocumentFilePreviewCard
-import com.google.modernstorage.sample.ui.theme.IntroCard
+import com.google.modernstorage.sample.ui.shared.MediaPreviewCard
 import com.google.modernstorage.storage.SharedFileSystem
 import com.google.modernstorage.storage.toPath
 import okio.FileMetadata
@@ -57,21 +55,15 @@ const val ZIP_MIMETYPE = "application/zip"
 const val IMAGE_MIMETYPE = "image/*"
 const val VIDEO_MIMETYPE = "video/*"
 
-@SuppressLint("UnsafeOptInUsageError")
 @ExperimentalFoundationApi
 @Composable
 fun SelectDocumentFileScreen(navController: NavController) {
     val fileSystem = SharedFileSystem(LocalContext.current)
-    var fileMetadata by remember { mutableStateOf<FileMetadata?>(null) }
+    var selectedFile by remember { mutableStateOf<Pair<Uri, FileMetadata?>?>(null) }
 
     val selectFile =
         rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-            uri?.let { fileMetadata = fileSystem.metadataOrNull(uri.toPath()) }
-        }
-
-    val photoPicker =
-        rememberLauncherForActivityResult(PhotoPicker()) { uris ->
-            println(uris)
+            uri?.let { selectedFile = Pair(uri, fileSystem.metadataOrNull(uri.toPath())) }
         }
 
     Scaffold(
@@ -90,12 +82,6 @@ fun SelectDocumentFileScreen(navController: NavController) {
         },
         content = { paddingValues ->
             Column(Modifier.padding(paddingValues)) {
-                if (fileMetadata != null) {
-                    DocumentFilePreviewCard(fileMetadata!!)
-                } else {
-                    IntroCard()
-                }
-
                 LazyVerticalGrid(cells = GridCells.Fixed(1)) {
                     item {
                         Button(
@@ -129,12 +115,10 @@ fun SelectDocumentFileScreen(navController: NavController) {
                             Text(stringResource(R.string.demo_select_image_and_video_document))
                         }
                     }
-                    item {
-                        Button(
-                            modifier = Modifier.padding(4.dp),
-                            onClick = { photoPicker.launch(PhotoPicker.Args(PhotoPicker.Type.IMAGES_AND_VIDEO, 5)) }
-                        ) {
-                            Text(stringResource(R.string.demo_select_photo_picker))
+
+                    if (selectedFile?.second != null) {
+                        item {
+                            MediaPreviewCard(selectedFile!!.first.toPath(), selectedFile!!.second!!)
                         }
                     }
                 }
