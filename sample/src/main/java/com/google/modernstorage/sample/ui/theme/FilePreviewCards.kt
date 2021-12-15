@@ -30,8 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.google.modernstorage.storage.DisplayNameExtra
-import com.google.modernstorage.storage.MimeTypeExtra
+import com.google.modernstorage.storage.MetadataExtras.DisplayName
+import com.google.modernstorage.storage.MetadataExtras.MimeType
 import okio.FileMetadata
 
 // @Composable
@@ -68,7 +68,7 @@ import okio.FileMetadata
 fun DocumentFilePreviewCard(metadata: FileMetadata) {
     val context = LocalContext.current
     val formattedFileSize = Formatter.formatShortFileSize(context, metadata.size ?: -1)
-    val fileMetadata = "${metadata.extra(MimeTypeExtra::class)} - $formattedFileSize"
+    val fileMetadata = "${metadata.extra(MimeType::class)} - $formattedFileSize"
 //    val uri = metadata.extra(UriExtra::class)!!
 
 //    val thumbnail by produceState<Bitmap?>(null, uri) {
@@ -86,7 +86,7 @@ fun DocumentFilePreviewCard(metadata: FileMetadata) {
 //            thumbnail?.let { Image(bitmap = it.asImageBitmap(), contentDescription = null) }
 
             Column(modifier = Modifier.padding(16.dp)) {
-                metadata.extra(DisplayNameExtra::class)?.let {
+                metadata.extra(DisplayName::class)?.let {
                     Text(text = it.value, style = MaterialTheme.typography.subtitle2)
                 }
 

@@ -25,17 +25,12 @@ import androidx.core.os.BuildCompat
 import java.util.ArrayList
 import java.util.LinkedHashSet
 
-// TODO: Show toast when higher number of items have been selected by the user
 @BuildCompat.PrereleaseSdkCheck
 class PhotoPicker : ActivityResultContract<PhotoPicker.Args, List<Uri>>() {
     companion object {
         fun isPhotoPickerAvailable(): Boolean {
             return BuildCompat.isAtLeastT()
         }
-
-        const val IMAGES_ONLY = 1
-        const val VIDEO_ONLY = 2
-        const val IMAGES_AND_VIDEO = 3
 
         private const val INTENT_PICK_IMAGES = "android.provider.action.PICK_IMAGES"
         private const val EXTRA_PICK_IMAGES_MAX = "android.provider.extra.PICK_IMAGES_MAX"
@@ -62,7 +57,11 @@ class PhotoPicker : ActivityResultContract<PhotoPicker.Args, List<Uri>>() {
         }
     }
 
-    class Args(val type: Int = IMAGES_AND_VIDEO, val maxItems: Int,)
+    enum class Type {
+        IMAGES_ONLY, VIDEO_ONLY, IMAGES_AND_VIDEO
+    }
+
+    class Args(val type: Type, val maxItems: Int)
 
     @CallSuper
     override fun createIntent(context: Context, input: Args): Intent {
@@ -70,11 +69,11 @@ class PhotoPicker : ActivityResultContract<PhotoPicker.Args, List<Uri>>() {
             val intent = Intent(INTENT_PICK_IMAGES).apply {
                 putExtra(EXTRA_PICK_IMAGES_MAX, input.maxItems)
                 when (input.type) {
-                    IMAGES_ONLY ->
+                    Type.IMAGES_ONLY ->
                         putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*"))
-                    VIDEO_ONLY ->
+                    Type.VIDEO_ONLY ->
                         putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("video/*"))
-                    IMAGES_AND_VIDEO ->
+                    Type.IMAGES_AND_VIDEO ->
                         putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*", "video/*"))
                 }
             }
@@ -89,11 +88,11 @@ class PhotoPicker : ActivityResultContract<PhotoPicker.Args, List<Uri>>() {
                 }
 
                 when (input.type) {
-                    IMAGES_ONLY ->
+                    Type.IMAGES_ONLY ->
                         putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*"))
-                    VIDEO_ONLY ->
+                    Type.VIDEO_ONLY ->
                         putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("video/*"))
-                    IMAGES_AND_VIDEO ->
+                    Type.IMAGES_AND_VIDEO ->
                         putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*", "video/*"))
                 }
             }
@@ -107,6 +106,9 @@ class PhotoPicker : ActivityResultContract<PhotoPicker.Args, List<Uri>>() {
     }
 
     override fun parseResult(resultCode: Int, intent: Intent?): List<Uri> {
+        // TODO: Show toast when higher number of items have been selected by the user when using
+        //  ACTION_OPEN_DOCUMENT
+
         return if (resultCode != Activity.RESULT_OK || intent == null) emptyList() else getClipDataUris(intent)
     }
 }

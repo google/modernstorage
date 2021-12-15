@@ -132,7 +132,7 @@ fun SelectDocumentFileScreen(navController: NavController) {
                     item {
                         Button(
                             modifier = Modifier.padding(4.dp),
-                            onClick = { photoPicker.launch(PhotoPicker.Args(PhotoPicker.VIDEO_ONLY, 5)) }
+                            onClick = { photoPicker.launch(PhotoPicker.Args(PhotoPicker.Type.IMAGES_AND_VIDEO, 5)) }
                         ) {
                             Text(stringResource(R.string.demo_select_photo_picker))
                         }

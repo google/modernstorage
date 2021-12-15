@@ -34,10 +34,16 @@ import java.io.IOException
 class SharedFileSystem(context: Context) : FileSystem() {
     private val contentResolver = context.contentResolver
 
+    /**
+     * Not yet implemented
+     */
     override fun appendingSink(file: Path, mustExist: Boolean): Sink {
         TODO("Not yet implemented")
     }
 
+    /**
+     * Not yet implemented
+     */
     override fun atomicMove(source: Path, target: Path) {
         TODO("Not yet implemented")
     }
@@ -46,6 +52,9 @@ class SharedFileSystem(context: Context) : FileSystem() {
         throw UnsupportedOperationException("Paths can't be canonicalized in SharedFileSystem")
     }
 
+    /**
+     * Not yet implemented
+     */
     override fun createDirectory(dir: Path, mustCreate: Boolean) {
         TODO("Not yet implemented")
     }
@@ -128,7 +137,7 @@ class SharedFileSystem(context: Context) : FileSystem() {
     }
 
     private fun fetchMetadataFromMediaStore(path: Path, uri: Uri): FileMetadata? {
-        // Convert generic media uri to content uri to get FileColumns.MEDIA_TYPE value
+        // Convert media collection uri to a generic content uri to access FileColumns data
         val contentUri = convertMediaUriToContentUri(uri)
 
         val cursor = contentResolver.query(
@@ -170,11 +179,11 @@ class SharedFileSystem(context: Context) : FileSystem() {
                 lastModifiedAtMillis = lastModifiedTime,
                 lastAccessedAtMillis = null,
                 extras = mapOf(
-                    PathExtra::class to path,
-                    UriExtra::class to uri,
-                    DisplayNameExtra::class to DisplayNameExtra(displayName),
-                    MimeTypeExtra::class to mimeType,
-                    FilePath::class to filePath
+                    Path::class to path,
+                    Uri::class to uri,
+                    MetadataExtras.DisplayName::class to MetadataExtras.DisplayName(displayName),
+                    MetadataExtras.MimeType::class to MetadataExtras.MimeType(mimeType),
+                    MetadataExtras.FilePath::class to MetadataExtras.FilePath(filePath),
                 )
             )
         }
@@ -220,19 +229,25 @@ class SharedFileSystem(context: Context) : FileSystem() {
                 lastModifiedAtMillis = lastModifiedTime,
                 lastAccessedAtMillis = null,
                 extras = mapOf(
-                    PathExtra::class to path,
-                    UriExtra::class to uri,
-                    DisplayNameExtra::class to DisplayNameExtra(displayName),
-                    MimeTypeExtra::class to mimeType
+                    Path::class to path,
+                    Uri::class to uri,
+                    MetadataExtras.DisplayName::class to MetadataExtras.DisplayName(displayName),
+                    MetadataExtras.MimeType::class to MetadataExtras.MimeType(mimeType),
                 )
             )
         }
     }
 
+    /**
+     * Not yet implemented
+     */
     override fun openReadOnly(file: Path): FileHandle {
         TODO("Not yet implemented")
     }
 
+    /**
+     * Not yet implemented
+     */
     override fun openReadWrite(file: Path, mustCreate: Boolean, mustExist: Boolean): FileHandle {
         TODO("Not yet implemented")
     }
@@ -263,11 +278,3 @@ class SharedFileSystem(context: Context) : FileSystem() {
         }
     }
 }
-
-@JvmInline
-value class DisplayNameExtra(val value: String)
-
-typealias PathExtra = Path
-typealias UriExtra = String
-typealias MimeTypeExtra = String
-typealias FilePath = String

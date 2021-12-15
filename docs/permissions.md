@@ -2,9 +2,9 @@
 artifact: "modernstorage-permissions"
 ---
 
-# FileSystem
+# Permissions
 
-`{{ artifact }}` is a library simplifying checking and requesting storage permissions on Android 21+.
+`{{ artifact }}` is a library simplifying checking storage permissions. It works on Android 21+.
 
 ## Add dependency to project
 
@@ -22,20 +22,32 @@ implementation("com.google.modernstorage:{{ artifact }}:{{ lib_version }}")
 
 ```kotlin
 // Check if the app can read image & document files created by itself
-StoragePermissions.canReadFiles(listOf(FileType.Image, FileType.Document), CreatedBy.Self)
+StoragePermissions.canReadFiles(
+    types = listOf(FileType.Image, FileType.Document),
+    createdBy = CreatedBy.Self
+)
 
 // Check if the app can read video & audio files created by all apps
-StoragePermissions.canReadFiles(listOf(FileType.Video, FileType.Audio), CreatedBy.AllApps)
+StoragePermissions.canReadFiles(
+    types = listOf(FileType.Video, FileType.Audio),
+    createdBy = CreatedBy.AllApps
+)
 ```
 
 ## Check if app can read and write files
 
 ```kotlin
 // Check if the app can read & write image & document files created by itself
-StoragePermissions.canReadAndWriteFiles(listOf(FileType.Image, FileType.Video), CreatedBy.Self)
+StoragePermissions.canReadAndWriteFiles(
+    types = listOf(FileType.Image, FileType.Video),
+    createdBy = CreatedBy.Self
+)
 
 // Check if the app can read & write video & audio files created by all apps
-StoragePermissions.canReadAndWriteFiles(listOf(FileType.Audio, FileType.Document), CreatedBy.AllApps)
+StoragePermissions.canReadAndWriteFiles(
+    types = listOf(FileType.Audio, FileType.Document),
+    createdBy = CreatedBy.AllApps
+)
 ```
 
 [api_reference]: /modernstorage/api/permissions/
