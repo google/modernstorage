@@ -5,19 +5,19 @@ package com.google.modernstorage.storage {
     field public static final com.google.modernstorage.storage.MetadataExtras INSTANCE;
   }
 
-  public static final class MetadataExtras.DisplayName {
+  @kotlin.jvm.JvmInline public static final class MetadataExtras.DisplayName {
     ctor public MetadataExtras.DisplayName(String value);
     method public String getValue();
     property public final String value;
   }
 
-  public static final class MetadataExtras.FilePath {
+  @kotlin.jvm.JvmInline public static final class MetadataExtras.FilePath {
     ctor public MetadataExtras.FilePath(String value);
     method public String getValue();
     property public final String value;
   }
 
-  public static final class MetadataExtras.MimeType {
+  @kotlin.jvm.JvmInline public static final class MetadataExtras.MimeType {
     ctor public MetadataExtras.MimeType(String value);
     method public String getValue();
     property public final String value;
