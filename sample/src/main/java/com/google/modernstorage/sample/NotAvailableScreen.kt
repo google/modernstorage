@@ -37,7 +37,7 @@ fun NotAvailableYetScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(Demos.SelectDocumentFile.name)) },
+                title = { Text(stringResource(R.string.app_name)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack(HomeRoute, false) }) {
                         Icon(

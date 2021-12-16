@@ -69,7 +69,7 @@ fun SelectDocumentFileScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(Demos.SelectDocumentFile.name)) },
+                title = { Text(stringResource(Demos.SelectDocument.name)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack(HomeRoute, false) }) {
                         Icon(

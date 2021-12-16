@@ -47,22 +47,22 @@ class MainActivity : ComponentActivity() {
                     /**
                      * MediaStore demos
                      */
-                    composable(Demos.AddMediaFile.route) {
+                    composable(Demos.AddMedia.route) {
                         NotAvailableYetScreen(navController)
                     }
-                    composable(Demos.CaptureMediaFile.route) {
+                    composable(Demos.CaptureMedia.route) {
                         NotAvailableYetScreen(navController)
                     }
                     composable(Demos.AddFileToDownloads.route) {
                         NotAvailableYetScreen(navController)
                     }
-                    composable(Demos.EditMediaFile.route) {
+                    composable(Demos.EditMedia.route) {
                         NotAvailableYetScreen(navController)
                     }
-                    composable(Demos.DeleteMediaFile.route) {
+                    composable(Demos.DeleteMedia.route) {
                         NotAvailableYetScreen(navController)
                     }
-                    composable(Demos.ListMediaFiles.route) {
+                    composable(Demos.ListMedia.route) {
                         NotAvailableYetScreen(navController)
                     }
 
@@ -76,10 +76,10 @@ class MainActivity : ComponentActivity() {
                     /**
                      * Storage Access Framework demos
                      */
-                    composable(Demos.SelectDocumentFile.route) {
+                    composable(Demos.SelectDocument.route) {
                         SelectDocumentFileScreen(navController)
                     }
-                    composable(Demos.EditDocumentFile.route) {
+                    composable(Demos.EditDocument.route) {
                         NotAvailableYetScreen(navController)
                     }
                 }

@@ -36,17 +36,17 @@ data class Demo(
 )
 
 object Demos {
-    val AddMediaFile = Demo(
+    val AddMedia = Demo(
         route = "demo_add_media_file",
-        name = R.string.demo_add_media_file_name,
-        description = R.string.demo_add_media_file_description,
+        name = R.string.demo_add_media_name,
+        description = R.string.demo_add_media_description,
         icon = Icons.Filled.AddPhotoAlternate,
     )
 
-    val CaptureMediaFile = Demo(
+    val CaptureMedia = Demo(
         route = "demo_capture_media_file",
-        name = R.string.demo_capture_media_file_name,
-        description = R.string.demo_capture_media_file_description,
+        name = R.string.demo_capture_media_name,
+        description = R.string.demo_capture_media_description,
         icon = Icons.Filled.AddAPhoto,
     )
 
@@ -57,24 +57,24 @@ object Demos {
         icon = Icons.Filled.AddCircle,
     )
 
-    val EditMediaFile = Demo(
+    val EditMedia = Demo(
         route = "demo_edit_media_file",
-        name = R.string.demo_edit_media_file_name,
-        description = R.string.demo_edit_media_file_description,
+        name = R.string.demo_edit_media_name,
+        description = R.string.demo_edit_media_description,
         icon = Icons.Filled.Edit,
     )
 
-    val DeleteMediaFile = Demo(
+    val DeleteMedia = Demo(
         route = "demo_download_media_file",
-        name = R.string.demo_delete_media_file_name,
-        description = R.string.demo_delete_media_file_description,
+        name = R.string.demo_delete_media_name,
+        description = R.string.demo_delete_media_description,
         icon = Icons.Filled.Delete,
     )
 
-    val ListMediaFiles = Demo(
+    val ListMedia = Demo(
         route = "demo_list_media_files",
-        name = R.string.demo_list_media_files_name,
-        description = R.string.demo_list_media_files_description,
+        name = R.string.demo_list_media_name,
+        description = R.string.demo_list_media_description,
         icon = Icons.Filled.ImageSearch,
     )
 
@@ -85,29 +85,29 @@ object Demos {
         icon = Icons.Filled.PhotoLibrary,
     )
 
-    val SelectDocumentFile = Demo(
-        route = "demo_select_document_file",
-        name = R.string.demo_select_document_file_name,
-        description = R.string.demo_select_document_file_description,
+    val SelectDocument = Demo(
+        route = "demo_select_document",
+        name = R.string.demo_select_document_name,
+        description = R.string.demo_select_document_description,
         icon = Icons.Filled.AttachFile,
     )
 
-    val EditDocumentFile = Demo(
-        route = "demo_edit_document_file",
-        name = R.string.demo_edit_document_file_name,
-        description = R.string.demo_edit_document_file_description,
+    val EditDocument = Demo(
+        route = "demo_edit_document",
+        name = R.string.demo_edit_document_name,
+        description = R.string.demo_edit_document_description,
         icon = Icons.Filled.NoteAdd,
     )
 
     val list = listOf(
-        AddMediaFile,
-        CaptureMediaFile,
+        AddMedia,
+        CaptureMedia,
         AddFileToDownloads,
-        EditMediaFile,
-        DeleteMediaFile,
-        ListMediaFiles,
+        EditMedia,
+        DeleteMedia,
+        ListMedia,
         PickVisualMedia,
-        SelectDocumentFile,
-        EditDocumentFile,
+        SelectDocument,
+        EditDocument,
     )
 }

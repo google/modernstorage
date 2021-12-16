@@ -79,7 +79,7 @@ fun PickVisualMediaScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(Demos.SelectDocumentFile.name)) },
+                title = { Text(stringResource(Demos.PickVisualMedia.name)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack(HomeRoute, false) }) {
                         Icon(
