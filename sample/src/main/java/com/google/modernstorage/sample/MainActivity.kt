@@ -23,6 +23,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.modernstorage.sample.mediastore.AddMediaScreen
 import com.google.modernstorage.sample.photopicker.PickVisualMediaScreen
 import com.google.modernstorage.sample.saf.SelectDocumentFileScreen
 import com.google.modernstorage.sample.ui.theme.ModernStorageTheme
@@ -48,7 +49,7 @@ class MainActivity : ComponentActivity() {
                      * MediaStore demos
                      */
                     composable(Demos.AddMedia.route) {
-                        NotAvailableYetScreen(navController)
+                        AddMediaScreen(navController)
                     }
                     composable(Demos.CaptureMedia.route) {
                         NotAvailableYetScreen(navController)

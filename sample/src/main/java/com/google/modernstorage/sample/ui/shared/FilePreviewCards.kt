@@ -32,17 +32,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.modernstorage.storage.MetadataExtras.DisplayName
 import com.google.modernstorage.storage.MetadataExtras.MimeType
-import com.google.modernstorage.storage.toUri
 import com.skydoves.landscapist.glide.GlideImage
-import okio.FileMetadata
-import okio.Path
 
 @Composable
-fun MediaPreviewCard(path: Path, metadata: FileMetadata) {
+fun MediaPreviewCard(fileDetails: FileDetails) {
     val context = LocalContext.current
 
+    val metadata = fileDetails.metadata
     val formattedFileSize = Formatter.formatShortFileSize(context, metadata.size ?: -1)
-    val fileDetails = "${metadata.extra(MimeType::class)} - $formattedFileSize"
+    val fileDescription = "${metadata.extra(MimeType::class)} - $formattedFileSize"
 
     Card(
         elevation = 0.dp,
@@ -56,14 +54,14 @@ fun MediaPreviewCard(path: Path, metadata: FileMetadata) {
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(text = fileDetails, style = MaterialTheme.typography.caption)
+                Text(text = fileDescription, style = MaterialTheme.typography.caption)
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = path.toUri().toString(), style = MaterialTheme.typography.caption)
+                Text(text = fileDetails.uri.toString(), style = MaterialTheme.typography.caption)
             }
 
             GlideImage(
                 modifier = Modifier.height(200.dp),
-                imageModel = path.toUri(),
+                imageModel = fileDetails.uri,
                 contentScale = ContentScale.FillWidth
             )
         }

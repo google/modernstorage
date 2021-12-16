@@ -16,7 +16,6 @@
 package com.google.modernstorage.sample.photopicker
 
 import android.annotation.SuppressLint
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -49,10 +48,10 @@ import com.google.modernstorage.photopicker.PhotoPicker
 import com.google.modernstorage.sample.Demos
 import com.google.modernstorage.sample.HomeRoute
 import com.google.modernstorage.sample.R
+import com.google.modernstorage.sample.ui.shared.FileDetails
 import com.google.modernstorage.sample.ui.shared.MediaPreviewCard
 import com.google.modernstorage.storage.SharedFileSystem
 import com.google.modernstorage.storage.toPath
-import okio.FileMetadata
 
 private const val IMAGE_MIMETYPE = "image/*"
 private const val VIDEO_MIMETYPE = "video/*"
@@ -62,18 +61,31 @@ private const val VIDEO_MIMETYPE = "video/*"
 @Composable
 fun PickVisualMediaScreen(navController: NavController) {
     val fileSystem = SharedFileSystem(LocalContext.current)
-    var selectedFiles by remember { mutableStateOf<List<Pair<Uri, FileMetadata?>>>(emptyList()) }
+    var selectedFiles by remember { mutableStateOf<List<FileDetails>>(emptyList()) }
 
     val selectFile = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        uri?.let { selectedFiles = listOf(it to fileSystem.metadataOrNull(it.toPath())) }
+        uri?.let { uri ->
+            val path = uri.toPath()
+            fileSystem.metadataOrNull(path)?.let { metadata ->
+                selectedFiles = listOf(FileDetails(uri, path, metadata))
+            }
+        }
     }
 
     val selectMultipleFiles = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
-        selectedFiles = uris.map { it to fileSystem.metadataOrNull(it.toPath()) }
+        selectedFiles = uris.map { uri ->
+            val path = uri.toPath()
+            val metadata = fileSystem.metadataOrNull(path) ?: return@map null
+            FileDetails(uri, path, metadata)
+        }.filterNotNull()
     }
 
     val photoPicker = rememberLauncherForActivityResult(PhotoPicker()) { uris ->
-        selectedFiles = uris.map { it to fileSystem.metadataOrNull(it.toPath()) }
+        selectedFiles = uris.map { uri ->
+            val path = uri.toPath()
+            val metadata = fileSystem.metadataOrNull(path) ?: return@map null
+            FileDetails(uri, path, metadata)
+        }.filterNotNull()
     }
 
     Scaffold(
@@ -179,7 +191,7 @@ fun PickVisualMediaScreen(navController: NavController) {
                     }
 
                     items(selectedFiles) {
-                        it.second?.let { metadata -> MediaPreviewCard(it.first.toPath(), metadata) }
+                        MediaPreviewCard(it)
                     }
                 }
             }

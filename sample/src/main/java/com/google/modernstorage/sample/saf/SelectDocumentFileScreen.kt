@@ -15,7 +15,6 @@
  */
 package com.google.modernstorage.sample.saf
 
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -44,10 +43,10 @@ import androidx.navigation.NavController
 import com.google.modernstorage.sample.Demos
 import com.google.modernstorage.sample.HomeRoute
 import com.google.modernstorage.sample.R
+import com.google.modernstorage.sample.ui.shared.FileDetails
 import com.google.modernstorage.sample.ui.shared.MediaPreviewCard
 import com.google.modernstorage.storage.SharedFileSystem
 import com.google.modernstorage.storage.toPath
-import okio.FileMetadata
 
 const val GENERIC_MIMETYPE = "*/*"
 const val PDF_MIMETYPE = "application/pdf"
@@ -59,11 +58,16 @@ const val VIDEO_MIMETYPE = "video/*"
 @Composable
 fun SelectDocumentFileScreen(navController: NavController) {
     val fileSystem = SharedFileSystem(LocalContext.current)
-    var selectedFile by remember { mutableStateOf<Pair<Uri, FileMetadata?>?>(null) }
+    var selectedFile by remember { mutableStateOf<FileDetails?>(null) }
 
     val selectFile =
         rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-            uri?.let { selectedFile = Pair(uri, fileSystem.metadataOrNull(uri.toPath())) }
+            uri?.let { uri ->
+                val path = uri.toPath()
+                fileSystem.metadataOrNull(path)?.let { metadata ->
+                    selectedFile = FileDetails(uri, path, metadata)
+                }
+            }
         }
 
     Scaffold(
@@ -116,9 +120,9 @@ fun SelectDocumentFileScreen(navController: NavController) {
                         }
                     }
 
-                    if (selectedFile?.second != null) {
+                    selectedFile?.let {
                         item {
-                            MediaPreviewCard(selectedFile!!.first.toPath(), selectedFile!!.second!!)
+                            MediaPreviewCard(it)
                         }
                     }
                 }

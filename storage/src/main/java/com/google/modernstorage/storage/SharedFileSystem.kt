@@ -15,10 +15,13 @@
  */
 package com.google.modernstorage.storage
 
+import android.content.ContentValues
 import android.content.Context
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import kotlinx.coroutines.suspendCancellableCoroutine
 import okio.FileHandle
 import okio.FileMetadata
 import okio.FileSystem
@@ -28,8 +31,9 @@ import okio.Source
 import okio.sink
 import okio.source
 import java.io.IOException
+import kotlin.coroutines.resume
 
-class SharedFileSystem(context: Context) : FileSystem() {
+class SharedFileSystem(private val context: Context) : FileSystem() {
     private val contentResolver = context.contentResolver
 
     /**
@@ -248,6 +252,46 @@ class SharedFileSystem(context: Context) : FileSystem() {
             throw IOException("Couldn't open an InputStream ($file)")
         } else {
             return inputStream.source()
+        }
+    }
+
+    fun createMediaStoreUri(filename: String, collection: Uri): Uri? {
+        val newEntry = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+        }
+
+        return context.contentResolver.insert(collection, newEntry)
+    }
+
+    suspend fun scanUri(uri: Uri, mimeType: String): Uri? {
+        val cursor = contentResolver.query(
+            uri,
+            arrayOf(MediaStore.Files.FileColumns.DATA),
+            null,
+            null,
+            null
+        ) ?: throw Exception("Uri $uri could not be found")
+
+        val path = cursor.use {
+            if (!cursor.moveToFirst()) {
+                throw Exception("Uri $uri could not be found")
+            }
+
+            cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA))
+        }
+
+        return suspendCancellableCoroutine { continuation ->
+            MediaScannerConnection.scanFile(
+                context,
+                arrayOf(path),
+                arrayOf(mimeType)
+            ) { _, scannedUri ->
+                if (scannedUri == null) {
+                    continuation.cancel(Exception("File $path could not be scanned"))
+                } else {
+                    continuation.resume(scannedUri)
+                }
+            }
         }
     }
 }
