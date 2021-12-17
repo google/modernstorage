@@ -16,10 +16,9 @@
 package com.google.modernstorage.sample.mediastore
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -61,29 +60,27 @@ fun AddMediaScreen(navController: NavController, viewModel: MediaStoreViewModel 
             )
         },
         content = { paddingValues ->
-            Column(Modifier.padding(paddingValues)) {
-                LazyVerticalGrid(cells = GridCells.Fixed(1)) {
-                    item {
-                        Button(
-                            modifier = Modifier.padding(4.dp),
-                            onClick = { viewModel.addImage() }
-                        ) {
-                            Text(stringResource(R.string.demo_add_image_label))
-                        }
+            LazyColumn(Modifier.padding(paddingValues)) {
+                item {
+                    Button(
+                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        onClick = { viewModel.addImage() }
+                    ) {
+                        Text(stringResource(R.string.demo_add_image_label))
                     }
-                    item {
-                        Button(
-                            modifier = Modifier.padding(4.dp),
-                            onClick = { viewModel.addVideo() }
-                        ) {
-                            Text(stringResource(R.string.demo_add_video_label))
-                        }
+                }
+                item {
+                    Button(
+                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        onClick = { viewModel.addVideo() }
+                    ) {
+                        Text(stringResource(R.string.demo_add_video_label))
                     }
+                }
 
-                    addedFile?.let {
-                        item {
-                            MediaPreviewCard(it)
-                        }
+                addedFile?.let {
+                    item {
+                        MediaPreviewCard(it)
                     }
                 }
             }

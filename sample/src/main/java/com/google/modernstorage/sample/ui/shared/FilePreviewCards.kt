@@ -35,7 +35,7 @@ import com.google.modernstorage.storage.MetadataExtras.MimeType
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun MediaPreviewCard(fileDetails: FileDetails) {
+fun FilePreviewCard(fileDetails: FileDetails, content: @Composable (() -> Unit)? = null) {
     val context = LocalContext.current
 
     val metadata = fileDetails.metadata
@@ -59,11 +59,20 @@ fun MediaPreviewCard(fileDetails: FileDetails) {
                 Text(text = fileDetails.uri.toString(), style = MaterialTheme.typography.caption)
             }
 
-            GlideImage(
-                modifier = Modifier.height(200.dp),
-                imageModel = fileDetails.uri,
-                contentScale = ContentScale.FillWidth
-            )
+            if (content != null) {
+                content()
+            }
         }
+    }
+}
+
+@Composable
+fun MediaPreviewCard(fileDetails: FileDetails) {
+    FilePreviewCard(fileDetails) {
+        GlideImage(
+            modifier = Modifier.height(200.dp),
+            imageModel = fileDetails.uri,
+            contentScale = ContentScale.FillWidth
+        )
     }
 }

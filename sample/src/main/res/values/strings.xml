@@ -19,16 +19,17 @@
 
     <string name="demo_add_media_name">Add Media</string>
     <string name="demo_add_media_description">Add media from local source</string>
-    <string name="demo_add_image_label">Add image</string>
-    <string name="demo_add_video_label">Add video</string>
+    <string name="demo_add_image_label">Add Image</string>
+    <string name="demo_add_video_label">Add Video</string>
 
     <string name="demo_capture_media_name">Capture Media</string>
     <string name="demo_capture_media_description">Capture media using camera intents</string>
-    <string name="demo_capture_image_label">Capture image</string>
-    <string name="demo_capture_video_label">Capture video</string>
+    <string name="demo_capture_image_label">Capture Image</string>
+    <string name="demo_capture_video_label">Capture Video</string>
 
     <string name="demo_add_file_to_downloads_name">Add File to Downloads</string>
     <string name="demo_add_file_to_downloads_description">Add file to the Downloads folder</string>
+    <string name="demo_add_text_label">Add Text</string>
     <string name="demo_add_pdf_label">Add PDF</string>
     <string name="demo_add_zip_label">Add ZIP</string>
 
