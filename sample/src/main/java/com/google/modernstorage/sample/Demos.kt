@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ImageSearch
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.NoteAdd
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -36,6 +37,13 @@ data class Demo(
 )
 
 object Demos {
+    val CheckPermissions = Demo(
+        route = "demo_check_permissions",
+        name = R.string.demo_check_permissions_name,
+        description = R.string.demo_check_permissions_description,
+        icon = Icons.Filled.Lock,
+    )
+
     val AddMedia = Demo(
         route = "demo_add_media_file",
         name = R.string.demo_add_media_name,
@@ -100,14 +108,15 @@ object Demos {
     )
 
     val list = listOf(
+        CheckPermissions,
         AddMedia,
         CaptureMedia,
         AddFileToDownloads,
         EditMedia,
         DeleteMedia,
         ListMedia,
-        PickVisualMedia,
         SelectDocument,
         EditDocument,
+        PickVisualMedia,
     )
 }

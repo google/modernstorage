@@ -15,8 +15,6 @@
  */
 package com.google.modernstorage.sample.mediastore
 
-import android.content.Context
-import android.provider.MediaStore
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -31,33 +29,22 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.modernstorage.sample.Demos
 import com.google.modernstorage.sample.HomeRoute
 import com.google.modernstorage.sample.R
-import com.google.modernstorage.sample.ui.shared.FileDetails
 import com.google.modernstorage.sample.ui.shared.MediaPreviewCard
-import com.google.modernstorage.storage.SharedFileSystem
-import com.google.modernstorage.storage.toPath
-import kotlinx.coroutines.launch
-import okio.buffer
-import okio.source
 
 @ExperimentalFoundationApi
 @Composable
-fun AddMediaScreen(navController: NavController) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    var addedFile by remember { mutableStateOf<FileDetails?>(null) }
+fun AddMediaScreen(navController: NavController, viewModel: MediaStoreViewModel = viewModel()) {
+    val addedFile by viewModel.addedFile.collectAsState()
 
     Scaffold(
         topBar = {
@@ -79,7 +66,7 @@ fun AddMediaScreen(navController: NavController) {
                     item {
                         Button(
                             modifier = Modifier.padding(4.dp),
-                            onClick = { scope.launch { addedFile = addImage(context) } }
+                            onClick = { viewModel.addImage() }
                         ) {
                             Text(stringResource(R.string.demo_add_image_label))
                         }
@@ -87,7 +74,7 @@ fun AddMediaScreen(navController: NavController) {
                     item {
                         Button(
                             modifier = Modifier.padding(4.dp),
-                            onClick = { scope.launch { addedFile = addVideo(context) } }
+                            onClick = { viewModel.addVideo() }
                         ) {
                             Text(stringResource(R.string.demo_add_video_label))
                         }
@@ -102,36 +89,4 @@ fun AddMediaScreen(navController: NavController) {
             }
         }
     )
-}
-
-private suspend fun addImage(context: Context): FileDetails? {
-    val fileSystem = SharedFileSystem(context)
-
-    val uri = fileSystem.createMediaStoreUri(
-        filename = "added-${System.currentTimeMillis()}.jpg",
-        collection = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-    ) ?: return null
-    val path = uri.toPath()
-
-    fileSystem.sink(path).buffer().writeAll(context.assets.open("sample.jpg").source())
-    fileSystem.scanUri(uri, "image/jpeg")
-
-    val metadata = fileSystem.metadataOrNull(path) ?: return null
-    return FileDetails(uri, path, metadata)
-}
-
-private suspend fun addVideo(context: Context): FileDetails? {
-    val fileSystem = SharedFileSystem(context)
-
-    val uri = fileSystem.createMediaStoreUri(
-        filename = "added-${System.currentTimeMillis()}.mp4",
-        collection = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-    ) ?: return null
-    val path = uri.toPath()
-
-    fileSystem.sink(path).buffer().writeAll(context.assets.open("sample.mp4").source())
-    fileSystem.scanUri(uri, "video/mp4")
-
-    val metadata = fileSystem.metadataOrNull(path) ?: return null
-    return FileDetails(uri, path, metadata)
 }

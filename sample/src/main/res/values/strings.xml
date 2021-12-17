@@ -5,6 +5,9 @@
     <string name="demo_not_available_yet_label">This demo hasn\'t been written yet</string>
     <string name="empty_state_label">Get started by triggering one of the actions below</string>
 
+    <string name="demo_check_permissions_name">Check Permissions</string>
+    <string name="demo_check_permissions_description">Check which type of file the app has access to</string>
+
     <string name="demo_add_media_name">Add Media</string>
     <string name="demo_add_media_description">Add media from local source</string>
     <string name="demo_add_image_label">Add image</string>

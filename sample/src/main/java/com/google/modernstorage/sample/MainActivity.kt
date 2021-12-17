@@ -46,6 +46,13 @@ class MainActivity : ComponentActivity() {
                     }
 
                     /**
+                     * Permissions demos
+                     */
+                    composable(Demos.CheckPermissions.route) {
+                        NotAvailableYetScreen(navController)
+                    }
+
+                    /**
                      * MediaStore demos
                      */
                     composable(Demos.AddMedia.route) {
@@ -68,13 +75,6 @@ class MainActivity : ComponentActivity() {
                     }
 
                     /**
-                     * Photo Picker demos
-                     */
-                    composable(Demos.PickVisualMedia.route) {
-                        PickVisualMediaScreen(navController)
-                    }
-
-                    /**
                      * Storage Access Framework demos
                      */
                     composable(Demos.SelectDocument.route) {
@@ -82,6 +82,13 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(Demos.EditDocument.route) {
                         NotAvailableYetScreen(navController)
+                    }
+
+                    /**
+                     * Photo Picker demos
+                     */
+                    composable(Demos.PickVisualMedia.route) {
+                        PickVisualMediaScreen(navController)
                     }
                 }
             }
