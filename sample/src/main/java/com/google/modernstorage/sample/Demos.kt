@@ -21,8 +21,6 @@ import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.AttachFile
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ImageSearch
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.NoteAdd
@@ -65,32 +63,11 @@ object Demos {
         icon = Icons.Filled.AddCircle,
     )
 
-    val EditMedia = Demo(
-        route = "demo_edit_media_file",
-        name = R.string.demo_edit_media_name,
-        description = R.string.demo_edit_media_description,
-        icon = Icons.Filled.Edit,
-    )
-
-    val DeleteMedia = Demo(
-        route = "demo_download_media_file",
-        name = R.string.demo_delete_media_name,
-        description = R.string.demo_delete_media_description,
-        icon = Icons.Filled.Delete,
-    )
-
     val ListMedia = Demo(
         route = "demo_list_media_files",
         name = R.string.demo_list_media_name,
         description = R.string.demo_list_media_description,
         icon = Icons.Filled.ImageSearch,
-    )
-
-    val PickVisualMedia = Demo(
-        route = "demo_pick_visual_media",
-        name = R.string.demo_pick_visual_media_name,
-        description = R.string.demo_pick_visual_media_description,
-        icon = Icons.Filled.PhotoLibrary,
     )
 
     val SelectDocument = Demo(
@@ -107,13 +84,18 @@ object Demos {
         icon = Icons.Filled.NoteAdd,
     )
 
+    val PickVisualMedia = Demo(
+        route = "demo_pick_visual_media",
+        name = R.string.demo_pick_visual_media_name,
+        description = R.string.demo_pick_visual_media_description,
+        icon = Icons.Filled.PhotoLibrary,
+    )
+
     val list = listOf(
         CheckPermissions,
         AddMedia,
         CaptureMedia,
         AddFileToDownloads,
-        EditMedia,
-        DeleteMedia,
         ListMedia,
         SelectDocument,
         EditDocument,

@@ -64,12 +64,6 @@ class MainActivity : ComponentActivity() {
                     composable(Demos.AddFileToDownloads.route) {
                         NotAvailableYetScreen(navController)
                     }
-                    composable(Demos.EditMedia.route) {
-                        NotAvailableYetScreen(navController)
-                    }
-                    composable(Demos.DeleteMedia.route) {
-                        NotAvailableYetScreen(navController)
-                    }
                     composable(Demos.ListMedia.route) {
                         NotAvailableYetScreen(navController)
                     }
