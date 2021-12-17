@@ -24,13 +24,13 @@ implementation("com.google.modernstorage:{{ artifact }}:{{ lib_version }}")
 // Check if the app can read image & document files created by itself
 StoragePermissions.canReadFiles(
     types = listOf(FileType.Image, FileType.Document),
-    createdBy = CreatedBy.Self
+    createdBy = StoragePermissions.CreatedBy.Self
 )
 
 // Check if the app can read video & audio files created by all apps
 StoragePermissions.canReadFiles(
     types = listOf(FileType.Video, FileType.Audio),
-    createdBy = CreatedBy.AllApps
+    createdBy = StoragePermissions.CreatedBy.AllApps
 )
 ```
 
@@ -40,13 +40,13 @@ StoragePermissions.canReadFiles(
 // Check if the app can read & write image & document files created by itself
 StoragePermissions.canReadAndWriteFiles(
     types = listOf(FileType.Image, FileType.Video),
-    createdBy = CreatedBy.Self
+    createdBy = StoragePermissions.CreatedBy.Self
 )
 
 // Check if the app can read & write video & audio files created by all apps
 StoragePermissions.canReadAndWriteFiles(
     types = listOf(FileType.Audio, FileType.Document),
-    createdBy = CreatedBy.AllApps
+    createdBy = StoragePermissions.CreatedBy.AllApps
 )
 ```
 

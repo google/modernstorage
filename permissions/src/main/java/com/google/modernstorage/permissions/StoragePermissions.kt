@@ -24,27 +24,25 @@ import android.os.Environment
 import androidx.core.content.ContextCompat
 
 class StoragePermissions(private val context: Context) {
-    companion object {
-        /**
-         * Type of files
-         */
-        enum class FileType {
-            Image, Video, Audio, Document
-        }
+    /**
+     * Type of files
+     */
+    enum class FileType {
+        Image, Video, Audio, Document
+    }
 
-        /**
-         * Type of file ownership
-         */
-        enum class CreatedBy {
-            Self, AllApps
-        }
+    /**
+     * Type of file ownership
+     */
+    enum class CreatedBy {
+        Self, AllApps
+    }
 
-        /**
-         * Type of file actions
-         */
-        enum class Action {
-            READ, READ_AND_WRITE
-        }
+    /**
+     * Type of file actions
+     */
+    enum class Action {
+        READ, READ_AND_WRITE
     }
 
     private fun hasPermission(permission: String): Boolean {

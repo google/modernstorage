@@ -35,10 +35,10 @@ data class Demo(
 )
 
 object Demos {
-    val CheckPermissions = Demo(
-        route = "demo_check_permissions",
-        name = R.string.demo_check_permissions_name,
-        description = R.string.demo_check_permissions_description,
+    val CheckPermission = Demo(
+        route = "demo_check_permission",
+        name = R.string.demo_check_permission_name,
+        description = R.string.demo_check_permission_description,
         icon = Icons.Filled.Lock,
     )
 
@@ -92,7 +92,7 @@ object Demos {
     )
 
     val list = listOf(
-        CheckPermissions,
+        CheckPermission,
         AddMedia,
         CaptureMedia,
         AddFileToDownloads,

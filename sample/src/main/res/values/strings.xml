@@ -5,8 +5,17 @@
     <string name="demo_not_available_yet_label">This demo hasn\'t been written yet</string>
     <string name="empty_state_label">Get started by triggering one of the actions below</string>
 
-    <string name="demo_check_permissions_name">Check Permissions</string>
-    <string name="demo_check_permissions_description">Check which type of file the app has access to</string>
+    <string name="demo_check_permission_name">Check Permission</string>
+    <string name="demo_check_permission_description">Check which type of file the app has access to</string>
+    <string name="demo_check_permission_read_label">Read</string>
+    <string name="demo_check_permission_read_and_write_label">Read &amp; write</string>
+    <string name="demo_check_permission_created_by_label">files created by</string>
+    <string name="demo_check_permission_created_by_self_label">Self</string>
+    <string name="demo_check_permission_created_by_all_apps_label">All Apps</string>
+    <string name="demo_check_permission_image_type">Image</string>
+    <string name="demo_check_permission_video_type">Video</string>
+    <string name="demo_check_permission_audio_type">Audio</string>
+    <string name="demo_check_permission_document_type">Document</string>
 
     <string name="demo_add_media_name">Add Media</string>
     <string name="demo_add_media_description">Add media from local source</string>

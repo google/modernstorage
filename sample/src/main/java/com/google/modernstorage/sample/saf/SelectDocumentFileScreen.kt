@@ -18,10 +18,8 @@ package com.google.modernstorage.sample.saf
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -85,45 +83,43 @@ fun SelectDocumentFileScreen(navController: NavController) {
             )
         },
         content = { paddingValues ->
-            Column(Modifier.padding(paddingValues)) {
-                LazyVerticalGrid(cells = GridCells.Fixed(1)) {
-                    item {
-                        Button(
-                            modifier = Modifier.padding(4.dp),
-                            onClick = { selectFile.launch(arrayOf(GENERIC_MIMETYPE)) }
-                        ) {
-                            Text(stringResource(R.string.demo_select_any_document))
-                        }
+            LazyColumn(Modifier.padding(paddingValues)) {
+                item {
+                    Button(
+                        modifier = Modifier.padding(4.dp),
+                        onClick = { selectFile.launch(arrayOf(GENERIC_MIMETYPE)) }
+                    ) {
+                        Text(stringResource(R.string.demo_select_any_document))
                     }
-                    item {
-                        Button(
-                            modifier = Modifier.padding(4.dp),
-                            onClick = { selectFile.launch(arrayOf(PDF_MIMETYPE)) }
-                        ) {
-                            Text(stringResource(R.string.demo_select_pdf_document))
-                        }
+                }
+                item {
+                    Button(
+                        modifier = Modifier.padding(4.dp),
+                        onClick = { selectFile.launch(arrayOf(PDF_MIMETYPE)) }
+                    ) {
+                        Text(stringResource(R.string.demo_select_pdf_document))
                     }
-                    item {
-                        Button(
-                            modifier = Modifier.padding(4.dp),
-                            onClick = { selectFile.launch(arrayOf(ZIP_MIMETYPE)) }
-                        ) {
-                            Text(stringResource(R.string.demo_select_zip_document))
-                        }
+                }
+                item {
+                    Button(
+                        modifier = Modifier.padding(4.dp),
+                        onClick = { selectFile.launch(arrayOf(ZIP_MIMETYPE)) }
+                    ) {
+                        Text(stringResource(R.string.demo_select_zip_document))
                     }
-                    item {
-                        Button(
-                            modifier = Modifier.padding(4.dp),
-                            onClick = { selectFile.launch(arrayOf(IMAGE_MIMETYPE, VIDEO_MIMETYPE)) }
-                        ) {
-                            Text(stringResource(R.string.demo_select_image_and_video_document))
-                        }
+                }
+                item {
+                    Button(
+                        modifier = Modifier.padding(4.dp),
+                        onClick = { selectFile.launch(arrayOf(IMAGE_MIMETYPE, VIDEO_MIMETYPE)) }
+                    ) {
+                        Text(stringResource(R.string.demo_select_image_and_video_document))
                     }
+                }
 
-                    selectedFile?.let {
-                        item {
-                            MediaPreviewCard(it)
-                        }
+                selectedFile?.let {
+                    item {
+                        MediaPreviewCard(it)
                     }
                 }
             }

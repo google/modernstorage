@@ -24,6 +24,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.modernstorage.sample.mediastore.AddMediaScreen
+import com.google.modernstorage.sample.permissions.CheckPermissionScreen
 import com.google.modernstorage.sample.photopicker.PickVisualMediaScreen
 import com.google.modernstorage.sample.saf.SelectDocumentFileScreen
 import com.google.modernstorage.sample.ui.theme.ModernStorageTheme
@@ -39,7 +40,7 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = HomeRoute
+                    startDestination = Demos.CheckPermission.route
                 ) {
                     composable(HomeRoute) {
                         HomeScreen(navController)
@@ -48,8 +49,8 @@ class MainActivity : ComponentActivity() {
                     /**
                      * Permissions demos
                      */
-                    composable(Demos.CheckPermissions.route) {
-                        NotAvailableYetScreen(navController)
+                    composable(Demos.CheckPermission.route) {
+                        CheckPermissionScreen(navController)
                     }
 
                     /**
