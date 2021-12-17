@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = Demos.CheckPermission.route
+                    startDestination = HomeRoute
                 ) {
                     composable(HomeRoute) {
                         HomeScreen(navController)

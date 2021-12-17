@@ -19,10 +19,9 @@ import android.annotation.SuppressLint
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.Divider
@@ -103,96 +102,129 @@ fun PickVisualMediaScreen(navController: NavController) {
             )
         },
         content = { paddingValues ->
-            Column(Modifier.padding(paddingValues)) {
-                LazyVerticalGrid(cells = GridCells.Fixed(1)) {
-                    item {
-                        Text(
-                            modifier = Modifier.padding(4.dp),
-                            text = stringResource(R.string.demo_system_file_picker),
-                            style = MaterialTheme.typography.subtitle1
-                        )
+            LazyColumn(Modifier.padding(paddingValues)) {
+                item {
+                    Text(
+                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        text = stringResource(R.string.demo_system_file_picker),
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                }
+                item {
+                    Button(
+                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        onClick = { selectFile.launch(arrayOf(IMAGE_MIMETYPE)) }
+                    ) {
+                        Text(stringResource(R.string.demo_pick_image))
                     }
-                    item {
-                        Button(
-                            modifier = Modifier.padding(4.dp),
-                            onClick = { selectFile.launch(arrayOf(IMAGE_MIMETYPE)) }
-                        ) {
-                            Text(stringResource(R.string.demo_pick_image))
+                }
+                item {
+                    Button(
+                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        onClick = { selectFile.launch(arrayOf(VIDEO_MIMETYPE)) }
+                    ) {
+                        Text(stringResource(R.string.demo_pick_video))
+                    }
+                }
+                item {
+                    Button(
+                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        onClick = { selectFile.launch(arrayOf(IMAGE_MIMETYPE, VIDEO_MIMETYPE)) }
+                    ) {
+                        Text(stringResource(R.string.demo_pick_image_and_video))
+                    }
+                }
+                item {
+                    Button(
+                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        onClick = {
+                            selectMultipleFiles.launch(
+                                arrayOf(
+                                    IMAGE_MIMETYPE,
+                                    VIDEO_MIMETYPE
+                                )
+                            )
                         }
+                    ) {
+                        Text(stringResource(R.string.demo_pick_multiple_images_and_video))
                     }
-                    item {
-                        Button(
-                            modifier = Modifier.padding(4.dp),
-                            onClick = { selectFile.launch(arrayOf(VIDEO_MIMETYPE)) }
-                        ) {
-                            Text(stringResource(R.string.demo_pick_video))
-                        }
-                    }
-                    item {
-                        Button(
-                            modifier = Modifier.padding(4.dp),
-                            onClick = { selectFile.launch(arrayOf(IMAGE_MIMETYPE, VIDEO_MIMETYPE)) }
-                        ) {
-                            Text(stringResource(R.string.demo_pick_image_and_video))
-                        }
-                    }
-                    item {
-                        Button(
-                            modifier = Modifier.padding(4.dp),
-                            onClick = { selectMultipleFiles.launch(arrayOf(IMAGE_MIMETYPE, VIDEO_MIMETYPE)) }
-                        ) {
-                            Text(stringResource(R.string.demo_pick_multiple_images_and_video))
-                        }
-                    }
+                }
 
-                    item {
-                        Divider(Modifier.padding(vertical = 10.dp))
-                    }
+                item {
+                    Divider(Modifier.padding(vertical = 10.dp))
+                }
 
-                    item {
-                        Text(
-                            modifier = Modifier.padding(4.dp),
-                            text = stringResource(R.string.demo_photo_picker),
-                            style = MaterialTheme.typography.subtitle1
-                        )
-                    }
+                item {
+                    Text(
+                        modifier = Modifier.padding(4.dp),
+                        text = stringResource(R.string.demo_photo_picker),
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                }
 
-                    item {
-                        Button(
-                            modifier = Modifier.padding(4.dp),
-                            onClick = { photoPicker.launch(PhotoPicker.Args(PhotoPicker.Type.IMAGES_ONLY, 1)) }
-                        ) {
-                            Text(stringResource(R.string.demo_pick_image))
+                item {
+                    Button(
+                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        onClick = {
+                            photoPicker.launch(
+                                PhotoPicker.Args(
+                                    PhotoPicker.Type.IMAGES_ONLY,
+                                    1
+                                )
+                            )
                         }
+                    ) {
+                        Text(stringResource(R.string.demo_pick_image))
                     }
-                    item {
-                        Button(
-                            modifier = Modifier.padding(4.dp),
-                            onClick = { photoPicker.launch(PhotoPicker.Args(PhotoPicker.Type.VIDEO_ONLY, 1)) }
-                        ) {
-                            Text(stringResource(R.string.demo_pick_video))
+                }
+                item {
+                    Button(
+                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        onClick = {
+                            photoPicker.launch(
+                                PhotoPicker.Args(
+                                    PhotoPicker.Type.VIDEO_ONLY,
+                                    1
+                                )
+                            )
                         }
+                    ) {
+                        Text(stringResource(R.string.demo_pick_video))
                     }
-                    item {
-                        Button(
-                            modifier = Modifier.padding(4.dp),
-                            onClick = { photoPicker.launch(PhotoPicker.Args(PhotoPicker.Type.IMAGES_AND_VIDEO, 1)) }
-                        ) {
-                            Text(stringResource(R.string.demo_pick_image_and_video))
+                }
+                item {
+                    Button(
+                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        onClick = {
+                            photoPicker.launch(
+                                PhotoPicker.Args(
+                                    PhotoPicker.Type.IMAGES_AND_VIDEO,
+                                    1
+                                )
+                            )
                         }
+                    ) {
+                        Text(stringResource(R.string.demo_pick_image_and_video))
                     }
-                    item {
-                        Button(
-                            modifier = Modifier.padding(4.dp),
-                            onClick = { photoPicker.launch(PhotoPicker.Args(PhotoPicker.Type.IMAGES_AND_VIDEO, 10)) }
-                        ) {
-                            Text(stringResource(R.string.demo_pick_multiple_images_video_photo_picker))
+                }
+                item {
+                    Button(
+                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        onClick = {
+                            photoPicker.launch(
+                                PhotoPicker.Args(
+                                    PhotoPicker.Type.IMAGES_AND_VIDEO,
+                                    10
+                                )
+                            )
                         }
+                    ) {
+                        Text(stringResource(R.string.demo_pick_multiple_images_video_photo_picker))
                     }
+                }
 
-                    items(selectedFiles) {
-                        MediaPreviewCard(it)
-                    }
+                items(selectedFiles) {
+                    MediaPreviewCard(it)
                 }
             }
         }

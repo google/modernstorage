@@ -18,6 +18,7 @@ package com.google.modernstorage.sample.saf
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
@@ -86,7 +87,7 @@ fun SelectDocumentFileScreen(navController: NavController) {
             LazyColumn(Modifier.padding(paddingValues)) {
                 item {
                     Button(
-                        modifier = Modifier.padding(4.dp),
+                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
                         onClick = { selectFile.launch(arrayOf(GENERIC_MIMETYPE)) }
                     ) {
                         Text(stringResource(R.string.demo_select_any_document))
@@ -94,7 +95,7 @@ fun SelectDocumentFileScreen(navController: NavController) {
                 }
                 item {
                     Button(
-                        modifier = Modifier.padding(4.dp),
+                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
                         onClick = { selectFile.launch(arrayOf(PDF_MIMETYPE)) }
                     ) {
                         Text(stringResource(R.string.demo_select_pdf_document))
@@ -102,7 +103,7 @@ fun SelectDocumentFileScreen(navController: NavController) {
                 }
                 item {
                     Button(
-                        modifier = Modifier.padding(4.dp),
+                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
                         onClick = { selectFile.launch(arrayOf(ZIP_MIMETYPE)) }
                     ) {
                         Text(stringResource(R.string.demo_select_zip_document))
@@ -110,7 +111,7 @@ fun SelectDocumentFileScreen(navController: NavController) {
                 }
                 item {
                     Button(
-                        modifier = Modifier.padding(4.dp),
+                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
                         onClick = { selectFile.launch(arrayOf(IMAGE_MIMETYPE, VIDEO_MIMETYPE)) }
                     ) {
                         Text(stringResource(R.string.demo_select_image_and_video_document))
