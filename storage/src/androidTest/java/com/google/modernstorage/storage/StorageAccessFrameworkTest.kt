@@ -18,10 +18,10 @@ package com.google.modernstorage.storage
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.media.MediaScannerConnection
-import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.os.Environment.DIRECTORY_DOWNLOADS
+import androidx.annotation.RequiresApi
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
@@ -29,7 +29,6 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.suspendCancellableCoroutine
 import okio.buffer
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -38,15 +37,13 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 @RunWith(AndroidJUnit4::class)
 class StorageAccessFrameworkTest {
     private lateinit var device: UiDevice
     private lateinit var appContext: Context
     private lateinit var fileSystem: SharedFileSystem
-    private lateinit var file: File
+    private var file: File? = null
 
     @get:Rule
     var activityScenarioRule = activityScenarioRule<TestingActivity>()
@@ -60,9 +57,10 @@ class StorageAccessFrameworkTest {
 
     @After
     fun tearDown() {
-        file.delete()
+        file?.delete()
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     @Test
     fun readTextFile() {
         val content = "Hello".toByteArray(Charsets.UTF_8)
@@ -75,7 +73,7 @@ class StorageAccessFrameworkTest {
 
         runBlocking { delay(2000L) }
 
-        val newTextFileEntry = device.findObject(UiSelector().textContains(file.name))
+        val newTextFileEntry = device.findObject(UiSelector().textContains(file!!.name))
         newTextFileEntry.click()
 
         runBlocking { delay(2000L) }
@@ -106,29 +104,9 @@ class StorageAccessFrameworkTest {
         file.writeBytes(bytes)
 
         runBlocking {
-            return@runBlocking scanFilePath(file.absolutePath, mimeType)
+            return@runBlocking MediaStoreUtils.scanFilePath(appContext, file.absolutePath, mimeType)
         }
 
         return file
-    }
-
-    /**
-     * Every added file should be scanned to be seen immediately in MediaStore or the system file
-     * navigator used by intents like ACTION_OPEN_DOCUMENT
-     */
-    private suspend fun scanFilePath(path: String, mimeType: String): Uri {
-        return suspendCancellableCoroutine { continuation ->
-            MediaScannerConnection.scanFile(
-                appContext,
-                arrayOf(path),
-                arrayOf(mimeType)
-            ) { _, scannedUri ->
-                if (scannedUri != null) {
-                    continuation.resume(scannedUri)
-                } else {
-                    continuation.resumeWithException(Exception("Scanning isn't supposed to fail"))
-                }
-            }
-        }
     }
 }
