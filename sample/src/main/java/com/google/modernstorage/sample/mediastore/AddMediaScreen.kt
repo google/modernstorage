@@ -38,6 +38,7 @@ import androidx.navigation.NavController
 import com.google.modernstorage.sample.Demos
 import com.google.modernstorage.sample.HomeRoute
 import com.google.modernstorage.sample.R
+import com.google.modernstorage.sample.mediastore.MediaStoreViewModel.MediaType
 import com.google.modernstorage.sample.ui.shared.MediaPreviewCard
 
 @ExperimentalFoundationApi
@@ -62,9 +63,13 @@ fun AddMediaScreen(navController: NavController, viewModel: MediaStoreViewModel 
         content = { paddingValues ->
             LazyColumn(Modifier.padding(paddingValues)) {
                 item {
+                    // TODO: Fix demo to handle devices on API lower than 29
+                    Text("This demo works only on API 29+ at the moment, will be updated soon")
+                }
+                item {
                     Button(
                         modifier = Modifier.padding(4.dp).fillMaxWidth(),
-                        onClick = { viewModel.addImage() }
+                        onClick = { viewModel.addMedia(MediaType.IMAGE) }
                     ) {
                         Text(stringResource(R.string.demo_add_image_label))
                     }
@@ -72,9 +77,17 @@ fun AddMediaScreen(navController: NavController, viewModel: MediaStoreViewModel 
                 item {
                     Button(
                         modifier = Modifier.padding(4.dp).fillMaxWidth(),
-                        onClick = { viewModel.addVideo() }
+                        onClick = { viewModel.addMedia(MediaType.VIDEO) }
                     ) {
                         Text(stringResource(R.string.demo_add_video_label))
+                    }
+                }
+                item {
+                    Button(
+                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        onClick = { viewModel.addMedia(MediaType.AUDIO) }
+                    ) {
+                        Text(stringResource(R.string.demo_add_audio_label))
                     }
                 }
 

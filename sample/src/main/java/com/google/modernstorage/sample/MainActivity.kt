@@ -23,6 +23,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.modernstorage.sample.mediastore.AddFileToDownloadsScreen
 import com.google.modernstorage.sample.mediastore.AddMediaScreen
 import com.google.modernstorage.sample.permissions.CheckPermissionScreen
 import com.google.modernstorage.sample.photopicker.PickVisualMediaScreen
@@ -63,7 +64,7 @@ class MainActivity : ComponentActivity() {
                         NotAvailableYetScreen(navController)
                     }
                     composable(Demos.AddFileToDownloads.route) {
-                        NotAvailableYetScreen(navController)
+                        AddFileToDownloadsScreen(navController)
                     }
                     composable(Demos.ListMedia.route) {
                         NotAvailableYetScreen(navController)

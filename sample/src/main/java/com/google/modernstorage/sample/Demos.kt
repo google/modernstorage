@@ -94,11 +94,11 @@ object Demos {
     val list = listOf(
         CheckPermission,
         AddMedia,
-        CaptureMedia,
+//        CaptureMedia,
         AddFileToDownloads,
-        ListMedia,
+//        ListMedia,
         SelectDocument,
-        EditDocument,
+//        EditDocument,
         PickVisualMedia,
     )
 }
