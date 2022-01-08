@@ -18,7 +18,7 @@ package com.google.modernstorage.sample.mediastore
 import android.app.Application
 import android.content.Context
 import android.os.Build
-import android.provider.MediaStore
+import android.os.Environment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.modernstorage.sample.ui.shared.FileDetails
@@ -62,15 +62,15 @@ class MediaStoreViewModel(application: Application) : AndroidViewModel(applicati
                 MediaType.AUDIO -> "audio/wav"
             }
 
-            val collection = when (type) {
-                MediaType.IMAGE -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                MediaType.VIDEO -> MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-                MediaType.AUDIO -> MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+            val directory = when (type) {
+                MediaType.IMAGE -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                MediaType.VIDEO -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)
+                MediaType.AUDIO -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
             }
 
             val uri = fileSystem.createMediaStoreUri(
                 filename = "added-${System.currentTimeMillis()}.$extension",
-                collection = collection
+                directory = directory.absolutePath
             ) ?: return@launch clearAddedFile()
 
             val path = uri.toPath()
@@ -107,7 +107,7 @@ class MediaStoreViewModel(application: Application) : AndroidViewModel(applicati
 
             val uri = fileSystem.createMediaStoreUri(
                 filename = "added-${System.currentTimeMillis()}.$extension",
-                collection = MediaStore.Downloads.EXTERNAL_CONTENT_URI
+                directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath
             ) ?: return@launch clearAddedFile()
 
             val path = uri.toPath()
