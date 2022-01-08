@@ -255,11 +255,13 @@ class SharedFileSystem(private val context: Context) : FileSystem() {
         }
     }
 
-    fun createMediaStoreUri(filename: String, collection: Uri): Uri? {
+    fun createMediaStoreUri(filename: String, directory: String): Uri? {
         val newEntry = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+            put(MediaStore.MediaColumns.DATA, "$directory/$filename")
         }
 
+        val collection = MediaStore.Files.getContentUri("external")
         return context.contentResolver.insert(collection, newEntry)
     }
 

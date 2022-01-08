@@ -34,7 +34,7 @@ package com.google.modernstorage.storage {
     method public void atomicMove(okio.Path source, okio.Path target);
     method public okio.Path canonicalize(okio.Path path);
     method public void createDirectory(okio.Path dir, boolean mustCreate);
-    method public android.net.Uri? createMediaStoreUri(String filename, android.net.Uri collection);
+    method public android.net.Uri? createMediaStoreUri(String filename, String directory);
     method public void createSymlink(okio.Path source, okio.Path target);
     method public void delete(okio.Path path, boolean mustExist);
     method public java.util.List<okio.Path> list(okio.Path dir);

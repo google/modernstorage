@@ -18,6 +18,7 @@ package com.google.modernstorage.storage
 import android.Manifest
 import android.content.Context
 import android.net.Uri
+import android.os.Environment
 import android.provider.MediaStore
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -59,9 +60,11 @@ class MediaStoreTest {
         val filename = "added-${System.currentTimeMillis()}.jpg"
         val content = appContext.assets.open("sample.jpg")
         val mimeType = "image/jpeg"
-        val collection = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
-        uri = fileSystem.createMediaStoreUri(filename, collection)!!
+        uri = fileSystem.createMediaStoreUri(
+            filename = filename,
+            directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath
+        )!!
         val path = uri.toPath()
 
         fileSystem.sink(path).buffer().writeAll(content.source())
@@ -92,9 +95,11 @@ class MediaStoreTest {
         val filename = "added-${System.currentTimeMillis()}.mp4"
         val content = appContext.assets.open("sample.mp4")
         val mimeType = "video/mp4"
-        val collection = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
 
-        uri = fileSystem.createMediaStoreUri(filename, collection)!!
+        uri = fileSystem.createMediaStoreUri(
+            filename = filename,
+            directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).absolutePath
+        )!!
         val path = uri.toPath()
 
         fileSystem.sink(path).buffer().writeAll(content.source())
@@ -124,10 +129,12 @@ class MediaStoreTest {
     fun addAudioFile() {
         val filename = "added-${System.currentTimeMillis()}.wav"
         val content = appContext.assets.open("sample.wav")
-        val mimeType = "audio/wav"
-        val collection = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        val mimeType = "audio/x-wav"
 
-        uri = fileSystem.createMediaStoreUri(filename, collection)!!
+        uri = fileSystem.createMediaStoreUri(
+            filename = filename,
+            directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).absolutePath
+        )!!
         val path = uri.toPath()
 
         fileSystem.sink(path).buffer().writeAll(content.source())
