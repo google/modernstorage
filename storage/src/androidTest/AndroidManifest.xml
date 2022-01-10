@@ -5,12 +5,16 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
 
-    <application android:label="StorageTest">
-        <uses-library android:name="android.test.runner" android:required="false" />
+    <application
+        android:label="StorageTest"
+        android:requestLegacyExternalStorage="true">
+        <uses-library
+            android:name="android.test.runner"
+            android:required="false" />
         <activity
             android:name="com.google.modernstorage.storage.TestingActivity"
-            android:label="StorageTestingActivity"
-            android:exported="true">
+            android:exported="true"
+            android:label="StorageTestingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

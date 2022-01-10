@@ -1,6 +1,16 @@
 // Signature format: 4.0
 package com.google.modernstorage.storage {
 
+  public final class AndroidFileHandle extends okio.FileHandle {
+    ctor public AndroidFileHandle(boolean readWrite, android.content.res.AssetFileDescriptor assetFileDescriptor);
+    method protected void protectedClose();
+    method protected void protectedFlush();
+    method protected int protectedRead(long fileOffset, byte[] array, int arrayOffset, int byteCount);
+    method protected void protectedResize(long size);
+    method protected long protectedSize();
+    method protected void protectedWrite(long fileOffset, byte[] array, int arrayOffset, int byteCount);
+  }
+
   public final class MetadataExtras {
     field public static final com.google.modernstorage.storage.MetadataExtras INSTANCE;
   }

@@ -66,7 +66,8 @@ class SharedFileSystem(private val context: Context) : FileSystem() {
     }
 
     override fun delete(path: Path, mustExist: Boolean) {
-        TODO("Not yet implemented")
+        val uri = path.toUri()
+        contentResolver.delete(uri, null, null)
     }
 
     override fun list(dir: Path): List<Path> = list(dir, throwOnFailure = true)!!
