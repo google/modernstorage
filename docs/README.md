@@ -26,9 +26,7 @@ implementation("com.google.modernstorage:modernstorage-storage:{{ lib_version }}
 
 ## Is it ready?
 It's in progress! Our current version is **{{ lib_version }}**. As it's an alpha release, we're
-expecting API breaking changes between releases. While it always seems risky to rely on an
-experimental library, we're enforcing storage best practises (including Scoped Storage), which
-developers aren't always aware of.
+expecting API breaking changes between releases.
 
 We're looking for a stable release in 2022 (we don't have yet a precise date). We actively
 listen to your feedback to make ModernStorage the default library for storage interactions on
@@ -59,5 +57,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-[sample_app]: https://github.com/google/modernstorage/tree/main/sample/src/main/java/com/google/modernstorage/sample/mediastore/
+[sample_app]: https://github.com/google/modernstorage/tree/main/sample/
 [contributing]: https://github.com/google/modernstorage/blob/main/CONTRIBUTING.md
+[permissions_guide]: ./permissions
+[storage_interactions_guide]: ./storage
