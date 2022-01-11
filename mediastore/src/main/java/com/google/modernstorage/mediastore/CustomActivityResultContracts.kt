@@ -28,6 +28,7 @@ import androidx.activity.result.contract.ActivityResultContract
  *
  * @return `true` if the image was saved into the given content [Uri]
  */
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 class CustomTakePicture : ActivityResultContract<Uri, Boolean>() {
     override fun createIntent(context: Context, input: Uri): Intent {
         return Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -47,6 +48,7 @@ class CustomTakePicture : ActivityResultContract<Uri, Boolean>() {
  *
  * @return the content [Uri] if the video was saved into it otherwise returns `null`
  */
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 class CustomTakeVideo : ActivityResultContract<Uri, Uri?>() {
     override fun createIntent(context: Context, input: Uri): Intent {
         return Intent(MediaStore.ACTION_VIDEO_CAPTURE)

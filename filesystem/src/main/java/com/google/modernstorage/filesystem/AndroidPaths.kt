@@ -29,6 +29,7 @@ import java.nio.file.Paths
  * This class automatically handles integration with the [ContentFileSystemProvider],
  * and delegates calls for schemes other than `content://` to [java.nio.file.Paths].
  */
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 @Suppress("unused")
 object AndroidPaths {
     /**

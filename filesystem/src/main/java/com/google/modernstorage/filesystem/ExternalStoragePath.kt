@@ -32,6 +32,7 @@ internal const val EXTERNAL_STORAGE_PROVIDER_AUTHORITY = "com.android.externalst
  * Representation of a `content://` URI backed by Android's
  * `com.android.externalstorage.ExternalStorageProvider`.
  */
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 class ExternalStoragePath internal constructor(
     fileSystem: ContentFileSystem,
     uri: URI

@@ -38,6 +38,7 @@ import kotlin.coroutines.resume
  *
  * @constructor Creates a [MediaStoreRepository] with a [Context]
  */
+@Deprecated("Use the new storage & permissions modules instead, this module will be removed at the next version")
 class MediaStoreRepository(private val appContext: Context) {
 
     private val contentResolver: ContentResolver

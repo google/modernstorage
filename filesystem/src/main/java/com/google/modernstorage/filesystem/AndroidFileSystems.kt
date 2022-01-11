@@ -34,6 +34,7 @@ import java.nio.file.spi.FileSystemProvider
  *
  * This class automatically calls through to [FileSystems] if it cannot handle the request.
  */
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 @Suppress("unused")
 object AndroidFileSystems {
     private val installedProviders = mutableMapOf<String, FileSystemProvider>()

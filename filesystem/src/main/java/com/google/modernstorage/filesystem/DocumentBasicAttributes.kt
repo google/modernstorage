@@ -18,6 +18,7 @@ package com.google.modernstorage.filesystem
 import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.attribute.FileTime
 
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 class DocumentBasicAttributes internal constructor(
     private val lastModifiedTime: FileTime,
     val mimeType: String,

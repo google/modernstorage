@@ -21,9 +21,11 @@ import java.net.URI
 /**
  * Convenience method to convert a [Uri] into a [URI].
  */
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 fun Uri.toURI() = URI(this.toString())
 
 /**
  * Convenience method to convert a [URI] into a [Uri].
  */
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 fun URI.toUri(): Uri = Uri.parse(this.toString())

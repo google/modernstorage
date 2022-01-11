@@ -18,6 +18,7 @@ package com.google.modernstorage.filesystem
 import java.nio.file.DirectoryStream
 import java.nio.file.Path
 
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 internal class SequenceDocumentDirectoryStream(
     private val sequence: Sequence<Path>,
 ) : DirectoryStream<Path> {
