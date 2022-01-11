@@ -15,13 +15,13 @@
  */
 package com.google.modernstorage.filesystem
 
-import java.lang.NullPointerException
 import java.net.URI
 import java.nio.file.Path
 
 /**
  * Implementation of a [java.nio.file.FileSystem] specific for Android's ExternalStorageProvider.
  */
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 class ExternalStorageFileSystem internal constructor(
     provider: ContentFileSystemProvider,
 ) : ContentFileSystem(provider, EXTERNAL_STORAGE_PROVIDER_AUTHORITY) {

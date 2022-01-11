@@ -44,6 +44,7 @@ internal const val CONTENT_SCHEME = "content"
  * would on a JVM (using [FileSystems.getFileSystem]). Instead you should explicitly create an
  * instance of this class (i.e.: `fileSystemProvider = ContentFileSystemProvider(context)`).
  */
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 class ContentFileSystemProvider(
     private val contentContract: PlatformContract
 ) : FileSystemProvider(), PlatformContract by contentContract {

@@ -1,45 +1,62 @@
-<!--
-  ~ Copyright 2021 Google LLC
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~     https://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <resources>
     <string name="app_name">ModernStorage Sample</string>
-    <string name="demo_mediastore">MediaStore</string>
-    <string name="demo_filesystem">FileSystem</string>
 
-    <!-- Fragment labels -->
-    <string name="fragment_main_label">ModernStorage Demos</string>
-    <string name="mediastore_fragment_label">MediaStore Demo</string>
-    <string name="filesystem_fragment_label">FileSystem Demo</string>
-    <string name="min_sdk_version_requirement">This demo requires API %1$d</string>
+    <string name="back_button_label">Go to Previous screen</string>
+    <string name="demo_not_available_yet_label">This demo hasn\'t been written yet</string>
+    <string name="empty_state_label">Get started by triggering one of the actions below</string>
 
-    <!-- MediaStore demo -->
-    <string name="mediastore_permission_message">To add files, we need to request the storage permission</string>
-    <string name="mediastore_permission_label">Request Permission</string>
-    <string name="mediastore_type_label">Type</string>
-    <string name="mediastore_source_label">Source</string>
-    <string name="mediastore_add_media_label">Add media</string>
-    <string name="mediastore_type_image">Image</string>
-    <string name="mediastore_type_video">Video</string>
-    <string name="mediastore_source_internet">Internet</string>
-    <string name="mediastore_source_camera">Camera</string>
+    <string name="demo_check_permission_name">Check Permission</string>
+    <string name="demo_check_permission_description">Check which type of file the app has access to</string>
+    <string name="demo_check_permission_read_label">Read</string>
+    <string name="demo_check_permission_read_and_write_label">Read &amp; write</string>
+    <string name="demo_check_permission_created_by_label">files created by</string>
+    <string name="demo_check_permission_created_by_self_label">Self</string>
+    <string name="demo_check_permission_created_by_all_apps_label">All Apps</string>
+    <string name="demo_check_permission_image_type">Image</string>
+    <string name="demo_check_permission_video_type">Video</string>
+    <string name="demo_check_permission_audio_type">Audio</string>
+    <string name="demo_check_permission_document_type">Document</string>
 
-    <!-- FileSystem demo -->
-    <string name="filesystem_open_text_file_label">Open text file</string>
-    <string name="filesystem_open_image_file_label">Open image file</string>
-    <string name="filesystem_create_text_file_label">Create text file</string>
-    <string name="filesystem_not_available_yet">This functionality is not available yet</string>
-    <string name="filesystem_size">File size: %1$s</string>
+    <string name="demo_add_media_name">Add Media</string>
+    <string name="demo_add_media_description">Add media from local source</string>
+    <string name="demo_add_image_label">Add Image</string>
+    <string name="demo_add_video_label">Add Video</string>
+    <string name="demo_add_audio_label">Add Audio</string>
+
+    <string name="demo_capture_media_name">Capture Media</string>
+    <string name="demo_capture_media_description">Capture media using camera intents</string>
+    <string name="demo_capture_image_label">Capture Image</string>
+    <string name="demo_capture_video_label">Capture Video</string>
+
+    <string name="demo_add_file_to_downloads_name">Add File to Downloads</string>
+    <string name="demo_add_file_to_downloads_description">Add file to the Downloads folder</string>
+    <string name="demo_add_text_label">Add Text</string>
+    <string name="demo_add_pdf_label">Add PDF</string>
+    <string name="demo_add_zip_label">Add ZIP</string>
+
+    <string name="demo_list_media_name">List Media</string>
+    <string name="demo_list_media_description">List and manage MediaStore files</string>
+    <string name="demo_list_media_loading">Loading…</string>
+    <string name="demo_list_media_failure">MediaStore couldn\'t return results. Check Logcat</string>
+    <string name="demo_list_media_no_files_found">No media files found</string>
+
+    <string name="demo_select_document_name">Select Document</string>
+    <string name="demo_select_document_description">Read file using Storage Access Framework</string>
+    <string name="demo_select_any_document">Select any file</string>
+    <string name="demo_select_pdf_document">Select PDF file</string>
+    <string name="demo_select_zip_document">Select ZIP file</string>
+    <string name="demo_select_image_and_video_document">Select Image or Video files</string>
+
+    <string name="demo_edit_document_name">Create and Edit Document</string>
+    <string name="demo_edit_document_description">Edit file using Storage Access Framework</string>
+
+    <string name="demo_pick_visual_media_name">Pick Visual Media</string>
+    <string name="demo_pick_visual_media_description">Select using file picker and photo picker</string>
+    <string name="demo_system_file_picker">System File Picker</string>
+    <string name="demo_photo_picker">Photo Picker</string>
+    <string name="demo_pick_image">Select Image (1 max)</string>
+    <string name="demo_pick_video">Select Video (1 max)</string>
+    <string name="demo_pick_image_and_video">Select Image or Video (1 max)</string>
+    <string name="demo_pick_multiple_images_and_video">Select Image or Video (multiple)</string>
+    <string name="demo_pick_multiple_images_video_photo_picker">Select Images and/or Video (10 max)</string>
 </resources>

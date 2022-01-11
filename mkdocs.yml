@@ -15,8 +15,8 @@ theme:
 
 nav:
     -   'Overview': README.md
-    -   'MediaStore': mediastore.md
-    -   'FileSystem': filesystem.md
+    -   'Permissions': permissions.md
+    -   'Storage interactions': storage.md
 
 # Extensions
 markdown_extensions:
@@ -38,4 +38,4 @@ plugins:
     - macros
 
 extra:
-    lib_version: "1.0.0-alpha02"
+    lib_version: "1.0.0-alpha03"

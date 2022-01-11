@@ -31,6 +31,7 @@ import java.io.File
  * @property type Entry file type.
  * @property mimeType Mime type of the file.
  */
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 @Parcelize
 data class FileResource(
     val id: Int,
@@ -58,6 +59,7 @@ data class FileResource(
  *  Media type enum class representing the [FileColumns.MEDIA_TYPE] column
  */
 
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 enum class FileType(val value: Int) {
     /**
      * Representing [FileColumns.MEDIA_TYPE_NONE]

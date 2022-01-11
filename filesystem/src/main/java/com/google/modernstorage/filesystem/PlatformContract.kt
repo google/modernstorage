@@ -28,6 +28,7 @@ import java.nio.file.attribute.BasicFileAttributes
  *
  * This interface is nominally implemented by [AndroidContentContract].
  */
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 interface PlatformContract {
 
     /**

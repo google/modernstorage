@@ -27,6 +27,7 @@ import java.util.Objects
 /**
  * Base class representing a generic `content://` scheme as a [Path]
  */
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 open class ContentPath(private val fs: ContentFileSystem, protected val uri: URI) : Path {
 
     override fun compareTo(other: Path?): Int {

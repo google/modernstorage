@@ -1,0 +1,63 @@
+Why adopt Compose
+Jetpack Compose is Android’s modern toolkit for building native UI. It simplifies and accelerates UI
+ development on Android bringing your apps to life with less code, powerful tools, and intuitive
+Kotlin APIs. It makes building Android UI faster and easier. While creating Compose we worked with
+different partners who experienced all of these benefits first hand and shared some of their
+takeaways with us.
+
+
+Less code
+Writing less code affects all stages of development: as an author, you get to focus on the problem
+at hand, with less to test and debug and with less chances of bugs; as a reviewer or maintainer you
+have less code to read, understand, review and maintain.
+
+Compose allows you to do more with less code, compared to using the Android View system: Buttons,
+lists or animation - whatever you need to build, now there’s less code to write.
+
+
+Intuitive
+Compose uses a declarative API, which means that all you need to do is describe your UI - Compose
+takes care of the rest. The APIs are intuitive - easy to discover and use: “Our theming layer is
+vastly more intuitive and legible. We've been able to accomplish within a single Kotlin file what
+otherwise extended across multiple XML files that were responsible for attribute definitions and
+assignments via multiple layered theme overlays.” (Twitter)
+
+With Compose, you build small, stateless components that are not tied to a specific activity or
+fragment. That makes them easy to reuse and test: “We set a goal for ourselves to deliver a new set
+of UI components that were stateless, easy to use and maintain, and intuitive to
+implement/extend/customize. Compose really provided a solid answer for us in this.” (Twitter)
+
+In Compose, state is explicit and passed to the composable. That way there’s one single source of
+truth for the state, making it encapsulated and decoupled. Then, as app state changes, your UI
+automatically updates. “There’s less to hold in your head while you’re reasoning about something and
+ less behavior that is outside of your control or poorly understood” (Cuvva)
+
+
+Accelerate development
+Compose is compatible with all your existing code: you can call Compose code from Views and Views
+from Compose. Most common libraries like Navigation, ViewModel and Kotlin coroutines work with
+Compose, so you can start adopting when and where you want. “Interoperability was where we started
+integrating Compose, and what we found was it 'just works'. We found that we didn’t have to think
+about things like light and dark mode, and the whole experience was incredibly seamless.” (Cuvva)
+
+Using the full Android Studio support, with features like live previews, you get to iterate and ship
+ code faster: “Previews in Android Studio have been a big time saver. Being able to build out
+multiple previews also saves us time. Often we need to check a UI component in different states or
+with different settings -- like error states, or with a different font size, etc. With the ability
+to create multiple previews we can easily check this.” (Square)
+
+Powerful
+Compose enables you to create beautiful apps with direct access to the Android platform APIs and
+built-in support for Material Design, Dark theme, animations, and more: “Compose has also solved
+more than declarative UI -- accessibility apis, layout, all kinds of stuff have been improved. There
+ are fewer steps between the thing you want to make and actually making it” (Square).
+
+With Compose, bringing movement and life to your apps through animations is quick and easy to
+implement: “animations are so easy to add in Compose that there’s very little reason not to animate
+things like color/size/elevation changes” (Monzo), “you can make animations without requiring
+anything special -- it’s not different than showing a static screen” (Square).
+
+Whether you’re building with Material Design or your own design system, Compose gives you the
+flexibility to implement the design you want: “Having Material Design separated from the foundation
+has been really useful to us as we’re building our own design system that often requires differing
+design requirements from Material.” (Square)

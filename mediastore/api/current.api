@@ -1,38 +1,38 @@
 // Signature format: 4.0
 package com.google.modernstorage.mediastore {
 
-  public final class CustomTakePicture extends androidx.activity.result.contract.ActivityResultContract<android.net.Uri,java.lang.Boolean> {
-    ctor public CustomTakePicture();
-    method public android.content.Intent createIntent(android.content.Context context, android.net.Uri input);
-    method public androidx.activity.result.contract.ActivityResultContract.SynchronousResult<java.lang.Boolean>? getSynchronousResult(android.content.Context context, android.net.Uri input);
-    method public Boolean parseResult(int resultCode, android.content.Intent? intent);
+  @Deprecated public final class CustomTakePicture extends androidx.activity.result.contract.ActivityResultContract<android.net.Uri,java.lang.Boolean> {
+    ctor @Deprecated public CustomTakePicture();
+    method @Deprecated public android.content.Intent createIntent(android.content.Context context, android.net.Uri input);
+    method @Deprecated public androidx.activity.result.contract.ActivityResultContract.SynchronousResult<java.lang.Boolean>? getSynchronousResult(android.content.Context context, android.net.Uri input);
+    method @Deprecated public Boolean parseResult(int resultCode, android.content.Intent? intent);
   }
 
-  public final class CustomTakeVideo extends androidx.activity.result.contract.ActivityResultContract<android.net.Uri,android.net.Uri> {
-    ctor public CustomTakeVideo();
-    method public android.content.Intent createIntent(android.content.Context context, android.net.Uri input);
-    method public androidx.activity.result.contract.ActivityResultContract.SynchronousResult<android.net.Uri>? getSynchronousResult(android.content.Context context, android.net.Uri input);
-    method public android.net.Uri? parseResult(int resultCode, android.content.Intent? intent);
+  @Deprecated public final class CustomTakeVideo extends androidx.activity.result.contract.ActivityResultContract<android.net.Uri,android.net.Uri> {
+    ctor @Deprecated public CustomTakeVideo();
+    method @Deprecated public android.content.Intent createIntent(android.content.Context context, android.net.Uri input);
+    method @Deprecated public androidx.activity.result.contract.ActivityResultContract.SynchronousResult<android.net.Uri>? getSynchronousResult(android.content.Context context, android.net.Uri input);
+    method @Deprecated public android.net.Uri? parseResult(int resultCode, android.content.Intent? intent);
   }
 
-  @kotlinx.parcelize.Parcelize public final class FileResource implements android.os.Parcelable {
-    ctor public FileResource(int id, android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.FileType type, String mimeType, String? path);
-    method public int component1();
-    method public android.net.Uri component2();
-    method public String component3();
-    method public long component4();
-    method public com.google.modernstorage.mediastore.FileType component5();
-    method public String component6();
-    method public String? component7();
-    method @kotlinx.parcelize.Parcelize public com.google.modernstorage.mediastore.FileResource copy(int id, android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.FileType type, String mimeType, String? path);
-    method public java.io.File? getFile();
-    method public String getFilename();
-    method public int getId();
-    method public String getMimeType();
-    method public String? getPath();
-    method public long getSize();
-    method public com.google.modernstorage.mediastore.FileType getType();
-    method public android.net.Uri getUri();
+  @Deprecated @kotlinx.parcelize.Parcelize public final class FileResource implements android.os.Parcelable {
+    ctor @Deprecated public FileResource(int id, android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.FileType type, String mimeType, String? path);
+    method @Deprecated public int component1();
+    method @Deprecated public android.net.Uri component2();
+    method @Deprecated public String component3();
+    method @Deprecated public long component4();
+    method @Deprecated public com.google.modernstorage.mediastore.FileType component5();
+    method @Deprecated public String component6();
+    method @Deprecated public String? component7();
+    method @Deprecated public com.google.modernstorage.mediastore.FileResource copy(int id, android.net.Uri uri, String filename, long size, com.google.modernstorage.mediastore.FileType type, String mimeType, String? path);
+    method @Deprecated public java.io.File? getFile();
+    method @Deprecated public String getFilename();
+    method @Deprecated public int getId();
+    method @Deprecated public String getMimeType();
+    method @Deprecated public String? getPath();
+    method @Deprecated public long getSize();
+    method @Deprecated public com.google.modernstorage.mediastore.FileType getType();
+    method @Deprecated public android.net.Uri getUri();
     property public final String filename;
     property public final int id;
     property public final String mimeType;
@@ -42,45 +42,45 @@ package com.google.modernstorage.mediastore {
     property public final android.net.Uri uri;
   }
 
-  public enum FileType {
-    method public final int getValue();
+  @Deprecated public enum FileType {
+    method @Deprecated public final int getValue();
     property public final int value;
-    enum_constant public static final com.google.modernstorage.mediastore.FileType AUDIO;
-    enum_constant public static final com.google.modernstorage.mediastore.FileType DOCUMENT;
-    enum_constant public static final com.google.modernstorage.mediastore.FileType IMAGE;
-    enum_constant public static final com.google.modernstorage.mediastore.FileType NONE;
-    enum_constant public static final com.google.modernstorage.mediastore.FileType PLAYLIST;
-    enum_constant public static final com.google.modernstorage.mediastore.FileType SUBTITLE;
-    enum_constant public static final com.google.modernstorage.mediastore.FileType VIDEO;
-    field public static final com.google.modernstorage.mediastore.FileType.Companion Companion;
+    enum_constant @Deprecated public static final com.google.modernstorage.mediastore.FileType AUDIO;
+    enum_constant @Deprecated public static final com.google.modernstorage.mediastore.FileType DOCUMENT;
+    enum_constant @Deprecated public static final com.google.modernstorage.mediastore.FileType IMAGE;
+    enum_constant @Deprecated public static final com.google.modernstorage.mediastore.FileType NONE;
+    enum_constant @Deprecated public static final com.google.modernstorage.mediastore.FileType PLAYLIST;
+    enum_constant @Deprecated public static final com.google.modernstorage.mediastore.FileType SUBTITLE;
+    enum_constant @Deprecated public static final com.google.modernstorage.mediastore.FileType VIDEO;
+    field @Deprecated public static final com.google.modernstorage.mediastore.FileType.Companion Companion;
   }
 
-  public static final class FileType.Companion {
-    method public com.google.modernstorage.mediastore.FileType getEnum(int value);
+  @Deprecated public static final class FileType.Companion {
+    method @Deprecated public com.google.modernstorage.mediastore.FileType getEnum(int value);
   }
 
-  public final class Internal extends com.google.modernstorage.mediastore.StorageLocation {
-    field public static final com.google.modernstorage.mediastore.Internal INSTANCE;
+  @Deprecated public final class Internal extends com.google.modernstorage.mediastore.StorageLocation {
+    field @Deprecated public static final com.google.modernstorage.mediastore.Internal INSTANCE;
   }
 
-  public final class MediaStoreRepository {
-    ctor public MediaStoreRepository(android.content.Context appContext);
-    method public suspend Object? addMediaFromStream-d1pmJ48(String filename, com.google.modernstorage.mediastore.FileType type, String mimeType, java.io.InputStream inputStream, com.google.modernstorage.mediastore.StorageLocation location, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<? extends android.net.Uri>> p);
-    method public boolean canReadOwnEntries();
-    method public boolean canReadSharedEntries();
-    method public boolean canWriteOwnEntries();
-    method public boolean canWriteSharedEntries();
-    method public android.net.Uri convertMediaUriToContentUri(android.net.Uri uri);
-    method public suspend Object? createMediaUri-d1pmJ48(String filename, com.google.modernstorage.mediastore.FileType type, com.google.modernstorage.mediastore.StorageLocation location, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<? extends android.net.Uri>> p);
-    method public suspend Object? getResourceByUri-d1pmJ48(android.net.Uri uri, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<com.google.modernstorage.mediastore.FileResource>> p);
-    method public suspend Object? scanUri-d1pmJ48(android.net.Uri uri, String mimeType, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<java.lang.String>> p);
+  @Deprecated public final class MediaStoreRepository {
+    ctor @Deprecated public MediaStoreRepository(android.content.Context appContext);
+    method @Deprecated public suspend Object? addMediaFromStream(String filename, com.google.modernstorage.mediastore.FileType type, String mimeType, java.io.InputStream inputStream, com.google.modernstorage.mediastore.StorageLocation location, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<? extends android.net.Uri>> p);
+    method @Deprecated public boolean canReadOwnEntries();
+    method @Deprecated public boolean canReadSharedEntries();
+    method @Deprecated public boolean canWriteOwnEntries();
+    method @Deprecated public boolean canWriteSharedEntries();
+    method @Deprecated public android.net.Uri convertMediaUriToContentUri(android.net.Uri uri);
+    method @Deprecated public suspend Object? createMediaUri(String filename, com.google.modernstorage.mediastore.FileType type, com.google.modernstorage.mediastore.StorageLocation location, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<? extends android.net.Uri>> p);
+    method @Deprecated public suspend Object? getResourceByUri(android.net.Uri uri, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<? extends com.google.modernstorage.mediastore.FileResource>> p);
+    method @Deprecated public suspend Object? scanUri(android.net.Uri uri, String mimeType, optional kotlin.coroutines.CoroutineContext context, optional kotlin.coroutines.Continuation<? super kotlin.Result<? extends java.lang.String>> p);
   }
 
-  public final class SharedPrimary extends com.google.modernstorage.mediastore.StorageLocation {
-    field public static final com.google.modernstorage.mediastore.SharedPrimary INSTANCE;
+  @Deprecated public final class SharedPrimary extends com.google.modernstorage.mediastore.StorageLocation {
+    field @Deprecated public static final com.google.modernstorage.mediastore.SharedPrimary INSTANCE;
   }
 
-  public abstract sealed class StorageLocation {
+  @Deprecated public abstract sealed class StorageLocation {
   }
 
 }

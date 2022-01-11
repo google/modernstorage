@@ -20,6 +20,7 @@ import android.os.RemoteException
 import java.io.FileNotFoundException
 import java.io.IOException
 
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 internal object Exceptions {
     class UriNotFoundException(uri: Uri) : FileNotFoundException() {
         override val message = "Uri $uri could not be found"

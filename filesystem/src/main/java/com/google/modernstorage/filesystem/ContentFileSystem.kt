@@ -24,6 +24,7 @@ import java.nio.file.PathMatcher
 import java.nio.file.WatchService
 import java.nio.file.attribute.UserPrincipalLookupService
 
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 open class ContentFileSystem internal constructor(
     private val provider: ContentFileSystemProvider,
     val authority: String

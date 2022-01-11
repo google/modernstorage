@@ -12,26 +12,23 @@ simplify its interactions by apps developers. ModernStorage is:
 ModernStorage is available on `mavenCentral()`.
 
 ```kotlin
-// For MediaStore interactions
-implementation("com.google.modernstorage:modernstorage-mediastore:{{ lib_version }}")
+// For storage permissions checking
+implementation("com.google.modernstorage:modernstorage-permissions:{{ lib_version }}")
 
-// For Storage Access Framework interactions on API 26+
-implementation("com.google.modernstorage:modernstorage-filesystem:{{ lib_version }}")
+// For storage interactions using Okio FileSystem API
+implementation("com.google.modernstorage:modernstorage-storage:{{ lib_version }}")
 ```
 
 ## Quick start
 
-* For MediaStore interactions, check out the [sample app][sample_app]
-* For non-media files on shared storage & SAF interactions, stay tuned for the upcoming `filesystem`
-package
+* Have a look at the [permissions][permissions_guide] and [storage interactions][storage_interactions_guide] guides
+* Check out the [sample app][sample_app]
 
 ## Is it ready?
-It's experimental! Our current version is **{{ lib_version }}**. As it's an alpha release, we're
-expecting API breaking changes between releases. While it always seems risky to rely on an
-experimental library, we're enforcing storage best practises (including Scoped Storage), which
-developers aren't always aware of.
+It's in progress! Our current version is **{{ lib_version }}**. As it's an alpha release, we're
+expecting API breaking changes between releases.
 
-We're looking for a stable release later this year (we don't have yet a precise date). We actively
+We're looking for a stable release in 2022 (we don't have yet a precise date). We actively
 listen to your feedback to make ModernStorage the default library for storage interactions on
 Android.
 
@@ -60,5 +57,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-[sample_app]: https://github.com/google/modernstorage/tree/main/sample/src/main/java/com/google/modernstorage/sample/mediastore/
+[sample_app]: https://github.com/google/modernstorage/tree/main/sample/
 [contributing]: https://github.com/google/modernstorage/blob/main/CONTRIBUTING.md
+[permissions_guide]: ./permissions
+[storage_interactions_guide]: ./storage

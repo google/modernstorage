@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-include ':mediastore'
-include ':sample'
 rootProject.name = "ModernStorage"
+include ':mediastore'
 include ':filesystem'
+include ':permissions'
+include ':photopicker'
+include ':storage'
+include ':sample'

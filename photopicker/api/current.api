@@ -1,0 +1,31 @@
+// Signature format: 4.0
+package com.google.modernstorage.photopicker {
+
+  @androidx.core.os.BuildCompat.PrereleaseSdkCheck public final class PhotoPicker extends androidx.activity.result.contract.ActivityResultContract<com.google.modernstorage.photopicker.PhotoPicker.Args,java.util.List<? extends android.net.Uri>> {
+    ctor public PhotoPicker();
+    method @CallSuper public android.content.Intent createIntent(android.content.Context context, com.google.modernstorage.photopicker.PhotoPicker.Args input);
+    method public androidx.activity.result.contract.ActivityResultContract.SynchronousResult<java.util.List<android.net.Uri>>? getSynchronousResult(android.content.Context context, com.google.modernstorage.photopicker.PhotoPicker.Args input);
+    method public java.util.List<android.net.Uri> parseResult(int resultCode, android.content.Intent? intent);
+    field public static final com.google.modernstorage.photopicker.PhotoPicker.Companion Companion;
+  }
+
+  public static final class PhotoPicker.Args {
+    ctor public PhotoPicker.Args(com.google.modernstorage.photopicker.PhotoPicker.Type type, int maxItems);
+    method public int getMaxItems();
+    method public com.google.modernstorage.photopicker.PhotoPicker.Type getType();
+    property public final int maxItems;
+    property public final com.google.modernstorage.photopicker.PhotoPicker.Type type;
+  }
+
+  public static final class PhotoPicker.Companion {
+    method public boolean isPhotoPickerAvailable();
+  }
+
+  public enum PhotoPicker.Type {
+    enum_constant public static final com.google.modernstorage.photopicker.PhotoPicker.Type IMAGES_AND_VIDEO;
+    enum_constant public static final com.google.modernstorage.photopicker.PhotoPicker.Type IMAGES_ONLY;
+    enum_constant public static final com.google.modernstorage.photopicker.PhotoPicker.Type VIDEO_ONLY;
+  }
+
+}
+

@@ -18,16 +18,19 @@ package com.google.modernstorage.mediastore
 /**
  *  Represents a storage volume to be used as target when using [MediaStoreRepository].
  */
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 sealed class StorageLocation
 
 /**
  *  Represents the internal storage of the current application.
  */
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 object Internal : StorageLocation()
 
 /**
  *  Represents the primary shared storage of the device.
  */
+@Deprecated("Use the new storage module instead, this module will be removed at the next version")
 object SharedPrimary : StorageLocation()
 
 // TODO: Handle secondary shared storage

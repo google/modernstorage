@@ -4,6 +4,10 @@ artifact: "modernstorage-filesystem"
 
 # FileSystem
 
+!!! danger
+    The `filesystem` and `mediastore` modules are deprecated. You should use the new [`storage`][storage_guide]
+    module which is relying on Okio Filesystem API.
+
 `{{ artifact }}` is a library abstracting storage interactions when using the
 [Storage Access Framework][saf_guide] by wrapping document uris in [Path][path_api]. It allows using
 methods from [java.nio.Files][java.nio.Files_api] without having to learn another API like
@@ -129,3 +133,4 @@ val bitmap = BitmapFactory.decodeStream(inputStream)
 [Uri_api]: https://developer.android.com/reference/kotlin/android/net/Uri
 [api_reference]: /modernstorage/api/filesystem/
 [InputStream_api]: https://developer.android.com/reference/kotlin/java/io/InputStream
+[storage_guide]: ../storage
