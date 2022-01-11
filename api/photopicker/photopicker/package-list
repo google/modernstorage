@@ -1,0 +1,26 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:com.google.modernstorage.photopicker////PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/index.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker.Args///PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/-args/index.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker.Args/Args/#com.google.modernstorage.photopicker.PhotoPicker.Type#kotlin.Int/PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/-args/-args.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker.Args/maxItems/#/PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/-args/max-items.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker.Args/type/#/PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/-args/type.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker.Companion///PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/-companion/index.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker.Companion/isPhotoPickerAvailable/#/PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/-companion/is-photo-picker-available.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker.Type.IMAGES_AND_VIDEO///PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/-type/-i-m-a-g-e-s_-a-n-d_-v-i-d-e-o/index.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker.Type.IMAGES_AND_VIDEO/name/#/PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/-type/-i-m-a-g-e-s_-a-n-d_-v-i-d-e-o/name.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker.Type.IMAGES_AND_VIDEO/ordinal/#/PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/-type/-i-m-a-g-e-s_-a-n-d_-v-i-d-e-o/ordinal.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker.Type.IMAGES_ONLY///PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/-type/-i-m-a-g-e-s_-o-n-l-y/index.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker.Type.IMAGES_ONLY/name/#/PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/-type/-i-m-a-g-e-s_-o-n-l-y/name.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker.Type.IMAGES_ONLY/ordinal/#/PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/-type/-i-m-a-g-e-s_-o-n-l-y/ordinal.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker.Type.VIDEO_ONLY///PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/-type/-v-i-d-e-o_-o-n-l-y/index.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker.Type.VIDEO_ONLY/name/#/PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/-type/-v-i-d-e-o_-o-n-l-y/name.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker.Type.VIDEO_ONLY/ordinal/#/PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/-type/-v-i-d-e-o_-o-n-l-y/ordinal.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker.Type///PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/-type/index.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker///PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/index.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker/PhotoPicker/#/PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/-photo-picker.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker/createIntent/#android.content.Context#com.google.modernstorage.photopicker.PhotoPicker.Args/PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/create-intent.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker/getSynchronousResult/#android.content.Context#com.google.modernstorage.photopicker.PhotoPicker.Args/PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/get-synchronous-result.html
+$dokka.location:com.google.modernstorage.photopicker/PhotoPicker/parseResult/#kotlin.Int#android.content.Intent?/PointingToDeclaration/photopicker/com.google.modernstorage.photopicker/-photo-picker/parse-result.html
+com.google.modernstorage.photopicker
+

@@ -1,0 +1,36 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:com.google.modernstorage.permissions////PointingToDeclaration/permissions/com.google.modernstorage.permissions/index.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.Action.READ///PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-action/-r-e-a-d/index.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.Action.READ/name/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-action/-r-e-a-d/name.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.Action.READ/ordinal/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-action/-r-e-a-d/ordinal.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.Action.READ_AND_WRITE///PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-action/-r-e-a-d_-a-n-d_-w-r-i-t-e/index.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.Action.READ_AND_WRITE/name/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-action/-r-e-a-d_-a-n-d_-w-r-i-t-e/name.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.Action.READ_AND_WRITE/ordinal/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-action/-r-e-a-d_-a-n-d_-w-r-i-t-e/ordinal.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.Action///PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-action/index.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.CreatedBy.AllApps///PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-created-by/-all-apps/index.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.CreatedBy.AllApps/name/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-created-by/-all-apps/name.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.CreatedBy.AllApps/ordinal/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-created-by/-all-apps/ordinal.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.CreatedBy.Self///PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-created-by/-self/index.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.CreatedBy.Self/name/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-created-by/-self/name.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.CreatedBy.Self/ordinal/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-created-by/-self/ordinal.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.CreatedBy///PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-created-by/index.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.FileType.Audio///PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-file-type/-audio/index.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.FileType.Audio/name/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-file-type/-audio/name.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.FileType.Audio/ordinal/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-file-type/-audio/ordinal.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.FileType.Document///PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-file-type/-document/index.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.FileType.Document/name/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-file-type/-document/name.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.FileType.Document/ordinal/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-file-type/-document/ordinal.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.FileType.Image///PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-file-type/-image/index.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.FileType.Image/name/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-file-type/-image/name.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.FileType.Image/ordinal/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-file-type/-image/ordinal.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.FileType.Video///PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-file-type/-video/index.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.FileType.Video/name/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-file-type/-video/name.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.FileType.Video/ordinal/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-file-type/-video/ordinal.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions.FileType///PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-file-type/index.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions///PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/index.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions/StoragePermissions/#android.content.Context/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-storage-permissions.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions/canReadAndWriteFiles/#kotlin.collections.List[com.google.modernstorage.permissions.StoragePermissions.FileType]#com.google.modernstorage.permissions.StoragePermissions.CreatedBy/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/can-read-and-write-files.html
+$dokka.location:com.google.modernstorage.permissions/StoragePermissions/canReadFiles/#kotlin.collections.List[com.google.modernstorage.permissions.StoragePermissions.FileType]#com.google.modernstorage.permissions.StoragePermissions.CreatedBy/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/can-read-files.html
+com.google.modernstorage.permissions
+
