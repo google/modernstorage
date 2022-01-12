@@ -22,13 +22,15 @@ implementation("com.google.modernstorage:{{ artifact }}:{{ lib_version }}")
 
 ```kotlin
 // Check if the app can read image & document files created by itself
-StoragePermissions.canReadFiles(
+val storagePermissions = StoragePermissions(context)
+
+storagePermissions.canReadFiles(
     types = listOf(FileType.Image, FileType.Document),
     createdBy = StoragePermissions.CreatedBy.Self
 )
 
 // Check if the app can read video & audio files created by all apps
-StoragePermissions.canReadFiles(
+storagePermissions.canReadFiles(
     types = listOf(FileType.Video, FileType.Audio),
     createdBy = StoragePermissions.CreatedBy.AllApps
 )
@@ -38,13 +40,15 @@ StoragePermissions.canReadFiles(
 
 ```kotlin
 // Check if the app can read & write image & document files created by itself
-StoragePermissions.canReadAndWriteFiles(
+val storagePermissions = StoragePermissions(context)
+
+storagePermissions.canReadAndWriteFiles(
     types = listOf(FileType.Image, FileType.Video),
     createdBy = StoragePermissions.CreatedBy.Self
 )
 
 // Check if the app can read & write video & audio files created by all apps
-StoragePermissions.canReadAndWriteFiles(
+storagePermissions.canReadAndWriteFiles(
     types = listOf(FileType.Audio, FileType.Document),
     createdBy = StoragePermissions.CreatedBy.AllApps
 )
