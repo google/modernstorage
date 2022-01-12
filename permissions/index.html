@@ -310,6 +310,36 @@
   
 
     
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mediastore/" class="md-nav__link">
+        MediaStore (deprecated)
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filesystem/" class="md-nav__link">
+        Filesystem (deprecated)
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -392,26 +422,30 @@
 <p><code>modernstorage-permissions</code> API reference is available <a href="/modernstorage/api/permissions/">here</a>.</p>
 <h2 id="check-if-app-can-read-files">Check if app can read files<a class="headerlink" href="#check-if-app-can-read-files" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="c1">// Check if the app can read image &amp; document files created by itself</span>
-<span class="n">StoragePermissions</span><span class="p">.</span><span class="na">canReadFiles</span><span class="p">(</span>
+<span class="kd">val</span> <span class="nv">storagePermissions</span> <span class="o">=</span> <span class="n">StoragePermissions</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+<span class="n">storagePermissions</span><span class="p">.</span><span class="na">canReadFiles</span><span class="p">(</span>
     <span class="n">types</span> <span class="o">=</span> <span class="n">listOf</span><span class="p">(</span><span class="n">FileType</span><span class="p">.</span><span class="na">Image</span><span class="p">,</span> <span class="n">FileType</span><span class="p">.</span><span class="na">Document</span><span class="p">),</span>
     <span class="n">createdBy</span> <span class="o">=</span> <span class="n">StoragePermissions</span><span class="p">.</span><span class="na">CreatedBy</span><span class="p">.</span><span class="na">Self</span>
 <span class="p">)</span>
 
 <span class="c1">// Check if the app can read video &amp; audio files created by all apps</span>
-<span class="n">StoragePermissions</span><span class="p">.</span><span class="na">canReadFiles</span><span class="p">(</span>
+<span class="n">storagePermissions</span><span class="p">.</span><span class="na">canReadFiles</span><span class="p">(</span>
     <span class="n">types</span> <span class="o">=</span> <span class="n">listOf</span><span class="p">(</span><span class="n">FileType</span><span class="p">.</span><span class="na">Video</span><span class="p">,</span> <span class="n">FileType</span><span class="p">.</span><span class="na">Audio</span><span class="p">),</span>
     <span class="n">createdBy</span> <span class="o">=</span> <span class="n">StoragePermissions</span><span class="p">.</span><span class="na">CreatedBy</span><span class="p">.</span><span class="na">AllApps</span>
 <span class="p">)</span>
 </code></pre></div>
 <h2 id="check-if-app-can-read-and-write-files">Check if app can read and write files<a class="headerlink" href="#check-if-app-can-read-and-write-files" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="c1">// Check if the app can read &amp; write image &amp; document files created by itself</span>
-<span class="n">StoragePermissions</span><span class="p">.</span><span class="na">canReadAndWriteFiles</span><span class="p">(</span>
+<span class="kd">val</span> <span class="nv">storagePermissions</span> <span class="o">=</span> <span class="n">StoragePermissions</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+<span class="n">storagePermissions</span><span class="p">.</span><span class="na">canReadAndWriteFiles</span><span class="p">(</span>
     <span class="n">types</span> <span class="o">=</span> <span class="n">listOf</span><span class="p">(</span><span class="n">FileType</span><span class="p">.</span><span class="na">Image</span><span class="p">,</span> <span class="n">FileType</span><span class="p">.</span><span class="na">Video</span><span class="p">),</span>
     <span class="n">createdBy</span> <span class="o">=</span> <span class="n">StoragePermissions</span><span class="p">.</span><span class="na">CreatedBy</span><span class="p">.</span><span class="na">Self</span>
 <span class="p">)</span>
 
 <span class="c1">// Check if the app can read &amp; write video &amp; audio files created by all apps</span>
-<span class="n">StoragePermissions</span><span class="p">.</span><span class="na">canReadAndWriteFiles</span><span class="p">(</span>
+<span class="n">storagePermissions</span><span class="p">.</span><span class="na">canReadAndWriteFiles</span><span class="p">(</span>
     <span class="n">types</span> <span class="o">=</span> <span class="n">listOf</span><span class="p">(</span><span class="n">FileType</span><span class="p">.</span><span class="na">Audio</span><span class="p">,</span> <span class="n">FileType</span><span class="p">.</span><span class="na">Document</span><span class="p">),</span>
     <span class="n">createdBy</span> <span class="o">=</span> <span class="n">StoragePermissions</span><span class="p">.</span><span class="na">CreatedBy</span><span class="p">.</span><span class="na">AllApps</span>
 <span class="p">)</span>
