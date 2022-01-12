@@ -59,5 +59,5 @@ limitations under the License.
 
 [sample_app]: https://github.com/google/modernstorage/tree/main/sample/
 [contributing]: https://github.com/google/modernstorage/blob/main/CONTRIBUTING.md
-[permissions_guide]: ./permissions
-[storage_interactions_guide]: ./storage
+[permissions_guide]: ./permissions.md
+[storage_interactions_guide]: ./storage.md
