@@ -17,7 +17,6 @@ package com.google.modernstorage.sample.mediastore
 
 import android.app.Application
 import android.content.Context
-import android.os.Build
 import android.os.Environment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -46,10 +45,6 @@ class MediaStoreViewModel(application: Application) : AndroidViewModel(applicati
 
     fun addMedia(type: MediaType) {
         viewModelScope.launch {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                return@launch
-            }
-
             val extension = when (type) {
                 MediaType.IMAGE -> "jpg"
                 MediaType.VIDEO -> "mp4"
@@ -89,10 +84,6 @@ class MediaStoreViewModel(application: Application) : AndroidViewModel(applicati
 
     fun addDocument(type: DocumentType) {
         viewModelScope.launch {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                return@launch
-            }
-
             val extension = when (type) {
                 DocumentType.TEXT -> "txt"
                 DocumentType.PDF -> "pdf"
