@@ -17,6 +17,9 @@ nav:
     -   'Overview': README.md
     -   'Permissions': permissions.md
     -   'Storage interactions': storage.md
+    # TODO: Remove below sections at the next release
+    -   'MediaStore (deprecated)': mediastore.md
+    -   'Filesystem (deprecated)': filesystem.md
 
 # Extensions
 markdown_extensions:
