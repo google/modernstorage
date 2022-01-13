@@ -24,6 +24,125 @@ import android.os.Environment
 import androidx.core.content.ContextCompat
 
 class StoragePermissions(private val context: Context) {
+    companion object {
+        private const val READ_EXTERNAL_STORAGE_MASK = 0b000001
+        private const val WRITE_EXTERNAL_STORAGE_MASK = 0b000011
+        private const val READ_IMAGES_MASK = 0b000100
+        private const val READ_VIDEO_MASK = 0b001000
+        private const val READ_AUDIO_MASK = 0b010000
+        private const val MANAGE_EXTERNAL_STORAGE_MASK = 0b111111
+
+        private fun getPermissionMask(
+            action: Action,
+            types: List<FileType>,
+            createdBy: CreatedBy
+        ): Int {
+            var permissionMask = 0
+
+            when (createdBy) {
+                CreatedBy.Self -> {
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                        permissionMask = when (action) {
+                            Action.READ -> permissionMask or READ_EXTERNAL_STORAGE_MASK or WRITE_EXTERNAL_STORAGE_MASK
+                            Action.READ_AND_WRITE -> permissionMask or WRITE_EXTERNAL_STORAGE_MASK
+                        }
+                    }
+                }
+                CreatedBy.AllApps -> {
+                    if (types.contains(FileType.Image)) {
+                        permissionMask = when {
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                                permissionMask or READ_EXTERNAL_STORAGE_MASK
+                            }
+                            else -> {
+                                when (action) {
+                                    Action.READ -> permissionMask or READ_EXTERNAL_STORAGE_MASK or WRITE_EXTERNAL_STORAGE_MASK
+                                    Action.READ_AND_WRITE -> permissionMask or WRITE_EXTERNAL_STORAGE_MASK
+                                }
+                            }
+                        }
+                    }
+
+                    if (types.contains(FileType.Video)) {
+                        permissionMask = when {
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                                permissionMask or READ_EXTERNAL_STORAGE_MASK
+                            }
+                            else -> {
+                                when (action) {
+                                    Action.READ -> permissionMask or READ_EXTERNAL_STORAGE_MASK or WRITE_EXTERNAL_STORAGE_MASK
+                                    Action.READ_AND_WRITE -> permissionMask or WRITE_EXTERNAL_STORAGE_MASK
+                                }
+                            }
+                        }
+                    }
+
+                    if (types.contains(FileType.Audio)) {
+                        permissionMask = when {
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                                permissionMask or READ_EXTERNAL_STORAGE_MASK
+                            }
+                            else -> {
+                                when (action) {
+                                    Action.READ -> permissionMask or READ_EXTERNAL_STORAGE_MASK or WRITE_EXTERNAL_STORAGE_MASK
+                                    Action.READ_AND_WRITE -> permissionMask or WRITE_EXTERNAL_STORAGE_MASK
+                                }
+                            }
+                        }
+                    }
+
+                    if (types.contains(FileType.Document)) {
+                        permissionMask = when {
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                                permissionMask or MANAGE_EXTERNAL_STORAGE_MASK
+                            }
+                            else -> {
+                                when (action) {
+                                    Action.READ -> permissionMask or READ_EXTERNAL_STORAGE_MASK or WRITE_EXTERNAL_STORAGE_MASK
+                                    Action.READ_AND_WRITE -> permissionMask or WRITE_EXTERNAL_STORAGE_MASK
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return permissionMask
+        }
+
+        private fun getRequiredPermissions(
+            action: Action,
+            types: List<FileType>,
+            createdBy: CreatedBy
+        ): List<String> {
+            val permissionMask = getPermissionMask(action, types, createdBy)
+
+            val requiredPermissions = mutableListOf<String>()
+            if (permissionMask and READ_EXTERNAL_STORAGE_MASK > 1) requiredPermissions.add(
+                READ_EXTERNAL_STORAGE
+            )
+            if (permissionMask and WRITE_EXTERNAL_STORAGE_MASK > 1) requiredPermissions.add(
+                WRITE_EXTERNAL_STORAGE
+            )
+
+            return requiredPermissions
+        }
+
+        /**
+         * Get list of required permissions for given read usage
+         */
+        fun getReadFilesPermissions(types: List<FileType>, createdBy: CreatedBy): List<String> {
+            return getRequiredPermissions(Action.READ, types, createdBy)
+        }
+
+        /**
+         * Get list of required permissions for given read usage
+         */
+        fun getReadAndWriteFilesPermissions(types: List<FileType>, createdBy: CreatedBy): List<String> {
+            return getRequiredPermissions(Action.READ_AND_WRITE, types, createdBy)
+        }
+    }
+
     /**
      * Type of files
      */
@@ -46,89 +165,26 @@ class StoragePermissions(private val context: Context) {
     }
 
     private fun hasPermission(permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(
+            context,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     /**
      * Check if app can read shared files
      */
-    private fun canAccessFiles(action: Action, types: List<FileType>, createdBy: CreatedBy): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager()) {
-            return true
-        }
+    private fun canAccessFiles(
+        action: Action,
+        types: List<FileType>,
+        createdBy: CreatedBy
+    ): Boolean {
+        val grantedPermissionMask =
+            if (hasPermission(READ_EXTERNAL_STORAGE)) READ_EXTERNAL_STORAGE_MASK else 0 or
+                if (hasPermission(WRITE_EXTERNAL_STORAGE)) WRITE_EXTERNAL_STORAGE_MASK else 0 or
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager()) MANAGE_EXTERNAL_STORAGE_MASK else 0
 
-        val conditions = mutableListOf<Boolean>()
-        when (createdBy) {
-            CreatedBy.Self -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    conditions.add(true)
-                } else {
-                    when (action) {
-                        Action.READ -> conditions.add(hasPermission(READ_EXTERNAL_STORAGE) || hasPermission(WRITE_EXTERNAL_STORAGE))
-                        Action.READ_AND_WRITE -> conditions.add(hasPermission(WRITE_EXTERNAL_STORAGE))
-                    }
-                }
-            }
-            CreatedBy.AllApps -> {
-                if (types.contains(FileType.Image)) {
-                    when {
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                            conditions.add(hasPermission(READ_EXTERNAL_STORAGE))
-                        }
-                        else -> {
-                            when (action) {
-                                Action.READ -> conditions.add(hasPermission(READ_EXTERNAL_STORAGE) || hasPermission(WRITE_EXTERNAL_STORAGE))
-                                Action.READ_AND_WRITE -> conditions.add(hasPermission(WRITE_EXTERNAL_STORAGE))
-                            }
-                        }
-                    }
-                }
-
-                if (types.contains(FileType.Video)) {
-                    when {
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                            conditions.add(hasPermission(READ_EXTERNAL_STORAGE))
-                        }
-                        else -> {
-                            when (action) {
-                                Action.READ -> conditions.add(hasPermission(READ_EXTERNAL_STORAGE) || hasPermission(WRITE_EXTERNAL_STORAGE))
-                                Action.READ_AND_WRITE -> conditions.add(hasPermission(WRITE_EXTERNAL_STORAGE))
-                            }
-                        }
-                    }
-                }
-
-                if (types.contains(FileType.Audio)) {
-                    when {
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                            conditions.add(hasPermission(READ_EXTERNAL_STORAGE))
-                        }
-                        else -> {
-                            when (action) {
-                                Action.READ -> conditions.add(hasPermission(READ_EXTERNAL_STORAGE) || hasPermission(WRITE_EXTERNAL_STORAGE))
-                                Action.READ_AND_WRITE -> conditions.add(hasPermission(WRITE_EXTERNAL_STORAGE))
-                            }
-                        }
-                    }
-                }
-
-                if (types.contains(FileType.Document)) {
-                    when {
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                            conditions.add(false)
-                        }
-                        else -> {
-                            when (action) {
-                                Action.READ -> conditions.add(hasPermission(READ_EXTERNAL_STORAGE) || hasPermission(WRITE_EXTERNAL_STORAGE))
-                                Action.READ_AND_WRITE -> conditions.add(hasPermission(WRITE_EXTERNAL_STORAGE))
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return conditions.all { it }
+        return (getPermissionMask(action, types, createdBy) and grantedPermissionMask) > 0
     }
 
     /**
@@ -139,7 +195,7 @@ class StoragePermissions(private val context: Context) {
     }
 
     /**
-     * Check if app can write shared files
+     * Check if app can read and write shared files
      */
     fun canReadAndWriteFiles(types: List<FileType>, createdBy: CreatedBy): Boolean {
         return canAccessFiles(Action.READ_AND_WRITE, types, createdBy)
