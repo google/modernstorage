@@ -23,6 +23,7 @@ nav:
 
 # Extensions
 markdown_extensions:
+    - tables
     - admonition
     -   codehilite:
             guess_lang: false
@@ -34,6 +35,9 @@ markdown_extensions:
     - pymdownx.tabbed
     -   pymdownx.tasklist:
             custom_checkbox: true
+    -   pymdownx.emoji:
+            emoji_index: !!python/name:materialx.emoji.twemoji
+            emoji_generator: !!python/name:materialx.emoji.to_svg
 
 # Plugins
 plugins:
@@ -41,4 +45,4 @@ plugins:
     - macros
 
 extra:
-    lib_version: "1.0.0-alpha03"
+    lib_version: "1.0.0-alpha04"
