@@ -274,6 +274,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#storage-permissions-usage" class="md-nav__link">
+    Storage Permissions usage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#check-if-app-can-read-files" class="md-nav__link">
     Check if app can read files
   </a>
@@ -381,6 +388,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#storage-permissions-usage" class="md-nav__link">
+    Storage Permissions usage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#check-if-app-can-read-files" class="md-nav__link">
     Check if app can read files
   </a>
@@ -416,10 +430,74 @@
 <h2 id="add-dependency-to-project">Add dependency to project<a class="headerlink" href="#add-dependency-to-project" title="Permanent link">&para;</a></h2>
 <p><code>modernstorage-permissions</code> is available on <code>mavenCentral()</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// build.gradle</span>
-<span class="n">implementation</span><span class="o">(</span><span class="s2">&quot;com.google.modernstorage:modernstorage-permissions:1.0.0-alpha03&quot;</span><span class="o">)</span>
+<span class="n">implementation</span><span class="o">(</span><span class="s2">&quot;com.google.modernstorage:modernstorage-permissions:1.0.0-alpha04&quot;</span><span class="o">)</span>
 </code></pre></div>
 <h2 id="api-reference">API reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h2>
 <p><code>modernstorage-permissions</code> API reference is available <a href="/modernstorage/api/permissions/">here</a>.</p>
+<h2 id="storage-permissions-usage">Storage Permissions usage<a class="headerlink" href="#storage-permissions-usage" title="Permanent link">&para;</a></h2>
+<p>Android provides two types of storage to save files:</p>
+<ul>
+<li>App-specific (internal folder, external app folder)</li>
+<li>Shared (visible using the system file manager)</li>
+</ul>
+<p>With the introduction of Scoped Storage in Android 10 (API 29), the storage access has deeply
+changed:</p>
+<ul>
+<li>You can add media &amp; document files without any permission, reading and editing media files
+created by other apps require <code>READ_EXTERNAL_STORAGE</code></li>
+<li>Document files created by other apps are readable only using the <a href="https://developer.android.com/training/data-storage/shared/documents-files">Storage Access Framework</a></li>
+</ul>
+<p>To help you navigate common use cases, check out the below table:</p>
+<table>
+<thead>
+<tr>
+<th>Actions</th>
+<th>API 29-</th>
+<th>API 29+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Read media files (created by self)</td>
+<td><code>READ_EXTERNAL_STORAGE</code></td>
+<td>No permission needed</td>
+</tr>
+<tr>
+<td>Read media files (created by all apps)</td>
+<td><code>READ_EXTERNAL_STORAGE</code></td>
+<td><code>READ_EXTERNAL_STORAGE</code></td>
+</tr>
+<tr>
+<td>Add file (media, document)</td>
+<td><code>WRITE_EXTERNAL_STORAGE</code></td>
+<td>No permission needed</td>
+</tr>
+<tr>
+<td>Edit &amp; Delete media files (created by self)</td>
+<td><code>WRITE_EXTERNAL_STORAGE</code></td>
+<td>No permission needed</td>
+</tr>
+<tr>
+<td>Edit &amp; Delete media files (created by all apps)</td>
+<td><code>WRITE_EXTERNAL_STORAGE</code></td>
+<td><code>READ_EXTERNAL_STORAGE</code> 1️⃣</td>
+</tr>
+<tr>
+<td>Edit &amp; Delete document files (created by self)</td>
+<td><code>WRITE_EXTERNAL_STORAGE</code></td>
+<td>No permission needed</td>
+</tr>
+<tr>
+<td>Edit &amp; Delete document files (created by all apps)</td>
+<td><code>WRITE_EXTERNAL_STORAGE</code></td>
+<td>Storage Access Framework</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>1️⃣ When editing or deleting media files created by other apps on API 29+ (Android 10), you have to
+request explicitly user's consent. Read more <a href="https://developer.android.com/training/data-storage/shared/media#update-other-apps-files">here</a>.</p>
+</blockquote>
 <h2 id="check-if-app-can-read-files">Check if app can read files<a class="headerlink" href="#check-if-app-can-read-files" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="c1">// Check if the app can read image &amp; document files created by itself</span>
 <span class="kd">val</span> <span class="nv">storagePermissions</span> <span class="o">=</span> <span class="n">StoragePermissions</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
