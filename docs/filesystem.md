@@ -1,5 +1,6 @@
 ---
 artifact: "modernstorage-filesystem"
+lib_version: "1.0.0-alpha03"
 ---
 
 # FileSystem
