@@ -239,6 +239,76 @@
 
   
   
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Photo Picker
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Photo Picker
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#add-dependency-to-project" class="md-nav__link">
+    Add dependency to project
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-reference" class="md-nav__link">
+    API reference
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-the-photo-picker" class="md-nav__link">
+    How to use the photo picker
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
   
     <li class="md-nav__item">
       <a href="../storage/" class="md-nav__link">
@@ -345,11 +415,13 @@
 <h1 id="photo-picker">Photo Picker<a class="headerlink" href="#photo-picker" title="Permanent link">&para;</a></h1>
 <p><code>modernstorage-photopicker</code> is a library providing an <code>ActivityResultContract</code> for the
 <a href="https://developer.android.com/training/basics/intents/result#register">ActivityResult</a> API to launch the Photo Picker intent when available on device
-or rely on the existing system file picker using the <code>ACTION_OPEN_DOCUMENT</code> intent. It works on Android 21+.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
+or rely on the existing system file picker using the <code>ACTION_OPEN_DOCUMENT</code> intent. It works on
+Android 21+.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
 <p>The Photo Picker feature is part of the next Android version as mentioned
-<a href="https://youtu.be/hBVwr2ErQCw?t=907">here</a>. There isn't a developer release yet, stay tuned for more updates.</p>
+<a href="https://youtu.be/hBVwr2ErQCw?t=907"><strong>here</strong></a>. There isn't a developer release yet, but you can use it already as it
+will rely on <code>ACTION_OPEN_DOCUMENT</code> for existing versions</p>
 </div>
 <h2 id="add-dependency-to-project">Add dependency to project<a class="headerlink" href="#add-dependency-to-project" title="Permanent link">&para;</a></h2>
 <p><code>modernstorage-photopicker</code> is available on <code>mavenCentral()</code>.</p>
@@ -422,6 +494,41 @@ or rely on the existing system file picker using the <code>ACTION_OPEN_DOCUMENT<
       </main>
       
         <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../permissions/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Permissions" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Permissions
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../storage/" class="md-footer__link md-footer__link--next" aria-label="Next: Storage interactions" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Storage interactions
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
