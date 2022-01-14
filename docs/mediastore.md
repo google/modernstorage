@@ -1,3 +1,8 @@
+---
+artifact: "modernstorage-mediastore"
+lib_version: "1.0.0-alpha03"
+---
+
 # MediaStore
 
 !!! danger
@@ -21,7 +26,7 @@ interactions on API 21+ (Android Lollipop).
 
 ```groovy
 // build.gradle
-implementation("com.google.modernstorage:modernstorage-mediastore:{{ lib_version }}")
+implementation("com.google.modernstorage:{{ artifact }}:{{ lib_version }}")
 ```
 
 ## API reference
