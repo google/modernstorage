@@ -16,6 +16,7 @@ theme:
 nav:
     -   'Overview': README.md
     -   'Permissions': permissions.md
+    -   'Photo Picker': photopicker.md
     -   'Storage interactions': storage.md
     # TODO: Remove below sections at the next release
     -   'MediaStore (deprecated)': mediastore.md

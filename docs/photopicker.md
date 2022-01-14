@@ -6,11 +6,13 @@ artifact: "modernstorage-photopicker"
 
 `{{ artifact }}` is a library providing an `ActivityResultContract` for the
 [ActivityResult][activity_result_api] API to launch the Photo Picker intent when available on device
-or rely on the existing system file picker using the `ACTION_OPEN_DOCUMENT` intent. It works on Android 21+.
+or rely on the existing system file picker using the `ACTION_OPEN_DOCUMENT` intent. It works on
+Android 21+.
 
-!!! warning
+!!! info
     The Photo Picker feature is part of the next Android version as mentioned
-    [here][ads_photo_picker]. There isn't a developer release yet, stay tuned for more updates.
+    [**here**][ads_photo_picker]. There isn't a developer release yet, but you can use it already as it
+    will rely on `ACTION_OPEN_DOCUMENT` for existing versions
 
 ## Add dependency to project
 
