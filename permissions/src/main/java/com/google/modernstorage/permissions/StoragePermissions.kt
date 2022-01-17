@@ -26,13 +26,10 @@ import androidx.core.content.ContextCompat
 
 class StoragePermissions(private val context: Context) {
     companion object {
-        private const val READ_EXTERNAL_STORAGE_MASK = 0b0000001
-        private const val WRITE_EXTERNAL_STORAGE_MASK = 0b0000011
-        private const val SCOPED_STORAGE_READ_EXTERNAL_STORAGE_MASK = 0b0000100
-        private const val READ_IMAGES_MASK = 0b0001000
-        private const val READ_VIDEO_MASK = 0b0010000
-        private const val READ_AUDIO_MASK = 0b0100000
-        private const val MANAGE_EXTERNAL_STORAGE_MASK = 0b1111111
+        private const val READ_EXTERNAL_STORAGE_MASK = 0b0001
+        private const val WRITE_EXTERNAL_STORAGE_MASK = 0b0011
+        private const val SCOPED_STORAGE_READ_EXTERNAL_STORAGE_MASK = 0b0100
+        private const val MANAGE_EXTERNAL_STORAGE_MASK = 0b1111
 
         private fun getPermissionMask(
             action: Action,
@@ -112,7 +109,10 @@ class StoragePermissions(private val context: Context) {
             return permissionMask
         }
 
-        private fun getRequiredPermissions(
+        /**
+         * Get list of required permissions for given usage
+         */
+        fun getPermissions(
             action: Action,
             types: List<FileType>,
             createdBy: CreatedBy
@@ -145,18 +145,28 @@ class StoragePermissions(private val context: Context) {
         /**
          * Get list of required permissions for given read usage
          */
+        @Deprecated(
+            "Use the new getPermissions() method",
+            ReplaceWith("getPermissions(Action.READ, types, createdBy)"),
+            DeprecationLevel.WARNING
+        )
         fun getReadFilesPermissions(types: List<FileType>, createdBy: CreatedBy): List<String> {
-            return getRequiredPermissions(Action.READ, types, createdBy)
+            return getPermissions(Action.READ, types, createdBy)
         }
 
         /**
          * Get list of required permissions for given read usage
          */
+        @Deprecated(
+            "Use the new getPermissions() method",
+            ReplaceWith("getPermissions(Action.READ_AND_WRITE, types, createdBy)"),
+            DeprecationLevel.WARNING
+        )
         fun getReadAndWriteFilesPermissions(
             types: List<FileType>,
             createdBy: CreatedBy
         ): List<String> {
-            return getRequiredPermissions(Action.READ_AND_WRITE, types, createdBy)
+            return getPermissions(Action.READ_AND_WRITE, types, createdBy)
         }
     }
 
@@ -189,31 +199,37 @@ class StoragePermissions(private val context: Context) {
     }
 
     /**
-     * Check if app can read shared files
+     * Check if app can access shared files
      */
-    private fun canAccessFiles(
-        action: Action,
-        types: List<FileType>,
-        createdBy: CreatedBy
-    ): Boolean {
+    fun hasAccess(action: Action, types: List<FileType>, createdBy: CreatedBy): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager()) {
             return true
         }
 
-        return getRequiredPermissions(action, types, createdBy).all { hasPermission(it) }
+        return getPermissions(action, types, createdBy).all { hasPermission(it) }
     }
 
     /**
      * Check if app can read shared files
      */
+    @Deprecated(
+        "Use the new hasAccess() method",
+        ReplaceWith("hasAccess(Action.READ, types, createdBy)"),
+        DeprecationLevel.WARNING
+    )
     fun canReadFiles(types: List<FileType>, createdBy: CreatedBy): Boolean {
-        return canAccessFiles(Action.READ, types, createdBy)
+        return hasAccess(Action.READ, types, createdBy)
     }
 
     /**
      * Check if app can read and write shared files
      */
+    @Deprecated(
+        "Use the new hasAccess() method",
+        ReplaceWith("hasAccess(Action.READ_AND_WRITE, types, createdBy)"),
+        DeprecationLevel.WARNING
+    )
     fun canReadAndWriteFiles(types: List<FileType>, createdBy: CreatedBy): Boolean {
-        return canAccessFiles(Action.READ_AND_WRITE, types, createdBy)
+        return hasAccess(Action.READ_AND_WRITE, types, createdBy)
     }
 }
