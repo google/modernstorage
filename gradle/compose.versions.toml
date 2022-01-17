@@ -1,0 +1,12 @@
+[versions]
+current="1.0.5"
+
+[libraries]
+ui = { module = "androidx.compose.ui:ui", version.ref = "current" }
+material = { module = "androidx.compose.material:material", version.ref = "current" }
+icons = { module = "androidx.compose.material:material-icons-extended", version.ref = "current" }
+uitoolingpreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "current" }
+activity = { module = "androidx.activity:activity-compose", version = "1.4.0" }
+navigation = { module = "androidx.navigation:navigation-compose", version = "2.4.0-rc01" }
+uitooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "current" }
+junit = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "current" }
