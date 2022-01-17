@@ -19,6 +19,21 @@ implementation("com.google.modernstorage:modernstorage-permissions:{{ lib_versio
 implementation("com.google.modernstorage:modernstorage-storage:{{ lib_version }}")
 ```
 
+Alternatively use the Bill of Material to just have to define the version once, and then define which modules you need.
+
+```kotlin
+implementation("com.google.modernstorage:modernstorage-bom:{{ lib_version }}")
+
+implementation("com.google.modernstorage:modernstorage-permissions")
+
+implementation("com.google.modernstorage:modernstorage-storage")
+
+// The Bill of Material includes Okio and Photo Picker as well
+implementation("com.google.modernstorage:modernstorage-photopicker")
+
+implementation("com.squareup.okio:okio")
+```
+
 ## Quick start
 
 * Have a look at the [permissions][permissions_guide] and [storage interactions][storage_interactions_guide] guides
