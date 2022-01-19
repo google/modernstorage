@@ -1,5 +1,5 @@
 [versions]
-current="1.0.5"
+current = "1.0.5"
 
 [libraries]
 ui = { module = "androidx.compose.ui:ui", version.ref = "current" }
