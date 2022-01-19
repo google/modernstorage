@@ -67,7 +67,6 @@ implementation("com.google.modernstorage:{{ artifact }}:{{ lib_version }}")
 === "Views"
 
     ```kotlin
-    class
     // Register a callback for the Activity Result
     val photoPicker = registerForActivityResult(PhotoPicker()) { uris ->
         // uris contain the list of selected images & video

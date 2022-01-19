@@ -26,19 +26,19 @@ nav:
 markdown_extensions:
     - tables
     - admonition
-    -   codehilite:
-            guess_lang: false
+    - codehilite:
+        guess_lang: false
     - footnotes
-    -   toc:
-            permalink: true
+    - toc:
+        permalink: true
     - pymdownx.betterem
     - pymdownx.superfences
     - pymdownx.tabbed
-    -   pymdownx.tasklist:
-            custom_checkbox: true
-    -   pymdownx.emoji:
-            emoji_index: !!python/name:materialx.emoji.twemoji
-            emoji_generator: !!python/name:materialx.emoji.to_svg
+    - pymdownx.tasklist:
+        custom_checkbox: true
+    - pymdownx.emoji:
+        emoji_index: !!python/name:materialx.emoji.twemoji
+        emoji_generator: !!python/name:materialx.emoji.to_svg
 
 # Plugins
 plugins:
