@@ -16,8 +16,6 @@
 
 rootProject.name = "ModernStorage"
 include ':bom'
-include ':mediastore'
-include ':filesystem'
 include ':permissions'
 include ':photopicker'
 include ':storage'
