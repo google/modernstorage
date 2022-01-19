@@ -112,6 +112,7 @@ class StoragePermissions(private val context: Context) {
         /**
          * Get list of required permissions for given usage
          */
+        @JvmStatic
         fun getPermissions(
             action: Action,
             types: List<FileType>,
