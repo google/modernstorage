@@ -28,6 +28,7 @@ import java.util.LinkedHashSet
 @BuildCompat.PrereleaseSdkCheck
 class PhotoPicker : ActivityResultContract<PhotoPicker.Args, List<Uri>>() {
     companion object {
+        @JvmStatic
         fun isPhotoPickerAvailable(): Boolean {
             return BuildCompat.isAtLeastT()
         }
@@ -88,9 +89,6 @@ class PhotoPicker : ActivityResultContract<PhotoPicker.Args, List<Uri>>() {
     }
 
     override fun parseResult(resultCode: Int, intent: Intent?): List<Uri> {
-        // TODO: Show toast when higher number of items have been selected by the user when using
-        //  ACTION_OPEN_DOCUMENT
-
         return if (resultCode != Activity.RESULT_OK || intent == null) emptyList() else getClipDataUris(intent)
     }
 

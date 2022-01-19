@@ -53,13 +53,15 @@ To help you navigate common use cases, check out the below table:
 // Check if the app can read image & document files created by itself
 val storagePermissions = StoragePermissions(context)
 
-storagePermissions.canReadFiles(
+storagePermissions.hasAccess(
+    action = Action.READ,
     types = listOf(FileType.Image, FileType.Document),
     createdBy = StoragePermissions.CreatedBy.Self
 )
 
 // Check if the app can read video & audio files created by all apps
-storagePermissions.canReadFiles(
+storagePermissions.hasAccess(
+    action = Action.READ,
     types = listOf(FileType.Video, FileType.Audio),
     createdBy = StoragePermissions.CreatedBy.AllApps
 )
@@ -71,13 +73,15 @@ storagePermissions.canReadFiles(
 // Check if the app can read & write image & document files created by itself
 val storagePermissions = StoragePermissions(context)
 
-storagePermissions.canReadAndWriteFiles(
+storagePermissions.hasAccess(
+    action = Action.READ_AND_WRITE,
     types = listOf(FileType.Image, FileType.Video),
     createdBy = StoragePermissions.CreatedBy.Self
 )
 
 // Check if the app can read & write video & audio files created by all apps
-storagePermissions.canReadAndWriteFiles(
+storagePermissions.hasAccess(
+    action = Action.READ_AND_WRITE,
     types = listOf(FileType.Audio, FileType.Document),
     createdBy = StoragePermissions.CreatedBy.AllApps
 )
