@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://google.github.com/modernstorage/">
       
       <link rel="icon" href="images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.6">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.7">
     
     
       
@@ -456,6 +456,18 @@ simplify its interactions by apps developers. ModernStorage is:</p>
 <span class="c1">// For storage interactions using Okio FileSystem API</span>
 <span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.google.modernstorage:modernstorage-storage:1.0.0-alpha03&quot;</span><span class="p">)</span>
 </code></pre></div>
+<p>Alternatively use the Bill of Material to just have to define the version once, and then define which modules you need.</p>
+<div class="highlight"><pre><span></span><code><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.google.modernstorage:modernstorage-bom:1.0.0-alpha03&quot;</span><span class="p">)</span>
+
+<span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.google.modernstorage:modernstorage-permissions&quot;</span><span class="p">)</span>
+
+<span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.google.modernstorage:modernstorage-storage&quot;</span><span class="p">)</span>
+
+<span class="c1">// The Bill of Material includes Okio and Photo Picker as well</span>
+<span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.google.modernstorage:modernstorage-photopicker&quot;</span><span class="p">)</span>
+
+<span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.squareup.okio:okio&quot;</span><span class="p">)</span>
+</code></pre></div>
 <h2 id="quick-start">Quick start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Have a look at the <a href="./permissions">permissions</a> and <a href="./storage">storage interactions</a> guides</li>
@@ -540,7 +552,7 @@ limitations under the License.
     <script id="__config" type="application/json">{"base": ".", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "assets/javascripts/workers/search.22074ed6.min.js"}</script>
     
     
-      <script src="assets/javascripts/bundle.1514a9a0.min.js"></script>
+      <script src="assets/javascripts/bundle.01de222e.min.js"></script>
       
     
   </body>
