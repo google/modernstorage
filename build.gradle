@@ -70,7 +70,7 @@ subprojects {
         }
     }
 
-    if (project.hasProperty('POM_ARTIFACT_ID')) {
+    if (project.hasProperty('POM_ARTIFACT_ID') && project.properties['POM_ARTIFACT_ID'] != "modernstorage-bom") {
         apply plugin: 'me.tylerbwong.gradle.metalava'
 
         metalava {
