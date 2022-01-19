@@ -81,6 +81,15 @@ dependencies {
     implementation(compose.activity)
     implementation(compose.navigation)
 
+    /*
+     * In a real world project you can use the BOM to import the different dependencies without needing
+     * to define version for each of them
+     * implementation("com.google.modernstorage:modernstorage-bom:{{ version }}")
+     * implementation("com.google.modernstorage:modernstorage-permissions")
+     * implementation("com.google.modernstorage:modernstorage-photopicker")
+     * implementation("com.squareup.okio:okio")
+     * implementation("com.google.modernstorage:modernstorage-storage")
+     */
     implementation(project(":permissions"))
     implementation(project(":photopicker"))
     implementation(libs.okio)
