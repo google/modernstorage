@@ -36,7 +36,6 @@ import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -85,23 +84,39 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ,
                                     createdBy = CreatedBy.Self,
-                                    enabled = check.canReadFiles(listOf(FileType.Image), CreatedBy.Self)
+                                    enabled = check.hasAccess(
+                                        Action.READ,
+                                        listOf(FileType.Image),
+                                        CreatedBy.Self
+                                    )
                                 )
                                 CreatedByLabel(
                                     action = Action.READ,
                                     createdBy = CreatedBy.AllApps,
-                                    enabled = check.canReadFiles(listOf(FileType.Image), CreatedBy.AllApps)
+                                    enabled = check.hasAccess(
+                                        Action.READ,
+                                        listOf(FileType.Image),
+                                        CreatedBy.AllApps
+                                    )
                                 )
                                 Spacer(Modifier.height(10.dp))
                                 CreatedByLabel(
                                     action = Action.READ_AND_WRITE,
                                     createdBy = CreatedBy.Self,
-                                    enabled = check.canReadAndWriteFiles(listOf(FileType.Image), CreatedBy.Self)
+                                    enabled = check.hasAccess(
+                                        Action.READ_AND_WRITE,
+                                        listOf(FileType.Image),
+                                        CreatedBy.Self
+                                    )
                                 )
                                 CreatedByLabel(
                                     action = Action.READ_AND_WRITE,
                                     createdBy = CreatedBy.AllApps,
-                                    enabled = check.canReadAndWriteFiles(listOf(FileType.Image), CreatedBy.AllApps)
+                                    enabled = check.hasAccess(
+                                        Action.READ_AND_WRITE,
+                                        listOf(FileType.Image),
+                                        CreatedBy.AllApps
+                                    )
                                 )
                             }
                         },
@@ -115,23 +130,39 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ,
                                     createdBy = CreatedBy.Self,
-                                    enabled = check.canReadFiles(listOf(FileType.Video), CreatedBy.Self)
+                                    enabled = check.hasAccess(
+                                        Action.READ,
+                                        listOf(FileType.Video),
+                                        CreatedBy.Self
+                                    )
                                 )
                                 CreatedByLabel(
                                     action = Action.READ,
                                     createdBy = CreatedBy.AllApps,
-                                    enabled = check.canReadFiles(listOf(FileType.Video), CreatedBy.AllApps)
+                                    enabled = check.hasAccess(
+                                        Action.READ,
+                                        listOf(FileType.Video),
+                                        CreatedBy.AllApps
+                                    )
                                 )
                                 Spacer(Modifier.height(10.dp))
                                 CreatedByLabel(
                                     action = Action.READ_AND_WRITE,
                                     createdBy = CreatedBy.Self,
-                                    enabled = check.canReadAndWriteFiles(listOf(FileType.Video), CreatedBy.Self)
+                                    enabled = check.hasAccess(
+                                        Action.READ_AND_WRITE,
+                                        listOf(FileType.Video),
+                                        CreatedBy.Self
+                                    )
                                 )
                                 CreatedByLabel(
                                     action = Action.READ_AND_WRITE,
                                     createdBy = CreatedBy.AllApps,
-                                    enabled = check.canReadAndWriteFiles(listOf(FileType.Video), CreatedBy.AllApps)
+                                    enabled = check.hasAccess(
+                                        Action.READ_AND_WRITE,
+                                        listOf(FileType.Video),
+                                        CreatedBy.AllApps
+                                    )
                                 )
                             }
                         },
@@ -145,23 +176,39 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ,
                                     createdBy = CreatedBy.Self,
-                                    enabled = check.canReadFiles(listOf(FileType.Audio), CreatedBy.Self)
+                                    enabled = check.hasAccess(
+                                        Action.READ,
+                                        listOf(FileType.Audio),
+                                        CreatedBy.Self
+                                    )
                                 )
                                 CreatedByLabel(
                                     action = Action.READ,
                                     createdBy = CreatedBy.AllApps,
-                                    enabled = check.canReadFiles(listOf(FileType.Audio), CreatedBy.AllApps)
+                                    enabled = check.hasAccess(
+                                        Action.READ,
+                                        listOf(FileType.Audio),
+                                        CreatedBy.AllApps
+                                    )
                                 )
                                 Spacer(Modifier.height(10.dp))
                                 CreatedByLabel(
                                     action = Action.READ_AND_WRITE,
                                     createdBy = CreatedBy.Self,
-                                    enabled = check.canReadAndWriteFiles(listOf(FileType.Audio), CreatedBy.Self)
+                                    enabled = check.hasAccess(
+                                        Action.READ_AND_WRITE,
+                                        listOf(FileType.Audio),
+                                        CreatedBy.Self
+                                    )
                                 )
                                 CreatedByLabel(
                                     action = Action.READ_AND_WRITE,
                                     createdBy = CreatedBy.AllApps,
-                                    enabled = check.canReadAndWriteFiles(listOf(FileType.Audio), CreatedBy.AllApps)
+                                    enabled = check.hasAccess(
+                                        Action.READ_AND_WRITE,
+                                        listOf(FileType.Audio),
+                                        CreatedBy.AllApps
+                                    )
                                 )
                             }
                         },
@@ -175,23 +222,39 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ,
                                     createdBy = CreatedBy.Self,
-                                    enabled = check.canReadFiles(listOf(FileType.Document), CreatedBy.Self)
+                                    enabled = check.hasAccess(
+                                        Action.READ,
+                                        listOf(FileType.Document),
+                                        CreatedBy.Self
+                                    )
                                 )
                                 CreatedByLabel(
                                     action = Action.READ,
                                     createdBy = CreatedBy.AllApps,
-                                    enabled = check.canReadFiles(listOf(FileType.Document), CreatedBy.AllApps)
+                                    enabled = check.hasAccess(
+                                        Action.READ,
+                                        listOf(FileType.Document),
+                                        CreatedBy.AllApps
+                                    )
                                 )
                                 Spacer(Modifier.height(10.dp))
                                 CreatedByLabel(
                                     action = Action.READ_AND_WRITE,
                                     createdBy = CreatedBy.Self,
-                                    enabled = check.canReadAndWriteFiles(listOf(FileType.Document), CreatedBy.Self)
+                                    enabled = check.hasAccess(
+                                        Action.READ_AND_WRITE,
+                                        listOf(FileType.Document),
+                                        CreatedBy.Self
+                                    )
                                 )
                                 CreatedByLabel(
                                     action = Action.READ_AND_WRITE,
                                     createdBy = CreatedBy.AllApps,
-                                    enabled = check.canReadAndWriteFiles(listOf(FileType.Document), CreatedBy.AllApps)
+                                    enabled = check.hasAccess(
+                                        Action.READ_AND_WRITE,
+                                        listOf(FileType.Document),
+                                        CreatedBy.AllApps
+                                    )
                                 )
                             }
                         },
