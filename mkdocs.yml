@@ -46,4 +46,4 @@ plugins:
     - macros
 
 extra:
-    lib_version: "1.0.0-alpha03"
+    lib_version: "1.0.0-alpha04"
