@@ -15,9 +15,7 @@
  */
 package com.google.modernstorage.sample.mediastore
 
-import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -46,7 +44,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.modernstorage.permissions.RequestAccess
 import com.google.modernstorage.permissions.StoragePermissions
+import com.google.modernstorage.permissions.StoragePermissions.Action
 import com.google.modernstorage.sample.Demos
 import com.google.modernstorage.sample.HomeRoute
 import com.google.modernstorage.sample.R
@@ -68,8 +68,8 @@ fun AddFileToDownloadsScreen(
     val permissions = StoragePermissions(LocalContext.current)
     val toastMessage = stringResource(R.string.authorization_dialog_success_toast)
     val requestPermission =
-        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
+        rememberLauncherForActivityResult(RequestAccess()) { hasAccess ->
+            if (hasAccess) {
                 scope.launch {
                     scaffoldState.snackbarHostState.showSnackbar(toastMessage)
                 }
@@ -84,7 +84,13 @@ fun AddFileToDownloadsScreen(
                 TextButton(
                     onClick = {
                         openPermissionDialog = false
-                        requestPermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        requestPermission.launch(
+                            RequestAccess.Args(
+                                action = Action.READ_AND_WRITE,
+                                types = listOf(StoragePermissions.FileType.Document),
+                                createdBy = StoragePermissions.CreatedBy.Self
+                            )
+                        )
                     }
                 ) {
                     Text(stringResource(R.string.authorization_dialog_confirm_label))
@@ -100,7 +106,8 @@ fun AddFileToDownloadsScreen(
     }
 
     fun checkAndRequestStoragePermission(onSuccess: () -> Unit) {
-        val isGranted = permissions.canReadAndWriteFiles(
+        val isGranted = permissions.hasAccess(
+            action = Action.READ_AND_WRITE,
             types = listOf(StoragePermissions.FileType.Document),
             createdBy = StoragePermissions.CreatedBy.Self
         )
@@ -131,7 +138,9 @@ fun AddFileToDownloadsScreen(
             LazyColumn(Modifier.padding(paddingValues)) {
                 item {
                     Button(
-                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .fillMaxWidth(),
                         onClick = {
                             checkAndRequestStoragePermission { viewModel.addDocument(DocumentType.TEXT) }
                         }
@@ -141,7 +150,9 @@ fun AddFileToDownloadsScreen(
                 }
                 item {
                     Button(
-                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .fillMaxWidth(),
                         onClick = {
                             checkAndRequestStoragePermission { viewModel.addDocument(DocumentType.PDF) }
                         }
@@ -151,7 +162,9 @@ fun AddFileToDownloadsScreen(
                 }
                 item {
                     Button(
-                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .fillMaxWidth(),
                         onClick = {
                             checkAndRequestStoragePermission { viewModel.addDocument(DocumentType.ZIP) }
                         }
