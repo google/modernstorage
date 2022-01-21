@@ -1,6 +1,16 @@
 $dokka.format:html-v1
 $dokka.linkExtension:html
 $dokka.location:com.google.modernstorage.permissions////PointingToDeclaration/permissions/com.google.modernstorage.permissions/index.html
+$dokka.location:com.google.modernstorage.permissions/RequestAccess.Args///PointingToDeclaration/permissions/com.google.modernstorage.permissions/-request-access/-args/index.html
+$dokka.location:com.google.modernstorage.permissions/RequestAccess.Args/Args/#com.google.modernstorage.permissions.StoragePermissions.Action#kotlin.collections.List[com.google.modernstorage.permissions.StoragePermissions.FileType]#com.google.modernstorage.permissions.StoragePermissions.CreatedBy/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-request-access/-args/-args.html
+$dokka.location:com.google.modernstorage.permissions/RequestAccess.Args/action/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-request-access/-args/action.html
+$dokka.location:com.google.modernstorage.permissions/RequestAccess.Args/createdBy/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-request-access/-args/created-by.html
+$dokka.location:com.google.modernstorage.permissions/RequestAccess.Args/types/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-request-access/-args/types.html
+$dokka.location:com.google.modernstorage.permissions/RequestAccess///PointingToDeclaration/permissions/com.google.modernstorage.permissions/-request-access/index.html
+$dokka.location:com.google.modernstorage.permissions/RequestAccess/RequestAccess/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-request-access/-request-access.html
+$dokka.location:com.google.modernstorage.permissions/RequestAccess/createIntent/#android.content.Context#com.google.modernstorage.permissions.RequestAccess.Args/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-request-access/create-intent.html
+$dokka.location:com.google.modernstorage.permissions/RequestAccess/getSynchronousResult/#android.content.Context#com.google.modernstorage.permissions.RequestAccess.Args/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-request-access/get-synchronous-result.html
+$dokka.location:com.google.modernstorage.permissions/RequestAccess/parseResult/#kotlin.Int#android.content.Intent?/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-request-access/parse-result.html
 $dokka.location:com.google.modernstorage.permissions/StoragePermissions.Action.READ///PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-action/-r-e-a-d/index.html
 $dokka.location:com.google.modernstorage.permissions/StoragePermissions.Action.READ/name/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-action/-r-e-a-d/name.html
 $dokka.location:com.google.modernstorage.permissions/StoragePermissions.Action.READ/ordinal/#/PointingToDeclaration/permissions/com.google.modernstorage.permissions/-storage-permissions/-action/-r-e-a-d/ordinal.html
