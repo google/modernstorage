@@ -47,7 +47,7 @@ To help you navigate common use cases, check out the below table:
 > 1️⃣ When editing or deleting media files created by other apps on API 29+ (Android 10), you have to
 > request explicitly user's consent. Read more [here][edit_media_scoped_storage].
 
-## Check if app can read files
+## Check if app can access files
 
 ```kotlin
 // Check if the app can read image & document files created by itself
@@ -65,11 +65,7 @@ storagePermissions.hasAccess(
     types = listOf(FileType.Video, FileType.Audio),
     createdBy = StoragePermissions.CreatedBy.AllApps
 )
-```
 
-## Check if app can read and write files
-
-```kotlin
 // Check if the app can read & write image & document files created by itself
 val storagePermissions = StoragePermissions(context)
 
@@ -86,6 +82,106 @@ storagePermissions.hasAccess(
     createdBy = StoragePermissions.CreatedBy.AllApps
 )
 ```
+
+## Get storage permissions
+
+!!! note ""
+
+    If the method returns an empty list, it means your app on the current device, given the defined
+    usage,  doesn't need any permissions.
+
+```kotlin
+// Get required permissions to read & write video & audio files created by all apps
+storagePermissions.getPermissions(
+    action = Action.READ,
+    types = listOf(FileType.Video, FileType.Audio),
+    createdBy = StoragePermissions.CreatedBy.AllApps
+)
+
+// Get required permissions to read & write image & document files created by the app itself
+StoragePermissions.getPermissions(
+    action = Action.READ_AND_WRITE,
+    types = listOf(FileType.Image, FileType.Document),
+    createdBy = StoragePermissions.CreatedBy.Self
+)
+```
+
+## Request storage permissions
+
+While you can use the `ActivityResultContracts.RequestPermission` provided by default with the
+Jetpack Activity or Fragment library to request storage permissions with input from
+`StoragePermissions.getPermissions`, `{{ artifact }}` bundles a custom ActivityResultContract named
+`RequestAccess` to request the right storage permissions to simplify the logic for you.
+
+=== "Compose"
+
+    ```kotlin
+    @Composable
+    fun RequestAccessExample() {
+        // Register a callback for the Activity Result
+        val requestAccess = rememberLauncherForActivityResult(RequestAccess()) { hasAccess ->
+            if (hasAccess) {
+                // write logic here
+            }
+        }
+
+        Column {
+            Button(onClick = {
+                // Request permission to read video & audio files created by all apps
+                requestAccess.launch(
+                    action = Action.READ,
+                    types = listOf(
+                        StoragePermissions.FileType.Video,
+                        StoragePermissions.FileType.Audio
+                    ),
+                    createdBy = StoragePermissions.CreatedBy.AllApps
+                )
+            }) {
+                Text("I want to read all video & audio files")
+            }
+
+            Button(onClick = {
+                // Request permission to read & write image & document files created by the app itself
+                requestAccess.launch(
+                    action = Action.READ_AND_WRITE,
+                    types = listOf(
+                        StoragePermissions.FileType.Image,
+                        StoragePermissions.FileType.Document
+                    ),
+                    createdBy = StoragePermissions.CreatedBy.Self
+                )
+            }) {
+                Text("I want to read & write the app's image & document files")
+            }
+        }
+    }
+    ```
+
+=== "Views"
+
+    ```kotlin
+    // Register a callback for the Activity Result
+    val requestAccess = registerForActivityResult(RequestAccess()) { hasAccess ->
+        if (hasAccess) {
+            // write logic here
+        }
+    }
+
+
+    // Request permission to read video & audio files created by all apps
+    requestAccess.launch(
+        action = Action.READ,
+        types = listOf(StoragePermissions.FileType.Video, StoragePermissions.FileType.Audio),
+        createdBy = StoragePermissions.CreatedBy.AllApps
+    )
+
+    // Request permission to read & write image & document files created by the app itself
+    requestAccess.launch(
+        action = Action.READ_AND_WRITE,
+        types = listOf(StoragePermissions.FileType.Image, StoragePermissions.FileType.Document),
+        createdBy = StoragePermissions.CreatedBy.Self
+    )
+    ```
 
 [api_reference]: /modernstorage/api/permissions/
 [saf_guide]: https://developer.android.com/training/data-storage/shared/documents-files

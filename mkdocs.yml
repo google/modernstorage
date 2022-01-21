@@ -15,6 +15,7 @@ theme:
 
 nav:
     -   'Overview': README.md
+    -   'Changelog': https://github.com/google/modernstorage/releases
     -   'Permissions': permissions.md
     -   'Photo Picker': photopicker.md
     -   'Storage interactions': storage.md

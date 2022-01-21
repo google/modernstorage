@@ -15,9 +15,7 @@
  */
 package com.google.modernstorage.sample.mediastore
 
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -46,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.modernstorage.permissions.RequestAccess
 import com.google.modernstorage.permissions.StoragePermissions
 import com.google.modernstorage.sample.Demos
 import com.google.modernstorage.sample.HomeRoute
@@ -65,8 +64,8 @@ fun AddMediaScreen(navController: NavController, viewModel: MediaStoreViewModel 
     val permissions = StoragePermissions(LocalContext.current)
     val toastMessage = stringResource(R.string.authorization_dialog_success_toast)
     val requestPermission =
-        rememberLauncherForActivityResult(RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
+        rememberLauncherForActivityResult(RequestAccess()) { hasAccess ->
+            if (hasAccess) {
                 scope.launch {
                     scaffoldState.snackbarHostState.showSnackbar(toastMessage)
                 }
@@ -81,7 +80,13 @@ fun AddMediaScreen(navController: NavController, viewModel: MediaStoreViewModel 
                 TextButton(
                     onClick = {
                         openPermissionDialog = false
-                        requestPermission.launch(WRITE_EXTERNAL_STORAGE)
+                        requestPermission.launch(
+                            RequestAccess.Args(
+                                action = StoragePermissions.Action.READ_AND_WRITE,
+                                types = listOf(StoragePermissions.FileType.Document),
+                                createdBy = StoragePermissions.CreatedBy.Self
+                            )
+                        )
                     }
                 ) {
                     Text(stringResource(R.string.authorization_dialog_confirm_label))
@@ -96,8 +101,9 @@ fun AddMediaScreen(navController: NavController, viewModel: MediaStoreViewModel 
         )
     }
 
-    fun checkAndRequestStoragePermission(onSuccess: () -> Unit,) {
-        val isGranted = permissions.canReadAndWriteFiles(
+    fun checkAndRequestStoragePermission(onSuccess: () -> Unit) {
+        val isGranted = permissions.hasAccess(
+            action = StoragePermissions.Action.READ_AND_WRITE,
             types = listOf(
                 StoragePermissions.FileType.Image,
                 StoragePermissions.FileType.Video,
@@ -132,7 +138,9 @@ fun AddMediaScreen(navController: NavController, viewModel: MediaStoreViewModel 
             LazyColumn(Modifier.padding(paddingValues)) {
                 item {
                     Button(
-                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .fillMaxWidth(),
                         onClick = {
                             checkAndRequestStoragePermission { viewModel.addMedia(MediaType.IMAGE) }
                         }
@@ -142,7 +150,9 @@ fun AddMediaScreen(navController: NavController, viewModel: MediaStoreViewModel 
                 }
                 item {
                     Button(
-                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .fillMaxWidth(),
                         onClick = {
                             checkAndRequestStoragePermission { viewModel.addMedia(MediaType.VIDEO) }
                         }
@@ -152,7 +162,9 @@ fun AddMediaScreen(navController: NavController, viewModel: MediaStoreViewModel 
                 }
                 item {
                     Button(
-                        modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .fillMaxWidth(),
                         onClick = {
                             checkAndRequestStoragePermission { viewModel.addMedia(MediaType.AUDIO) }
                         }
