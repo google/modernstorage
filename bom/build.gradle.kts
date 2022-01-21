@@ -8,7 +8,7 @@ dependencies {
         api(project(":permissions"))
         api(project(":photopicker"))
         api(project(":storage"))
-        api("com.squareup.okio:okio:3.0.0")
+        api(libs.okio)
     }
 }
 
