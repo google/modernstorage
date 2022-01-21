@@ -1,6 +1,23 @@
 // Signature format: 4.0
 package com.google.modernstorage.permissions {
 
+  public final class RequestAccess extends androidx.activity.result.contract.ActivityResultContract<com.google.modernstorage.permissions.RequestAccess.Args,java.lang.Boolean> {
+    ctor public RequestAccess();
+    method public android.content.Intent createIntent(android.content.Context context, com.google.modernstorage.permissions.RequestAccess.Args input);
+    method public androidx.activity.result.contract.ActivityResultContract.SynchronousResult<java.lang.Boolean>? getSynchronousResult(android.content.Context context, com.google.modernstorage.permissions.RequestAccess.Args input);
+    method public Boolean parseResult(int resultCode, android.content.Intent? intent);
+  }
+
+  public static final class RequestAccess.Args {
+    ctor public RequestAccess.Args(com.google.modernstorage.permissions.StoragePermissions.Action action, java.util.List<? extends com.google.modernstorage.permissions.StoragePermissions.FileType> types, com.google.modernstorage.permissions.StoragePermissions.CreatedBy createdBy);
+    method public com.google.modernstorage.permissions.StoragePermissions.Action getAction();
+    method public com.google.modernstorage.permissions.StoragePermissions.CreatedBy getCreatedBy();
+    method public java.util.List<com.google.modernstorage.permissions.StoragePermissions.FileType> getTypes();
+    property public final com.google.modernstorage.permissions.StoragePermissions.Action action;
+    property public final com.google.modernstorage.permissions.StoragePermissions.CreatedBy createdBy;
+    property public final java.util.List<com.google.modernstorage.permissions.StoragePermissions.FileType> types;
+  }
+
   public final class StoragePermissions {
     ctor public StoragePermissions(android.content.Context context);
     method @Deprecated public boolean canReadAndWriteFiles(java.util.List<? extends com.google.modernstorage.permissions.StoragePermissions.FileType> types, com.google.modernstorage.permissions.StoragePermissions.CreatedBy createdBy);
