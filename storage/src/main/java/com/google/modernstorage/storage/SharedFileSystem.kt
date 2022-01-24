@@ -34,6 +34,14 @@ import java.io.IOException
 import kotlin.coroutines.resume
 
 class SharedFileSystem(private val context: Context) : FileSystem() {
+    companion object {
+        private object PhotoPickerColumns {
+            const val PATH = "data"
+            const val DATE_TAKEN = "date_taken_ms"
+            const val MIME_TYPE = "mime_type"
+            const val SIZE = "size_bytes"
+        }
+    }
     private val contentResolver = context.contentResolver
 
     /**
@@ -112,7 +120,19 @@ class SharedFileSystem(private val context: Context) : FileSystem() {
         val uri = path.toUri()
 
         return when (uri.authority) {
-            MediaStore.AUTHORITY -> fetchMetadataFromMediaStore(path, uri)
+            MediaStore.AUTHORITY -> {
+                when {
+                    uri.pathSegments.firstOrNull().isNullOrBlank() -> {
+                        null
+                    }
+                    uri.pathSegments.firstOrNull() == "picker" -> {
+                        fetchMetadataFromPhotoPicker(path, uri)
+                    }
+                    else -> {
+                        fetchMetadataFromMediaStore(path, uri)
+                    }
+                }
+            }
             else -> fetchMetadataFromDocumentProvider(path, uri)
         }
     }
@@ -160,6 +180,48 @@ class SharedFileSystem(private val context: Context) : FileSystem() {
                     Path::class to path,
                     Uri::class to uri,
                     MetadataExtras.DisplayName::class to MetadataExtras.DisplayName(displayName),
+                    MetadataExtras.MimeType::class to MetadataExtras.MimeType(mimeType),
+                    MetadataExtras.FilePath::class to MetadataExtras.FilePath(filePath),
+                )
+            )
+        }
+    }
+
+    private fun fetchMetadataFromPhotoPicker(path: Path, uri: Uri): FileMetadata? {
+        val cursor = contentResolver.query(
+            uri,
+            arrayOf(
+                PhotoPickerColumns.MIME_TYPE,
+                PhotoPickerColumns.SIZE,
+                PhotoPickerColumns.PATH,
+                PhotoPickerColumns.DATE_TAKEN
+            ),
+            null,
+            null,
+            null
+        ) ?: return null
+
+        cursor.use { cursor ->
+            if (!cursor.moveToNext()) {
+                return null
+            }
+
+            val mimeType = cursor.getString(cursor.getColumnIndexOrThrow(PhotoPickerColumns.MIME_TYPE))
+            val size = cursor.getLong(cursor.getColumnIndexOrThrow(PhotoPickerColumns.SIZE))
+            val filePath = cursor.getString(cursor.getColumnIndexOrThrow(PhotoPickerColumns.PATH))
+
+            return FileMetadata(
+                isRegularFile = true,
+                isDirectory = false,
+                symlinkTarget = null,
+                size = size,
+                createdAtMillis = cursor.getLong(cursor.getColumnIndexOrThrow(PhotoPickerColumns.DATE_TAKEN)) / 1000,
+                lastModifiedAtMillis = null,
+                lastAccessedAtMillis = null,
+                extras = mapOf(
+                    Path::class to path,
+                    Uri::class to uri,
+                    MetadataExtras.DisplayName::class to MetadataExtras.DisplayName(Uri.parse(filePath).lastPathSegment ?: ""),
                     MetadataExtras.MimeType::class to MetadataExtras.MimeType(mimeType),
                     MetadataExtras.FilePath::class to MetadataExtras.FilePath(filePath),
                 )
