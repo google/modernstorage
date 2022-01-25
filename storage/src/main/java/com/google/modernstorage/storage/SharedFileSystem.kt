@@ -34,7 +34,7 @@ import java.io.IOException
 import kotlin.coroutines.resume
 
 class SharedFileSystem(private val context: Context) : FileSystem() {
-    companion object {
+    private companion object {
         private object PhotoPickerColumns {
             const val PATH = "data"
             const val DATE_TAKEN = "date_taken_ms"
