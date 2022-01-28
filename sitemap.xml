@@ -2,32 +2,32 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://google.github.com/modernstorage/</loc>
-         <lastmod>2022-01-21</lastmod>
+         <lastmod>2022-01-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://google.github.com/modernstorage/filesystem/</loc>
-         <lastmod>2022-01-21</lastmod>
+         <lastmod>2022-01-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://google.github.com/modernstorage/mediastore/</loc>
-         <lastmod>2022-01-21</lastmod>
+         <lastmod>2022-01-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://google.github.com/modernstorage/permissions/</loc>
-         <lastmod>2022-01-21</lastmod>
+         <lastmod>2022-01-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://google.github.com/modernstorage/photopicker/</loc>
-         <lastmod>2022-01-21</lastmod>
+         <lastmod>2022-01-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://google.github.com/modernstorage/storage/</loc>
-         <lastmod>2022-01-21</lastmod>
+         <lastmod>2022-01-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
