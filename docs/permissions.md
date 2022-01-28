@@ -129,10 +129,12 @@ Jetpack Activity or Fragment library to request storage permissions with input f
             Button(onClick = {
                 // Request permission to read video & audio files created by all apps
                 requestAccess.launch(
-                    action = Action.READ,
-                    types = listOf(
-                        StoragePermissions.FileType.Video,
-                        StoragePermissions.FileType.Audio
+                     RequestAccess.Args(
+                        action = Action.READ,
+                        types = listOf(
+                            StoragePermissions.FileType.Video,
+                            StoragePermissions.FileType.Audio
+                        )
                     ),
                     createdBy = StoragePermissions.CreatedBy.AllApps
                 )
@@ -143,10 +145,12 @@ Jetpack Activity or Fragment library to request storage permissions with input f
             Button(onClick = {
                 // Request permission to read & write image & document files created by the app itself
                 requestAccess.launch(
-                    action = Action.READ_AND_WRITE,
-                    types = listOf(
-                        StoragePermissions.FileType.Image,
-                        StoragePermissions.FileType.Document
+                     RequestAccess.Args(
+                        action = Action.READ_AND_WRITE,
+                        types = listOf(
+                            StoragePermissions.FileType.Image,
+                            StoragePermissions.FileType.Document
+                        )
                     ),
                     createdBy = StoragePermissions.CreatedBy.Self
                 )
@@ -170,16 +174,20 @@ Jetpack Activity or Fragment library to request storage permissions with input f
 
     // Request permission to read video & audio files created by all apps
     requestAccess.launch(
-        action = Action.READ,
-        types = listOf(StoragePermissions.FileType.Video, StoragePermissions.FileType.Audio),
-        createdBy = StoragePermissions.CreatedBy.AllApps
+         RequestAccess.Args(
+            action = Action.READ,
+            types = listOf(StoragePermissions.FileType.Video, StoragePermissions.FileType.Audio),
+            createdBy = StoragePermissions.CreatedBy.AllApps
+        )
     )
 
     // Request permission to read & write image & document files created by the app itself
     requestAccess.launch(
-        action = Action.READ_AND_WRITE,
-        types = listOf(StoragePermissions.FileType.Image, StoragePermissions.FileType.Document),
-        createdBy = StoragePermissions.CreatedBy.Self
+         RequestAccess.Args(
+            action = Action.READ_AND_WRITE,
+            types = listOf(StoragePermissions.FileType.Image, StoragePermissions.FileType.Document),
+            createdBy = StoragePermissions.CreatedBy.Self
+        )
     )
     ```
 
