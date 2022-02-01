@@ -23,7 +23,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.0.4")
+        classpath("com.android.tools.build:gradle:7.1.0")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31")
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -40,11 +40,6 @@ plugins {
 }
 
 allprojects {
-    // TODO: Remove ext section when filesystem and mediastore is removed
-    ext {
-        set("kotlin_version", "1.5.31")
-        set("compose_version", "1.0.5")
-    }
     repositories {
         google()
         mavenCentral()
