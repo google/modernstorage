@@ -76,8 +76,6 @@ class SharedMediaStoreTest {
         appContext.contentResolver.delete(uri, null, null)
     }
 
-
-
     @Test
     fun addImage() {
         addFile(
