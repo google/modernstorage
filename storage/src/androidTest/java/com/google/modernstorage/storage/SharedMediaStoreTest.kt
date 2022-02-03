@@ -52,7 +52,12 @@ class SharedMediaStoreTest {
         val uri = fileSystem.createMediaStoreUri(filename, destination.absolutePath)!!
         val path = uri.toPath()
 
-        fileSystem.sink(path).buffer().writeAll(appContext.assets.open("sample.$extension").source())
+        fileSystem.write(path, false) {
+            appContext.assets.open("sample.$extension").source().use { source ->
+                writeAll(source)
+            }
+        }
+
         runBlocking {
             fileSystem.scanUri(uri, mimeType)
         }
@@ -63,16 +68,17 @@ class SharedMediaStoreTest {
         Assert.assertEquals(filename, metadata.extra(MetadataExtras.DisplayName::class)!!.value)
         Assert.assertEquals(mimeType, metadata.extra(MetadataExtras.MimeType::class)!!.value)
 
-        val iterator = appContext.assets.open("sample.$extension").readBytes().iterator()
-        val source = fileSystem.source(path).buffer()
+        appContext.assets.open("sample.$extension").use { inputStream ->
+            val iterator = inputStream.readBytes().iterator()
+            fileSystem.read(path) {
+                do {
+                    val a = iterator.next()
+                    val b = this.readByte()
+                    Assert.assertEquals(a, b)
+                } while (iterator.hasNext() && !this.exhausted())
+            }
+        }
 
-        do {
-            val a = iterator.next()
-            val b = source.readByte()
-            Assert.assertEquals(a, b)
-        } while (iterator.hasNext() && !source.exhausted())
-
-        source.close()
         appContext.contentResolver.delete(uri, null, null)
     }
 
