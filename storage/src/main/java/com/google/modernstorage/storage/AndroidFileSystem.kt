@@ -21,16 +21,20 @@ import android.media.MediaScannerConnection
 import android.net.Uri
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.webkit.MimeTypeMap
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okio.FileHandle
 import okio.FileMetadata
+import okio.FileNotFoundException
 import okio.FileSystem
 import okio.Path
 import okio.Sink
 import okio.Source
 import okio.sink
 import okio.source
+import java.io.File
 import java.io.IOException
+import java.util.Locale
 import kotlin.coroutines.resume
 
 class AndroidFileSystem(private val context: Context) : FileSystem() {
@@ -45,7 +49,26 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
 
     private val contentResolver = context.contentResolver
 
+    private fun isPhysicalFile(file: Path): Boolean {
+        return file.toString().first() == '/'
+    }
+
+    private fun requireFileExist(file: File) {
+        if (!file.exists()) throw IOException("$this doesn't exist.")
+    }
+
+    private fun requireFileCreate(file: File) {
+        if (file.exists()) throw IOException("$this already exists.")
+    }
+
     override fun appendingSink(file: Path, mustExist: Boolean): Sink {
+        if (isPhysicalFile(file)) {
+            val target = file.toFile()
+            if (mustExist) requireFileExist(target)
+
+            return target.sink(append = true)
+        }
+
         if (!mustExist) {
             throw IOException("Appending on an inexisting path isn't supported ($file)")
         }
@@ -68,7 +91,7 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
     }
 
     override fun canonicalize(path: Path): Path {
-        throw UnsupportedOperationException("Paths can't be canonicalized in SharedFileSystem")
+        throw UnsupportedOperationException("Paths can't be canonicalized in AndroidFileSystem")
     }
 
     /**
@@ -79,7 +102,7 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
     }
 
     override fun createSymlink(source: Path, target: Path) {
-        throw UnsupportedOperationException("Symlinks  can't be created in SharedFileSystem")
+        throw UnsupportedOperationException("Symlinks  can't be created in AndroidFileSystem")
     }
 
     override fun delete(path: Path, mustExist: Boolean) {
@@ -92,6 +115,30 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
     override fun listOrNull(dir: Path): List<Path>? = list(dir, throwOnFailure = false)
 
     private fun list(dir: Path, throwOnFailure: Boolean): List<Path>? {
+        if (isPhysicalFile(dir)) {
+            return listPhysicalDirectory(dir, throwOnFailure)
+        }
+
+        return listDocumentProvider(dir, throwOnFailure)
+    }
+
+    private fun listPhysicalDirectory(dir: Path, throwOnFailure: Boolean): List<Path>? {
+        val file = dir.toFile()
+        val entries = file.list()
+        if (entries == null) {
+            if (throwOnFailure) {
+                if (!file.exists()) throw FileNotFoundException("no such file: $dir")
+                throw IOException("failed to list $dir")
+            } else {
+                return null
+            }
+        }
+        val result = entries.mapTo(mutableListOf()) { dir / it }
+        result.sort()
+        return result
+    }
+
+    private fun listDocumentProvider(dir: Path, throwOnFailure: Boolean): List<Path>? {
         // TODO: Verify path is a directory
         val rootUri = dir.toUri()
         val documentId = DocumentsContract.getDocumentId(rootUri)
@@ -129,6 +176,7 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
         val uri = path.toUri()
 
         return when (uri.authority) {
+            null -> fetchMetadataFromPhysicalFile(path)
             MediaStore.AUTHORITY -> {
                 when {
                     uri.pathSegments.firstOrNull().isNullOrBlank() -> {
@@ -144,6 +192,45 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
             }
             else -> fetchMetadataFromDocumentProvider(path, uri)
         }
+    }
+
+    private fun fetchMetadataFromPhysicalFile(path: Path): FileMetadata? {
+        val file = path.toFile()
+        val isRegularFile = file.isFile
+        val isDirectory = file.isDirectory
+        val lastModifiedAtMillis = file.lastModified()
+        val size = file.length()
+
+        if (!isRegularFile &&
+            !isDirectory &&
+            lastModifiedAtMillis == 0L &&
+            size == 0L &&
+            !file.exists()
+        ) {
+            return null
+        }
+
+        val fileExtension: String = MimeTypeMap.getFileExtensionFromUrl(file.toString())
+        val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension.lowercase(Locale.getDefault()))
+
+        val extras = mutableMapOf(
+            Path::class to path,
+            MetadataExtras.DisplayName::class to MetadataExtras.DisplayName(file.name),
+            MetadataExtras.FilePath::class to MetadataExtras.FilePath(file.absolutePath),
+        )
+
+        if (mimeType != null) extras[MetadataExtras.MimeType::class] = MetadataExtras.MimeType(mimeType)
+
+        return FileMetadata(
+            isRegularFile = isRegularFile,
+            isDirectory = isDirectory,
+            symlinkTarget = null,
+            size = size,
+            createdAtMillis = null,
+            lastModifiedAtMillis = lastModifiedAtMillis,
+            lastAccessedAtMillis = null,
+            extras = extras
+        )
     }
 
     private fun fetchMetadataFromPhotoPicker(path: Path, uri: Uri): FileMetadata? {
@@ -307,6 +394,13 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
     }
 
     override fun sink(file: Path, mustCreate: Boolean): Sink {
+        if (isPhysicalFile(file)) {
+            val target = file.toFile()
+            if (mustCreate) requireFileCreate(target)
+
+            return file.toFile().sink()
+        }
+
         if (mustCreate) {
             throw IOException("Path creation isn't supported ($file)")
         }
@@ -322,6 +416,10 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
     }
 
     override fun source(file: Path): Source {
+        if (isPhysicalFile(file)) {
+            return file.toFile().source()
+        }
+
         val uri = file.toUri()
         val inputStream = contentResolver.openInputStream(uri)
 

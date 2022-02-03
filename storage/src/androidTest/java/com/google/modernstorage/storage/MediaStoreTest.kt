@@ -31,9 +31,9 @@ import org.junit.runner.RunWith
 import java.io.File
 
 @RunWith(AndroidJUnit4::class)
-class SharedMediaStoreTest {
+class MediaStoreTest {
     private lateinit var appContext: Context
-    private lateinit var fileSystem: SharedFileSystem
+    private lateinit var fileSystem: AndroidFileSystem
 
     @get:Rule
     var readStoragePermission = GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -43,7 +43,7 @@ class SharedMediaStoreTest {
     @Before
     fun setup() {
         appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        fileSystem = SharedFileSystem(appContext)
+        fileSystem = AndroidFileSystem(appContext)
     }
 
     private fun addFile(extension: String, mimeType: String, destination: File) {

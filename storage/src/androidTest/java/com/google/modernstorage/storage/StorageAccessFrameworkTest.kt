@@ -42,7 +42,7 @@ import java.io.File
 class StorageAccessFrameworkTest {
     private lateinit var device: UiDevice
     private lateinit var appContext: Context
-    private lateinit var fileSystem: SharedFileSystem
+    private lateinit var fileSystem: AndroidFileSystem
     private var file: File? = null
 
     @get:Rule
@@ -52,7 +52,7 @@ class StorageAccessFrameworkTest {
     fun setup() {
         device = UiDevice.getInstance(getInstrumentation())
         appContext = getInstrumentation().targetContext
-        fileSystem = SharedFileSystem(appContext)
+        fileSystem = AndroidFileSystem(appContext)
     }
 
     @After

@@ -20,8 +20,6 @@ import okio.Path
 import okio.Path.Companion.toPath
 
 fun Path.toUri(): Uri {
-    // TODO: Add proper verification
-    // TODO: Check if URI authority is compatible with our API
     val str = this.toString()
 
     if (str.startsWith("content:/")) {
@@ -32,7 +30,5 @@ fun Path.toUri(): Uri {
 }
 
 fun Uri.toPath(): Path {
-    // TODO: Add proper verification
-    // TODO: Check if URI authority is compatible with our API
     return this.toString().toPath(false)
 }
