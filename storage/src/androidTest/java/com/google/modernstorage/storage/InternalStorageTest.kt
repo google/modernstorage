@@ -16,9 +16,14 @@
 package com.google.modernstorage.storage
 
 import android.content.Context
+import android.os.Environment
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import okio.BufferedSource
+import okio.Path
 import okio.Path.Companion.toOkioPath
+import okio.buffer
+import okio.sink
 import okio.source
 import org.junit.Assert
 import org.junit.Before
@@ -37,7 +42,7 @@ class InternalStorageTest {
         fileSystem = AndroidFileSystem(appContext)
     }
 
-    private fun addFile(extension: String, mimeType: String, destination: File) {
+    private fun addFile(extension: String, mimeType: String, destination: File): Path {
         val filename = "added-${System.currentTimeMillis()}.$extension"
         val file = File(destination, filename)
         val path = file.toOkioPath()
@@ -65,26 +70,121 @@ class InternalStorageTest {
             }
         }
 
-        file.delete()
+        return path
     }
 
     @Test
     fun addFilesInCacheFolder() {
-        addFile("jpg", "image/jpeg", appContext.cacheDir)
-        addFile("mp4", "video/mp4", appContext.cacheDir)
-        addFile("wav", "audio/x-wav", appContext.cacheDir)
-        addFile("txt", "text/plain", appContext.cacheDir)
-        addFile("pdf", "application/pdf", appContext.cacheDir)
-        addFile("zip", "application/zip", appContext.cacheDir)
+        addFile("jpg", "image/jpeg", appContext.cacheDir).also {
+            it.toFile().delete()
+        }
+        addFile("mp4", "video/mp4", appContext.cacheDir).also {
+            it.toFile().delete()
+        }
+        addFile("wav", "audio/x-wav", appContext.cacheDir).also {
+            it.toFile().delete()
+        }
+        addFile("txt", "text/plain", appContext.cacheDir).also {
+            it.toFile().delete()
+        }
+        addFile("pdf", "application/pdf", appContext.cacheDir).also {
+            it.toFile().delete()
+        }
+        addFile("zip", "application/zip", appContext.cacheDir).also {
+            it.toFile().delete()
+        }
     }
 
     @Test
     fun addFilesInDataFolder() {
-        addFile("jpg", "image/jpeg", appContext.dataDir)
-        addFile("mp4", "video/mp4", appContext.dataDir)
-        addFile("wav", "audio/x-wav", appContext.dataDir)
-        addFile("txt", "text/plain", appContext.dataDir)
-        addFile("pdf", "application/pdf", appContext.dataDir)
-        addFile("zip", "application/zip", appContext.dataDir)
+        addFile("jpg", "image/jpeg", appContext.dataDir).also {
+            it.toFile().delete()
+        }
+        addFile("mp4", "video/mp4", appContext.dataDir).also {
+            it.toFile().delete()
+        }
+        addFile("wav", "audio/x-wav", appContext.dataDir).also {
+            it.toFile().delete()
+        }
+        addFile("txt", "text/plain", appContext.dataDir).also {
+            it.toFile().delete()
+        }
+        addFile("pdf", "application/pdf", appContext.dataDir).also {
+            it.toFile().delete()
+        }
+        addFile("zip", "application/zip", appContext.dataDir).also {
+            it.toFile().delete()
+        }
+    }
+
+    @Test
+    fun editFile() {
+        val file = File(appContext.dataDir, "edit-${System.currentTimeMillis()}.txt").also {
+            it.writeText("Hello World")
+        }
+
+        file.inputStream().use {
+            Assert.assertEquals(String(it.readBytes()), "Hello World")
+        }
+
+        fileSystem.write(file.toOkioPath(), false) {
+            writeUtf8("Storage on Android")
+        }
+
+        file.inputStream().use {
+            Assert.assertEquals(String(it.readBytes()), "Storage on Android")
+        }
+
+        file.delete()
+    }
+
+    @Test
+    fun appendToFile() {
+        val file = File(appContext.dataDir, "edit-${System.currentTimeMillis()}.txt").also {
+            it.writeText("Hello World")
+        }
+
+        file.inputStream().use {
+            Assert.assertEquals(String(it.readBytes()), "Hello World")
+        }
+
+        fileSystem.appendingSink(file.toOkioPath()).use { sink ->
+            sink.buffer().use {
+                it.writeUtf8(" and Storage on Android")
+            }
+        }
+
+        file.inputStream().use {
+            Assert.assertEquals(String(it.readBytes()), "Hello World and Storage on Android")
+        }
+
+        file.delete()
+    }
+
+    @Test
+    fun readFile() {
+        val file = File(appContext.dataDir, "edit-${System.currentTimeMillis()}.txt").also {
+            it.writeText("Hello World")
+        }
+
+        fileSystem.read(file.toOkioPath()) {
+            Assert.assertEquals(readUtf8(), "Hello World")
+        }
+
+        file.inputStream().use {
+            Assert.assertEquals(String(it.readBytes()), "Hello World")
+        }
+
+        file.delete()
+    }
+
+
+    @Test
+    fun deleteFile() {
+        val path = addFile("pdf", "application/pdf", appContext.dataDir)
+        val actualFile = path.toFile()
+        fileSystem.delete(path)
+
+        Assert.assertFalse(actualFile.exists())
     }
 }

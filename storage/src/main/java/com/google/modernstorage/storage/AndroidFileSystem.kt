@@ -106,8 +106,21 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
     }
 
     override fun delete(path: Path, mustExist: Boolean) {
-        val uri = path.toUri()
-        contentResolver.delete(uri, null, null)
+        if (isPhysicalFile(path)) {
+            val file = path.toFile()
+            val deleted = file.delete()
+            if (!deleted) {
+                if (!file.exists()) throw FileNotFoundException("no such file: $path")
+                else throw IOException("failed to delete $path")
+            }
+        } else {
+            val uri = path.toUri()
+            val deletedRows = contentResolver.delete(uri, null, null)
+
+            if(deletedRows == 0) {
+                throw IOException("failed to delete $path")
+            }
+        }
     }
 
     override fun list(dir: Path): List<Path> = list(dir, throwOnFailure = true)!!
