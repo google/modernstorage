@@ -21,17 +21,16 @@ import android.os.Environment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.modernstorage.sample.ui.shared.FileDetails
-import com.google.modernstorage.storage.SharedFileSystem
+import com.google.modernstorage.storage.AndroidFileSystem
 import com.google.modernstorage.storage.toPath
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import okio.buffer
 import okio.source
 
 class MediaStoreViewModel(application: Application) : AndroidViewModel(application) {
     private val context: Context get() = getApplication()
-    private val fileSystem = SharedFileSystem(context)
+    private val fileSystem = AndroidFileSystem(context)
 
     private val _addedFile = MutableStateFlow<FileDetails?>(null)
     val addedFile: StateFlow<FileDetails?> = _addedFile
@@ -70,7 +69,11 @@ class MediaStoreViewModel(application: Application) : AndroidViewModel(applicati
 
             val path = uri.toPath()
 
-            fileSystem.sink(path).buffer().writeAll(context.assets.open("sample.$extension").source())
+            fileSystem.write(path, false) {
+                context.assets.open("sample.$extension").source().use { source ->
+                    writeAll(source)
+                }
+            }
             fileSystem.scanUri(uri, mimeType)
 
             val metadata = fileSystem.metadataOrNull(path) ?: return@launch clearAddedFile()
@@ -103,7 +106,11 @@ class MediaStoreViewModel(application: Application) : AndroidViewModel(applicati
 
             val path = uri.toPath()
 
-            fileSystem.sink(path).buffer().writeAll(context.assets.open("sample.$extension").source())
+            fileSystem.write(path, false) {
+                context.assets.open("sample.$extension").source().use { source ->
+                    writeAll(source)
+                }
+            }
             fileSystem.scanUri(uri, mimeType)
 
             val metadata = fileSystem.metadataOrNull(path) ?: return@launch clearAddedFile()

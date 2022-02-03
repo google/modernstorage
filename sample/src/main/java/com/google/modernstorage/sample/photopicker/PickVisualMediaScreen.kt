@@ -49,7 +49,7 @@ import com.google.modernstorage.sample.HomeRoute
 import com.google.modernstorage.sample.R
 import com.google.modernstorage.sample.ui.shared.FileDetails
 import com.google.modernstorage.sample.ui.shared.MediaPreviewCard
-import com.google.modernstorage.storage.SharedFileSystem
+import com.google.modernstorage.storage.AndroidFileSystem
 import com.google.modernstorage.storage.toPath
 
 private const val IMAGE_MIMETYPE = "image/*"
@@ -59,7 +59,7 @@ private const val VIDEO_MIMETYPE = "video/*"
 @ExperimentalFoundationApi
 @Composable
 fun PickVisualMediaScreen(navController: NavController) {
-    val fileSystem = SharedFileSystem(LocalContext.current)
+    val fileSystem = AndroidFileSystem(LocalContext.current)
     var selectedFiles by remember { mutableStateOf<List<FileDetails>>(emptyList()) }
 
     val selectFile = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->

@@ -4,9 +4,9 @@ artifact: "modernstorage-storage"
 
 # Storage Interactions
 
-`{{ artifact }}` is a library abstracting interactions on the Android shared storage using the
-library [Okio][okio_website]. It relies on its [FileSystem][okio_filesystem_guide] API, which
-provides a [set of methods][okio_filesystem_api] to read and write files.
+`{{ artifact }}` is a library abstracting storage interactions on Android using the library
+[Okio][okio_website]. It relies on its [FileSystem][okio_filesystem_guide] API, which provides a
+[set of methods][okio_filesystem_api] to read and write files.
 
 Instead of opening an `InputStream` or `OutputStream` and relies on different APIs to get file
 metadata for MediaStore and Storage Access Framework `DocumentProvider`, this library takes
@@ -33,9 +33,9 @@ To interact with the [FileSystem][okio_filesystem_guide] API, you need to initia
 first:
 
 ```kotlin
-import com.google.modernstorage.storage.SharedFileSystem
+import com.google.modernstorage.storage.AndroidFileSystem
 
-val fileSystem = SharedFileSystem(context)
+val fileSystem = AndroidFileSystem(context)
 ```
 
 ## Get Path from Uri
