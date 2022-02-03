@@ -45,11 +45,19 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
 
     private val contentResolver = context.contentResolver
 
-    /**
-     * Not yet implemented
-     */
     override fun appendingSink(file: Path, mustExist: Boolean): Sink {
-        TODO("Not yet implemented")
+        if (!mustExist) {
+            throw IOException("Appending on an inexisting path isn't supported ($file)")
+        }
+
+        val uri = file.toUri()
+        val outputStream = contentResolver.openOutputStream(uri, "a")
+
+        if (outputStream == null) {
+            throw IOException("Couldn't open an OutputStream ($file)")
+        } else {
+            return outputStream.sink()
+        }
     }
 
     /**
