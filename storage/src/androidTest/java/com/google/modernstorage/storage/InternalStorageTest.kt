@@ -16,14 +16,11 @@
 package com.google.modernstorage.storage
 
 import android.content.Context
-import android.os.Environment
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import okio.BufferedSource
 import okio.Path
 import okio.Path.Companion.toOkioPath
 import okio.buffer
-import okio.sink
 import okio.source
 import org.junit.Assert
 import org.junit.Before
@@ -177,7 +174,6 @@ class InternalStorageTest {
 
         file.delete()
     }
-
 
     @Test
     fun deleteFile() {

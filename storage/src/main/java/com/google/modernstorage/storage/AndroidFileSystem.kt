@@ -117,7 +117,7 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
             val uri = path.toUri()
             val deletedRows = contentResolver.delete(uri, null, null)
 
-            if(deletedRows == 0) {
+            if (deletedRows == 0) {
                 throw IOException("failed to delete $path")
             }
         }
