@@ -39,10 +39,10 @@ val fileSystem = AndroidFileSystem(context)
 ```
 
 ## Get Path from Uri
-Call `toPath` to get a `Path` from a `Uri`:
+Call `toOkioPath` to get a `Path` from a `Uri`:
 
 ```kotlin
-val path = uri.toPath()
+val path = uri.toOkioPath()
 ```
 
 ## Get file metadata
@@ -52,7 +52,7 @@ You can get the file size by using the method `metadataOrNull`:
 import com.google.modernstorage.storage.MetadataExtras.DisplayName
 import com.google.modernstorage.storage.MetadataExtras.MimeType
 
-val fileMetadata = fileSystem.metadataOrNull(uri.toPath())
+val fileMetadata = fileSystem.metadataOrNull(uri.toOkioPath())
 Log.d("ModernStorage/uri", uri.toString())
 Log.d("ModernStorage/isRegularFile", metadata.isRegularFile.toString())
 Log.d("ModernStorage/isDirectory", metadata.isDirectory.toString())
@@ -71,7 +71,7 @@ Log.d("ModernStorage/mimeType", metadata.extra(MimeType::class).value)
 val actionOpenTextFile = registerForActivityResult(OpenDocument()) { uri ->
     if(uri != null) {
         // textPath is an instance of okio.Path
-        val textPath = uri.toPath()
+        val textPath = uri.toOkioPath()
         Log.d("ModernStorage/metadata", fileSystem.metadataOrNull(textPath).toString())
         Log.d("ModernStorage/content", fileSystem.source(textPath).buffer().readUtf8())
     }
