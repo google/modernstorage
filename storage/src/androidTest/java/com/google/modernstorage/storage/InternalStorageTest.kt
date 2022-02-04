@@ -16,6 +16,7 @@
 package com.google.modernstorage.storage
 
 import android.content.Context
+import android.os.Environment
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import okio.Path
@@ -27,6 +28,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
+import java.io.InputStream
 
 @RunWith(AndroidJUnit4::class)
 class InternalStorageTest {
@@ -39,7 +41,7 @@ class InternalStorageTest {
         fileSystem = AndroidFileSystem(appContext)
     }
 
-    private fun addFile(extension: String, mimeType: String, destination: File): Path {
+    private fun addFileFromAssets(extension: String, mimeType: String, destination: File): Path {
         val filename = "added-${System.currentTimeMillis()}.$extension"
         val file = File(destination, filename)
         val path = file.toOkioPath()
@@ -70,53 +72,66 @@ class InternalStorageTest {
         return path
     }
 
+    private fun verifyBytes(original: InputStream, target: Path) {
+        original.use { inputStream ->
+            val iterator = inputStream.readBytes().iterator()
+            fileSystem.read(target) {
+                do {
+                    val a = iterator.next()
+                    val b = this.readByte()
+                    Assert.assertEquals(a, b)
+                } while (iterator.hasNext() && !this.exhausted())
+            }
+        }
+    }
+
     @Test
     fun addFilesInCacheFolder() {
-        addFile("jpg", "image/jpeg", appContext.cacheDir).also {
+        addFileFromAssets("jpg", "image/jpeg", appContext.cacheDir).also {
             it.toFile().delete()
         }
-        addFile("mp4", "video/mp4", appContext.cacheDir).also {
+        addFileFromAssets("mp4", "video/mp4", appContext.cacheDir).also {
             it.toFile().delete()
         }
-        addFile("wav", "audio/x-wav", appContext.cacheDir).also {
+        addFileFromAssets("wav", "audio/x-wav", appContext.cacheDir).also {
             it.toFile().delete()
         }
-        addFile("txt", "text/plain", appContext.cacheDir).also {
+        addFileFromAssets("txt", "text/plain", appContext.cacheDir).also {
             it.toFile().delete()
         }
-        addFile("pdf", "application/pdf", appContext.cacheDir).also {
+        addFileFromAssets("pdf", "application/pdf", appContext.cacheDir).also {
             it.toFile().delete()
         }
-        addFile("zip", "application/zip", appContext.cacheDir).also {
+        addFileFromAssets("zip", "application/zip", appContext.cacheDir).also {
             it.toFile().delete()
         }
     }
 
     @Test
     fun addFilesInDataFolder() {
-        addFile("jpg", "image/jpeg", appContext.dataDir).also {
+        addFileFromAssets("jpg", "image/jpeg", appContext.filesDir).also {
             it.toFile().delete()
         }
-        addFile("mp4", "video/mp4", appContext.dataDir).also {
+        addFileFromAssets("mp4", "video/mp4", appContext.filesDir).also {
             it.toFile().delete()
         }
-        addFile("wav", "audio/x-wav", appContext.dataDir).also {
+        addFileFromAssets("wav", "audio/x-wav", appContext.filesDir).also {
             it.toFile().delete()
         }
-        addFile("txt", "text/plain", appContext.dataDir).also {
+        addFileFromAssets("txt", "text/plain", appContext.filesDir).also {
             it.toFile().delete()
         }
-        addFile("pdf", "application/pdf", appContext.dataDir).also {
+        addFileFromAssets("pdf", "application/pdf", appContext.filesDir).also {
             it.toFile().delete()
         }
-        addFile("zip", "application/zip", appContext.dataDir).also {
+        addFileFromAssets("zip", "application/zip", appContext.filesDir).also {
             it.toFile().delete()
         }
     }
 
     @Test
     fun editFile() {
-        val file = File(appContext.dataDir, "edit-${System.currentTimeMillis()}.txt").also {
+        val file = File(appContext.filesDir, "edit-${System.currentTimeMillis()}.txt").also {
             it.writeText("Hello World")
         }
 
@@ -137,7 +152,7 @@ class InternalStorageTest {
 
     @Test
     fun appendToFile() {
-        val file = File(appContext.dataDir, "edit-${System.currentTimeMillis()}.txt").also {
+        val file = File(appContext.filesDir, "edit-${System.currentTimeMillis()}.txt").also {
             it.writeText("Hello World")
         }
 
@@ -160,7 +175,7 @@ class InternalStorageTest {
 
     @Test
     fun readFile() {
-        val file = File(appContext.dataDir, "edit-${System.currentTimeMillis()}.txt").also {
+        val file = File(appContext.filesDir, "edit-${System.currentTimeMillis()}.txt").also {
             it.writeText("Hello World")
         }
 
@@ -177,10 +192,29 @@ class InternalStorageTest {
 
     @Test
     fun deleteFile() {
-        val path = addFile("pdf", "application/pdf", appContext.dataDir)
+        val path = addFileFromAssets("pdf", "application/pdf", appContext.filesDir)
         val actualFile = path.toFile()
         fileSystem.delete(path)
 
         Assert.assertFalse(actualFile.exists())
+    }
+
+    @Test
+    fun copyImageFromSharedStorage() {
+        val sharedFile = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+            "shared-${System.currentTimeMillis()}.jpg"
+        ).also {
+            appContext.assets.open("sample.jpg").copyTo(it.outputStream())
+        }
+
+        val targetFile = File(appContext.filesDir, "added-${System.currentTimeMillis()}.jpg")
+        val path = targetFile.toOkioPath()
+
+        fileSystem.copy(sharedFile.toOkioPath(), path)
+        verifyBytes(targetFile.inputStream(), path)
+
+        sharedFile.delete()
+        targetFile.delete()
     }
 }

@@ -36,7 +36,7 @@ import kotlin.coroutines.resume
 @Deprecated(
     "Use the new AndroidFileSystem() class",
     ReplaceWith("AndroidFileSystem(context)"),
-    DeprecationLevel.WARNING
+    DeprecationLevel.ERROR
 )
 class SharedFileSystem(private val context: Context) : FileSystem() {
     private val contentResolver = context.contentResolver

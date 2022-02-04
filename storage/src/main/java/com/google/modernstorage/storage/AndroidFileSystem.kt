@@ -178,7 +178,7 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
 
         cursor.use { cursor ->
             while (cursor.moveToNext()) {
-                result.add(DocumentsContract.buildDocumentUriUsingTree(rootUri, documentId).toPath())
+                result.add(DocumentsContract.buildDocumentUriUsingTree(rootUri, documentId).toOkioPath())
             }
         }
 
@@ -443,6 +443,11 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
         }
     }
 
+    @Deprecated(
+        "Use the updated createMediaStoreUri() method",
+        ReplaceWith("createMediaStoreUri(filename, collection, directory)"),
+        DeprecationLevel.WARNING
+    )
     fun createMediaStoreUri(
         filename: String,
         directory: String,
@@ -451,6 +456,19 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
         val newEntry = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
             put(MediaStore.MediaColumns.DATA, "$directory/$filename")
+        }
+
+        return context.contentResolver.insert(collection, newEntry)
+    }
+
+    fun createMediaStoreUri(
+        filename: String,
+        collection: Uri = MediaStore.Files.getContentUri("external"),
+        directory: String?
+    ): Uri? {
+        val newEntry = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+            if (directory !== null) put(MediaStore.MediaColumns.DATA, "$directory/$filename")
         }
 
         return context.contentResolver.insert(collection, newEntry)
@@ -481,6 +499,22 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
             ) { _, scannedUri ->
                 if (scannedUri == null) {
                     continuation.cancel(Exception("File $path could not be scanned"))
+                } else {
+                    continuation.resume(scannedUri)
+                }
+            }
+        }
+    }
+
+    suspend fun scanFile(file: File, mimeType: String): Uri? {
+        return suspendCancellableCoroutine { continuation ->
+            MediaScannerConnection.scanFile(
+                context,
+                arrayOf(file.toString()),
+                arrayOf(mimeType)
+            ) { _, scannedUri ->
+                if (scannedUri == null) {
+                    continuation.cancel(Exception("File $file could not be scanned"))
                 } else {
                     continuation.resume(scannedUri)
                 }

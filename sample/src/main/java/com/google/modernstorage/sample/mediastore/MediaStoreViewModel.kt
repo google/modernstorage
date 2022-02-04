@@ -22,7 +22,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.modernstorage.sample.ui.shared.FileDetails
 import com.google.modernstorage.storage.AndroidFileSystem
-import com.google.modernstorage.storage.toPath
+import com.google.modernstorage.storage.toOkioPath
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -67,7 +67,7 @@ class MediaStoreViewModel(application: Application) : AndroidViewModel(applicati
                 directory = directory.absolutePath
             ) ?: return@launch clearAddedFile()
 
-            val path = uri.toPath()
+            val path = uri.toOkioPath()
 
             fileSystem.write(path, false) {
                 context.assets.open("sample.$extension").source().use { source ->
@@ -104,7 +104,7 @@ class MediaStoreViewModel(application: Application) : AndroidViewModel(applicati
                 directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath
             ) ?: return@launch clearAddedFile()
 
-            val path = uri.toPath()
+            val path = uri.toOkioPath()
 
             fileSystem.write(path, false) {
                 context.assets.open("sample.$extension").source().use { source ->

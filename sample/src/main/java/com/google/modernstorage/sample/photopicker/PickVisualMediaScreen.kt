@@ -50,7 +50,7 @@ import com.google.modernstorage.sample.R
 import com.google.modernstorage.sample.ui.shared.FileDetails
 import com.google.modernstorage.sample.ui.shared.MediaPreviewCard
 import com.google.modernstorage.storage.AndroidFileSystem
-import com.google.modernstorage.storage.toPath
+import com.google.modernstorage.storage.toOkioPath
 
 private const val IMAGE_MIMETYPE = "image/*"
 private const val VIDEO_MIMETYPE = "video/*"
@@ -64,7 +64,7 @@ fun PickVisualMediaScreen(navController: NavController) {
 
     val selectFile = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri?.let { uri ->
-            val path = uri.toPath()
+            val path = uri.toOkioPath()
             fileSystem.metadataOrNull(path)?.let { metadata ->
                 selectedFiles = listOf(FileDetails(uri, path, metadata))
             }
@@ -73,7 +73,7 @@ fun PickVisualMediaScreen(navController: NavController) {
 
     val selectMultipleFiles = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
         selectedFiles = uris.map { uri ->
-            val path = uri.toPath()
+            val path = uri.toOkioPath()
             val metadata = fileSystem.metadataOrNull(path) ?: return@map null
             FileDetails(uri, path, metadata)
         }.filterNotNull()
@@ -81,7 +81,7 @@ fun PickVisualMediaScreen(navController: NavController) {
 
     val photoPicker = rememberLauncherForActivityResult(PhotoPicker()) { uris ->
         selectedFiles = uris.map { uri ->
-            val path = uri.toPath()
+            val path = uri.toOkioPath()
             val metadata = fileSystem.metadataOrNull(path) ?: return@map null
             FileDetails(uri, path, metadata)
         }.filterNotNull()

@@ -17,9 +17,7 @@ package com.google.modernstorage.storage
 
 import android.Manifest
 import android.content.Context
-import android.net.Uri
 import android.os.Environment
-import android.provider.MediaStore
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
@@ -36,7 +34,7 @@ import java.io.File
 import java.io.InputStream
 
 @RunWith(AndroidJUnit4::class)
-class MediaStoreTest {
+class SharedStorageTest {
     private lateinit var appContext: Context
     private lateinit var fileSystem: AndroidFileSystem
 
@@ -51,14 +49,10 @@ class MediaStoreTest {
         fileSystem = AndroidFileSystem(appContext)
     }
 
-    private fun addFileFromAssets(extension: String, mimeType: String, collection: Uri, destination: File) {
+    private fun addFileFromAssets(extension: String, mimeType: String, destination: File) {
         val filename = "added-${System.currentTimeMillis()}.$extension"
-        val uri = fileSystem.createMediaStoreUri(
-            filename,
-            collection,
-            destination.absolutePath
-        )!!
-        val path = uri.toOkioPath()
+        val file = File(destination, filename)
+        val path = file.toOkioPath()
 
         fileSystem.write(path, false) {
             appContext.assets.open("sample.$extension").source().use { source ->
@@ -67,7 +61,7 @@ class MediaStoreTest {
         }
 
         runBlocking {
-            requireNotNull(fileSystem.scanUri(uri, mimeType))
+            requireNotNull(fileSystem.scanFile(file, mimeType))
         }
 
         val metadata = fileSystem.metadataOrNull(path)
@@ -78,7 +72,7 @@ class MediaStoreTest {
         Assert.assertEquals("$destination/$filename", metadata.extra(MetadataExtras.FilePath::class)!!.value)
 
         verifyBytes(appContext.assets.open("sample.$extension"), path)
-        appContext.contentResolver.delete(uri, null, null)
+        file.delete()
     }
 
     private fun verifyBytes(original: InputStream, target: Path) {
@@ -99,7 +93,6 @@ class MediaStoreTest {
         addFileFromAssets(
             "jpg",
             "image/jpeg",
-            MediaStore.Images.Media.getContentUri("external"),
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
         )
     }
@@ -109,7 +102,6 @@ class MediaStoreTest {
         addFileFromAssets(
             "mp4",
             "video/mp4",
-            MediaStore.Video.Media.getContentUri("external"),
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)
         )
     }
@@ -119,7 +111,6 @@ class MediaStoreTest {
         addFileFromAssets(
             "wav",
             "audio/x-wav",
-            MediaStore.Audio.Media.getContentUri("external"),
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
         )
     }
@@ -129,7 +120,6 @@ class MediaStoreTest {
         addFileFromAssets(
             "txt",
             "text/plain",
-            MediaStore.Files.getContentUri("external"),
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         )
     }
@@ -139,7 +129,6 @@ class MediaStoreTest {
         addFileFromAssets(
             "pdf",
             "application/pdf",
-            MediaStore.Files.getContentUri("external"),
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         )
     }
@@ -149,7 +138,6 @@ class MediaStoreTest {
         addFileFromAssets(
             "zip",
             "application/zip",
-            MediaStore.Files.getContentUri("external"),
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         )
     }
@@ -160,57 +148,16 @@ class MediaStoreTest {
             appContext.assets.open("sample.jpg").copyTo(it.outputStream())
         }
 
-        val uri = fileSystem.createMediaStoreUri(
-            "added-${System.currentTimeMillis()}.jpg",
-            MediaStore.Files.getContentUri("external"),
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath
-        )!!
-        val path = uri.toOkioPath()
+        val targetFile = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+            "added-${System.currentTimeMillis()}.jpg"
+        )
+        val path = targetFile.toOkioPath()
 
         fileSystem.copy(internalFile.toOkioPath(), path)
         verifyBytes(internalFile.inputStream(), path)
 
         internalFile.delete()
-        appContext.contentResolver.delete(uri, null, null)
-    }
-
-    @Test
-    fun copyTextFromInternalStorage() {
-        val internalFile = File(appContext.filesDir, "internal-${System.currentTimeMillis()}.txt").also {
-            appContext.assets.open("sample.txt").copyTo(it.outputStream())
-        }
-
-        val uri = fileSystem.createMediaStoreUri(
-            "added-${System.currentTimeMillis()}.txt",
-            MediaStore.Files.getContentUri("external"),
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath
-        )!!
-        val path = uri.toOkioPath()
-
-        fileSystem.copy(internalFile.toOkioPath(), path)
-        verifyBytes(internalFile.inputStream(), path)
-
-        internalFile.delete()
-        appContext.contentResolver.delete(uri, null, null)
-    }
-
-    @Test
-    fun copyPdfFromInternalStorage() {
-        val internalFile = File(appContext.filesDir, "internal-${System.currentTimeMillis()}.pdf").also {
-            appContext.assets.open("sample.pdf").copyTo(it.outputStream())
-        }
-
-        val uri = fileSystem.createMediaStoreUri(
-            "added-${System.currentTimeMillis()}.pdf",
-            MediaStore.Files.getContentUri("external"),
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath
-        )!!
-        val path = uri.toOkioPath()
-
-        fileSystem.copy(internalFile.toOkioPath(), path)
-        verifyBytes(internalFile.inputStream(), path)
-
-        internalFile.delete()
-        appContext.contentResolver.delete(uri, null, null)
+        targetFile.delete()
     }
 }

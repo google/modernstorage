@@ -29,6 +29,13 @@ fun Path.toUri(): Uri {
     return Uri.parse(str)
 }
 
-fun Uri.toPath(): Path {
+fun Uri.toOkioPath(): Path {
     return this.toString().toPath(false)
 }
+
+@Deprecated(
+    "Use the Uri.toOkioPath() method instead",
+    ReplaceWith("toOkioPath()"),
+    DeprecationLevel.WARNING
+)
+fun Uri.toPath() = this.toOkioPath()
