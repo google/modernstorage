@@ -51,13 +51,10 @@ class PhotoPicker : ActivityResultContract<PhotoPicker.Args, List<Uri>>() {
                     putExtra(EXTRA_PICK_IMAGES_MAX, input.maxItems)
                 }
 
-                when (input.type) {
-                    Type.IMAGES_ONLY ->
-                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*"))
-                    Type.VIDEO_ONLY ->
-                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("video/*"))
-                    Type.IMAGES_AND_VIDEO ->
-                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*", "video/*"))
+                if (input.type == Type.IMAGES_ONLY) {
+                    type = "image/*"
+                } else if (input.type == Type.VIDEO_ONLY) {
+                    type = "video/*"
                 }
             }
 
