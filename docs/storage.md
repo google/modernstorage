@@ -45,6 +45,19 @@ Call `toOkioPath` to get a `Path` from a `Uri`:
 val path = uri.toOkioPath()
 ```
 
+## Get Path from File
+Call `toOkioPath` to get a `Path` from a `File`:
+
+```kotlin
+val path = File(context.filesDir, "myfile.jpg").toOkioPath()
+```
+
+## Copy a file
+You can easily copy a file to another location by using the `copy` method:
+```kotlin
+fileSystem.copy(originPath, targetPath)
+```
+
 ## Get file metadata
 You can get the file size by using the method `metadataOrNull`:
 
