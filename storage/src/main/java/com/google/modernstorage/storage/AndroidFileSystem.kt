@@ -38,15 +38,6 @@ import java.util.Locale
 import kotlin.coroutines.resume
 
 class AndroidFileSystem(private val context: Context) : FileSystem() {
-    private companion object {
-        private object PhotoPickerColumns {
-            const val PATH = "data"
-            const val DATE_TAKEN = "date_taken_ms"
-            const val MIME_TYPE = "mime_type"
-            const val SIZE = "size_bytes"
-        }
-    }
-
     private val contentResolver = context.contentResolver
 
     private fun isPhysicalFile(file: Path): Boolean {
@@ -190,19 +181,7 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
 
         return when (uri.authority) {
             null -> fetchMetadataFromPhysicalFile(path)
-            MediaStore.AUTHORITY -> {
-                when {
-                    uri.pathSegments.firstOrNull().isNullOrBlank() -> {
-                        null
-                    }
-                    uri.pathSegments.firstOrNull() == "picker" -> {
-                        fetchMetadataFromPhotoPicker(path, uri)
-                    }
-                    else -> {
-                        fetchMetadataFromMediaStore(path, uri)
-                    }
-                }
-            }
+            MediaStore.AUTHORITY -> fetchMetadataFromMediaStore(path, uri)
             else -> fetchMetadataFromDocumentProvider(path, uri)
         }
     }
@@ -246,63 +225,35 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
         )
     }
 
-    private fun fetchMetadataFromPhotoPicker(path: Path, uri: Uri): FileMetadata? {
-        val cursor = contentResolver.query(
-            uri,
-            arrayOf(
-                PhotoPickerColumns.MIME_TYPE,
-                PhotoPickerColumns.SIZE,
-                PhotoPickerColumns.PATH,
-                PhotoPickerColumns.DATE_TAKEN
-            ),
-            null,
-            null,
-            null
-        ) ?: return null
-
-        cursor.use { cursor ->
-            if (!cursor.moveToNext()) {
-                return null
-            }
-
-            val mimeType =
-                cursor.getString(cursor.getColumnIndexOrThrow(PhotoPickerColumns.MIME_TYPE))
-            val size = cursor.getLong(cursor.getColumnIndexOrThrow(PhotoPickerColumns.SIZE))
-            val filePath = cursor.getString(cursor.getColumnIndexOrThrow(PhotoPickerColumns.PATH))
-
-            return FileMetadata(
-                isRegularFile = true,
-                isDirectory = false,
-                symlinkTarget = null,
-                size = size,
-                createdAtMillis = cursor.getLong(cursor.getColumnIndexOrThrow(PhotoPickerColumns.DATE_TAKEN)) / 1000,
-                lastModifiedAtMillis = null,
-                lastAccessedAtMillis = null,
-                extras = mapOf(
-                    Path::class to path,
-                    Uri::class to uri,
-                    MetadataExtras.DisplayName::class to MetadataExtras.DisplayName(
-                        Uri.parse(
-                            filePath
-                        ).lastPathSegment ?: ""
-                    ),
-                    MetadataExtras.MimeType::class to MetadataExtras.MimeType(mimeType),
-                    MetadataExtras.FilePath::class to MetadataExtras.FilePath(filePath),
-                )
-            )
-        }
-    }
-
     private fun fetchMetadataFromMediaStore(path: Path, uri: Uri): FileMetadata? {
-        val cursor = contentResolver.query(
-            uri,
+        if (uri.pathSegments.firstOrNull().isNullOrBlank()) {
+            return null
+        }
+
+        val isPhotoPickerUri = uri.pathSegments.firstOrNull() == "picker"
+
+        val projection = if (isPhotoPickerUri) {
             arrayOf(
+                MediaStore.MediaColumns.DATE_TAKEN,
+                MediaStore.MediaColumns.DISPLAY_NAME,
+                MediaStore.MediaColumns.MIME_TYPE,
+                MediaStore.MediaColumns.SIZE,
+                MediaStore.MediaColumns.DATA,
+            )
+        } else {
+            arrayOf(
+                MediaStore.MediaColumns.DATE_ADDED,
                 MediaStore.MediaColumns.DATE_MODIFIED,
                 MediaStore.MediaColumns.DISPLAY_NAME,
                 MediaStore.MediaColumns.MIME_TYPE,
                 MediaStore.MediaColumns.SIZE,
                 MediaStore.MediaColumns.DATA,
-            ),
+            )
+        }
+
+        val cursor = contentResolver.query(
+            uri,
+            projection,
             null,
             null,
             null
@@ -313,23 +264,27 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
                 return null
             }
 
-            // FileColumns.DATE_MODIFIED
-            val lastModifiedTime = cursor.getLong(0)
-            // FileColumns.DISPLAY_NAME
-            val displayName = cursor.getString(1)
-            // FileColumns.MIME_TYPE
-            val mimeType = cursor.getString(2)
-            // FileColumns.SIZE
-            val size = cursor.getLong(3)
-            // FileColumns.DATA
-            val filePath = cursor.getString(4)
+            val createdTime: Long
+            var lastModifiedTime: Long? = null
+
+            if (isPhotoPickerUri) {
+                createdTime = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_TAKEN))
+            } else {
+                createdTime = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_ADDED))
+                lastModifiedTime = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_MODIFIED))
+            }
+
+            val displayName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME))
+            val mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE))
+            val size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE))
+            val filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA))
 
             return FileMetadata(
                 isRegularFile = true,
                 isDirectory = false,
                 symlinkTarget = null,
                 size = size,
-                createdAtMillis = null,
+                createdAtMillis = createdTime,
                 lastModifiedAtMillis = lastModifiedTime,
                 lastAccessedAtMillis = null,
                 extras = mapOf(
