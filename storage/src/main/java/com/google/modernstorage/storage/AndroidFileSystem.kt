@@ -403,17 +403,13 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
         ReplaceWith("createMediaStoreUri(filename, collection, directory)"),
         DeprecationLevel.WARNING
     )
-    fun createMediaStoreUri(
-        filename: String,
-        directory: String,
-        collection: Uri = MediaStore.Files.getContentUri("external")
-    ): Uri? {
+    fun createMediaStoreUri(filename: String, directory: String): Uri? {
         val newEntry = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
             put(MediaStore.MediaColumns.DATA, "$directory/$filename")
         }
 
-        return context.contentResolver.insert(collection, newEntry)
+        return context.contentResolver.insert(MediaStore.Files.getContentUri("external"), newEntry)
     }
 
     fun createMediaStoreUri(
