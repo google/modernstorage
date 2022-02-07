@@ -1,8 +1,28 @@
 $dokka.format:html-v1
 $dokka.linkExtension:html
 $dokka.location:com.google.modernstorage.storage////PointingToDeclaration/storage/com.google.modernstorage.storage/index.html
+$dokka.location:com.google.modernstorage.storage//toOkioPath/android.net.Uri#/PointingToDeclaration/storage/com.google.modernstorage.storage/to-okio-path.html
 $dokka.location:com.google.modernstorage.storage//toPath/android.net.Uri#/PointingToDeclaration/storage/com.google.modernstorage.storage/to-path.html
 $dokka.location:com.google.modernstorage.storage//toUri/okio.Path#/PointingToDeclaration/storage/com.google.modernstorage.storage/to-uri.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem///PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/index.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/AndroidFileSystem/#android.content.Context/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/-android-file-system.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/appendingSink/#okio.Path#kotlin.Boolean/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/appending-sink.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/atomicMove/#okio.Path#okio.Path/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/atomic-move.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/canonicalize/#okio.Path/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/canonicalize.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/createDirectory/#okio.Path#kotlin.Boolean/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/create-directory.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/createMediaStoreUri/#kotlin.String#android.net.Uri#kotlin.String?/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/create-media-store-uri.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/createMediaStoreUri/#kotlin.String#kotlin.String/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/create-media-store-uri.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/createSymlink/#okio.Path#okio.Path/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/create-symlink.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/delete/#okio.Path#kotlin.Boolean/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/delete.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/list/#okio.Path/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/list.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/listOrNull/#okio.Path/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/list-or-null.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/metadataOrNull/#okio.Path/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/metadata-or-null.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/openReadOnly/#okio.Path/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/open-read-only.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/openReadWrite/#okio.Path#kotlin.Boolean#kotlin.Boolean/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/open-read-write.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/scanFile/#java.io.File#kotlin.String/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/scan-file.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/scanUri/#android.net.Uri#kotlin.String/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/scan-uri.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/sink/#okio.Path#kotlin.Boolean/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/sink.html
+$dokka.location:com.google.modernstorage.storage/AndroidFileSystem/source/#okio.Path/PointingToDeclaration/storage/com.google.modernstorage.storage/-android-file-system/source.html
 $dokka.location:com.google.modernstorage.storage/MetadataExtras.DisplayName///PointingToDeclaration/storage/com.google.modernstorage.storage/-metadata-extras/-display-name/index.html
 $dokka.location:com.google.modernstorage.storage/MetadataExtras.DisplayName/DisplayName/#kotlin.String/PointingToDeclaration/storage/com.google.modernstorage.storage/-metadata-extras/-display-name/-display-name.html
 $dokka.location:com.google.modernstorage.storage/MetadataExtras.DisplayName/value/#/PointingToDeclaration/storage/com.google.modernstorage.storage/-metadata-extras/-display-name/value.html
@@ -19,6 +39,7 @@ $dokka.location:com.google.modernstorage.storage/SharedFileSystem/appendingSink/
 $dokka.location:com.google.modernstorage.storage/SharedFileSystem/atomicMove/#okio.Path#okio.Path/PointingToDeclaration/storage/com.google.modernstorage.storage/-shared-file-system/atomic-move.html
 $dokka.location:com.google.modernstorage.storage/SharedFileSystem/canonicalize/#okio.Path/PointingToDeclaration/storage/com.google.modernstorage.storage/-shared-file-system/canonicalize.html
 $dokka.location:com.google.modernstorage.storage/SharedFileSystem/createDirectory/#okio.Path#kotlin.Boolean/PointingToDeclaration/storage/com.google.modernstorage.storage/-shared-file-system/create-directory.html
+$dokka.location:com.google.modernstorage.storage/SharedFileSystem/createMediaStoreUri/#kotlin.String#kotlin.String#android.net.Uri/PointingToDeclaration/storage/com.google.modernstorage.storage/-shared-file-system/create-media-store-uri.html
 $dokka.location:com.google.modernstorage.storage/SharedFileSystem/createMediaStoreUri/#kotlin.String#kotlin.String/PointingToDeclaration/storage/com.google.modernstorage.storage/-shared-file-system/create-media-store-uri.html
 $dokka.location:com.google.modernstorage.storage/SharedFileSystem/createSymlink/#okio.Path#okio.Path/PointingToDeclaration/storage/com.google.modernstorage.storage/-shared-file-system/create-symlink.html
 $dokka.location:com.google.modernstorage.storage/SharedFileSystem/delete/#okio.Path#kotlin.Boolean/PointingToDeclaration/storage/com.google.modernstorage.storage/-shared-file-system/delete.html
