@@ -1,6 +1,27 @@
 // Signature format: 4.0
 package com.google.modernstorage.storage {
 
+  public final class AndroidFileSystem extends okio.FileSystem {
+    ctor public AndroidFileSystem(android.content.Context context);
+    method public okio.Sink appendingSink(okio.Path file, boolean mustExist);
+    method public void atomicMove(okio.Path source, okio.Path target);
+    method public okio.Path canonicalize(okio.Path path);
+    method public void createDirectory(okio.Path dir, boolean mustCreate);
+    method @Deprecated public android.net.Uri? createMediaStoreUri(String filename, String directory);
+    method public android.net.Uri? createMediaStoreUri(String filename, optional android.net.Uri collection, String? directory);
+    method public void createSymlink(okio.Path source, okio.Path target);
+    method public void delete(okio.Path path, boolean mustExist);
+    method public java.util.List<okio.Path> list(okio.Path dir);
+    method public java.util.List<okio.Path>? listOrNull(okio.Path dir);
+    method public okio.FileMetadata? metadataOrNull(okio.Path path);
+    method public okio.FileHandle openReadOnly(okio.Path file);
+    method public okio.FileHandle openReadWrite(okio.Path file, boolean mustCreate, boolean mustExist);
+    method public suspend Object? scanFile(java.io.File file, String mimeType, kotlin.coroutines.Continuation<? super android.net.Uri> p);
+    method public suspend Object? scanUri(android.net.Uri uri, String mimeType, kotlin.coroutines.Continuation<? super android.net.Uri> p);
+    method public okio.Sink sink(okio.Path file, boolean mustCreate);
+    method public okio.Source source(okio.Path file);
+  }
+
   public final class MetadataExtras {
     field public static final com.google.modernstorage.storage.MetadataExtras INSTANCE;
   }
@@ -24,27 +45,29 @@ package com.google.modernstorage.storage {
   }
 
   public final class PathUtilsKt {
-    method public static okio.Path toPath(android.net.Uri);
+    method public static okio.Path toOkioPath(android.net.Uri);
+    method @Deprecated public static okio.Path toPath(android.net.Uri);
     method public static android.net.Uri toUri(okio.Path);
   }
 
-  public final class SharedFileSystem extends okio.FileSystem {
-    ctor public SharedFileSystem(android.content.Context context);
-    method public okio.Sink appendingSink(okio.Path file, boolean mustExist);
-    method public void atomicMove(okio.Path source, okio.Path target);
-    method public okio.Path canonicalize(okio.Path path);
-    method public void createDirectory(okio.Path dir, boolean mustCreate);
-    method public android.net.Uri? createMediaStoreUri(String filename, String directory);
-    method public void createSymlink(okio.Path source, okio.Path target);
-    method public void delete(okio.Path path, boolean mustExist);
-    method public java.util.List<okio.Path> list(okio.Path dir);
-    method public java.util.List<okio.Path>? listOrNull(okio.Path dir);
-    method public okio.FileMetadata? metadataOrNull(okio.Path path);
-    method public okio.FileHandle openReadOnly(okio.Path file);
-    method public okio.FileHandle openReadWrite(okio.Path file, boolean mustCreate, boolean mustExist);
-    method public suspend Object? scanUri(android.net.Uri uri, String mimeType, kotlin.coroutines.Continuation<? super android.net.Uri> p);
-    method public okio.Sink sink(okio.Path file, boolean mustCreate);
-    method public okio.Source source(okio.Path file);
+  @Deprecated public final class SharedFileSystem extends okio.FileSystem {
+    ctor @Deprecated public SharedFileSystem(android.content.Context context);
+    method @Deprecated public okio.Sink appendingSink(okio.Path file, boolean mustExist);
+    method @Deprecated public void atomicMove(okio.Path source, okio.Path target);
+    method @Deprecated public okio.Path canonicalize(okio.Path path);
+    method @Deprecated public void createDirectory(okio.Path dir, boolean mustCreate);
+    method @Deprecated public android.net.Uri? createMediaStoreUri(String filename, String directory);
+    method @Deprecated public android.net.Uri? createMediaStoreUri(String filename, String directory, optional android.net.Uri collection);
+    method @Deprecated public void createSymlink(okio.Path source, okio.Path target);
+    method @Deprecated public void delete(okio.Path path, boolean mustExist);
+    method @Deprecated public java.util.List<okio.Path> list(okio.Path dir);
+    method @Deprecated public java.util.List<okio.Path>? listOrNull(okio.Path dir);
+    method @Deprecated public okio.FileMetadata? metadataOrNull(okio.Path path);
+    method @Deprecated public okio.FileHandle openReadOnly(okio.Path file);
+    method @Deprecated public okio.FileHandle openReadWrite(okio.Path file, boolean mustCreate, boolean mustExist);
+    method @Deprecated public suspend Object? scanUri(android.net.Uri uri, String mimeType, kotlin.coroutines.Continuation<? super android.net.Uri> p);
+    method @Deprecated public okio.Sink sink(okio.Path file, boolean mustCreate);
+    method @Deprecated public okio.Source source(okio.Path file);
   }
 
 }

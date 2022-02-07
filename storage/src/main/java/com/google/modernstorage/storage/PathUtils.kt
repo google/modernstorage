@@ -20,8 +20,6 @@ import okio.Path
 import okio.Path.Companion.toPath
 
 fun Path.toUri(): Uri {
-    // TODO: Add proper verification
-    // TODO: Check if URI authority is compatible with our API
     val str = this.toString()
 
     if (str.startsWith("content:/")) {
@@ -31,8 +29,13 @@ fun Path.toUri(): Uri {
     return Uri.parse(str)
 }
 
-fun Uri.toPath(): Path {
-    // TODO: Add proper verification
-    // TODO: Check if URI authority is compatible with our API
+fun Uri.toOkioPath(): Path {
     return this.toString().toPath(false)
 }
+
+@Deprecated(
+    "Use the Uri.toOkioPath() method instead",
+    ReplaceWith("toOkioPath()"),
+    DeprecationLevel.WARNING
+)
+fun Uri.toPath() = this.toOkioPath()

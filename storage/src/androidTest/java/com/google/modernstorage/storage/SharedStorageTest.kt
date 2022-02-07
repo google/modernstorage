@@ -22,7 +22,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import kotlinx.coroutines.runBlocking
-import okio.buffer
+import okio.Path
+import okio.Path.Companion.toOkioPath
 import okio.source
 import org.junit.Assert
 import org.junit.Before
@@ -30,11 +31,12 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
+import java.io.InputStream
 
 @RunWith(AndroidJUnit4::class)
-class SharedMediaStoreTest {
+class SharedStorageTest {
     private lateinit var appContext: Context
-    private lateinit var fileSystem: SharedFileSystem
+    private lateinit var fileSystem: AndroidFileSystem
 
     @get:Rule
     var readStoragePermission = GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -44,13 +46,13 @@ class SharedMediaStoreTest {
     @Before
     fun setup() {
         appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        fileSystem = SharedFileSystem(appContext)
+        fileSystem = AndroidFileSystem(appContext)
     }
 
-    private fun addFile(extension: String, mimeType: String, destination: File) {
+    private fun addFileFromAssets(extension: String, mimeType: String, destination: File) {
         val filename = "added-${System.currentTimeMillis()}.$extension"
-        val uri = fileSystem.createMediaStoreUri(filename, destination.absolutePath)!!
-        val path = uri.toPath()
+        val file = File(destination, filename)
+        val path = file.toOkioPath()
 
         fileSystem.write(path, false) {
             appContext.assets.open("sample.$extension").source().use { source ->
@@ -59,7 +61,7 @@ class SharedMediaStoreTest {
         }
 
         runBlocking {
-            fileSystem.scanUri(uri, mimeType)
+            requireNotNull(fileSystem.scanFile(file, mimeType))
         }
 
         val metadata = fileSystem.metadataOrNull(path)
@@ -67,10 +69,16 @@ class SharedMediaStoreTest {
 
         Assert.assertEquals(filename, metadata.extra(MetadataExtras.DisplayName::class)!!.value)
         Assert.assertEquals(mimeType, metadata.extra(MetadataExtras.MimeType::class)!!.value)
+        Assert.assertEquals("$destination/$filename", metadata.extra(MetadataExtras.FilePath::class)!!.value)
 
-        appContext.assets.open("sample.$extension").use { inputStream ->
+        verifyBytes(appContext.assets.open("sample.$extension"), path)
+        file.delete()
+    }
+
+    private fun verifyBytes(original: InputStream, target: Path) {
+        original.use { inputStream ->
             val iterator = inputStream.readBytes().iterator()
-            fileSystem.read(path) {
+            fileSystem.read(target) {
                 do {
                     val a = iterator.next()
                     val b = this.readByte()
@@ -78,13 +86,11 @@ class SharedMediaStoreTest {
                 } while (iterator.hasNext() && !this.exhausted())
             }
         }
-
-        appContext.contentResolver.delete(uri, null, null)
     }
 
     @Test
     fun addImage() {
-        addFile(
+        addFileFromAssets(
             "jpg",
             "image/jpeg",
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
@@ -93,7 +99,7 @@ class SharedMediaStoreTest {
 
     @Test
     fun addVideo() {
-        addFile(
+        addFileFromAssets(
             "mp4",
             "video/mp4",
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)
@@ -102,7 +108,7 @@ class SharedMediaStoreTest {
 
     @Test
     fun addAudio() {
-        addFile(
+        addFileFromAssets(
             "wav",
             "audio/x-wav",
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
@@ -111,7 +117,7 @@ class SharedMediaStoreTest {
 
     @Test
     fun addText() {
-        addFile(
+        addFileFromAssets(
             "txt",
             "text/plain",
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
@@ -120,7 +126,7 @@ class SharedMediaStoreTest {
 
     @Test
     fun addPdf() {
-        addFile(
+        addFileFromAssets(
             "pdf",
             "application/pdf",
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
@@ -129,10 +135,29 @@ class SharedMediaStoreTest {
 
     @Test
     fun addZip() {
-        addFile(
+        addFileFromAssets(
             "zip",
             "application/zip",
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         )
+    }
+
+    @Test
+    fun copyImageFromInternalStorage() {
+        val internalFile = File(appContext.filesDir, "internal-${System.currentTimeMillis()}.jpg").also {
+            appContext.assets.open("sample.jpg").copyTo(it.outputStream())
+        }
+
+        val targetFile = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+            "added-${System.currentTimeMillis()}.jpg"
+        )
+        val path = targetFile.toOkioPath()
+
+        fileSystem.copy(internalFile.toOkioPath(), path)
+        verifyBytes(internalFile.inputStream(), path)
+
+        internalFile.delete()
+        targetFile.delete()
     }
 }

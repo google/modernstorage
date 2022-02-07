@@ -4,9 +4,9 @@ artifact: "modernstorage-storage"
 
 # Storage Interactions
 
-`{{ artifact }}` is a library abstracting interactions on the Android shared storage using the
-library [Okio][okio_website]. It relies on its [FileSystem][okio_filesystem_guide] API, which
-provides a [set of methods][okio_filesystem_api] to read and write files.
+`{{ artifact }}` is a library abstracting storage interactions on Android using the library
+[Okio][okio_website]. It relies on its [FileSystem][okio_filesystem_guide] API, which provides a
+[set of methods][okio_filesystem_api] to read and write files.
 
 Instead of opening an `InputStream` or `OutputStream` and relies on different APIs to get file
 metadata for MediaStore and Storage Access Framework `DocumentProvider`, this library takes
@@ -33,16 +33,29 @@ To interact with the [FileSystem][okio_filesystem_guide] API, you need to initia
 first:
 
 ```kotlin
-import com.google.modernstorage.storage.SharedFileSystem
+import com.google.modernstorage.storage.AndroidFileSystem
 
-val fileSystem = SharedFileSystem(context)
+val fileSystem = AndroidFileSystem(context)
 ```
 
 ## Get Path from Uri
-Call `toPath` to get a `Path` from a `Uri`:
+Call `toOkioPath` to get a `Path` from a `Uri`:
 
 ```kotlin
-val path = uri.toPath()
+val path = uri.toOkioPath()
+```
+
+## Get Path from File
+Call `toOkioPath` to get a `Path` from a `File`:
+
+```kotlin
+val path = File(context.filesDir, "myfile.jpg").toOkioPath()
+```
+
+## Copy a file
+You can easily copy a file to another location by using the `copy` method:
+```kotlin
+fileSystem.copy(originPath, targetPath)
 ```
 
 ## Get file metadata
@@ -52,7 +65,7 @@ You can get the file size by using the method `metadataOrNull`:
 import com.google.modernstorage.storage.MetadataExtras.DisplayName
 import com.google.modernstorage.storage.MetadataExtras.MimeType
 
-val fileMetadata = fileSystem.metadataOrNull(uri.toPath())
+val fileMetadata = fileSystem.metadataOrNull(uri.toOkioPath())
 Log.d("ModernStorage/uri", uri.toString())
 Log.d("ModernStorage/isRegularFile", metadata.isRegularFile.toString())
 Log.d("ModernStorage/isDirectory", metadata.isDirectory.toString())
@@ -71,7 +84,7 @@ Log.d("ModernStorage/mimeType", metadata.extra(MimeType::class).value)
 val actionOpenTextFile = registerForActivityResult(OpenDocument()) { uri ->
     if(uri != null) {
         // textPath is an instance of okio.Path
-        val textPath = uri.toPath()
+        val textPath = uri.toOkioPath()
         Log.d("ModernStorage/metadata", fileSystem.metadataOrNull(textPath).toString())
         Log.d("ModernStorage/content", fileSystem.source(textPath).buffer().readUtf8())
     }

@@ -17,21 +17,23 @@ package com.google.modernstorage.sample.mediastore
 
 import android.app.Application
 import android.content.Context
+import android.net.Uri
 import android.os.Environment
+import android.provider.MediaStore
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.modernstorage.sample.ui.shared.FileDetails
-import com.google.modernstorage.storage.SharedFileSystem
-import com.google.modernstorage.storage.toPath
+import com.google.modernstorage.storage.AndroidFileSystem
+import com.google.modernstorage.storage.toOkioPath
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import okio.buffer
 import okio.source
+import java.io.File
 
 class MediaStoreViewModel(application: Application) : AndroidViewModel(application) {
     private val context: Context get() = getApplication()
-    private val fileSystem = SharedFileSystem(context)
+    private val fileSystem = AndroidFileSystem(context)
 
     private val _addedFile = MutableStateFlow<FileDetails?>(null)
     val addedFile: StateFlow<FileDetails?> = _addedFile
@@ -45,32 +47,45 @@ class MediaStoreViewModel(application: Application) : AndroidViewModel(applicati
 
     fun addMedia(type: MediaType) {
         viewModelScope.launch {
-            val extension = when (type) {
-                MediaType.IMAGE -> "jpg"
-                MediaType.VIDEO -> "mp4"
-                MediaType.AUDIO -> "wav"
-            }
+            val extension: String
+            val mimeType: String
+            val collection: Uri
+            val directory: File
 
-            val mimeType = when (type) {
-                MediaType.IMAGE -> "image/jpeg"
-                MediaType.VIDEO -> "video/mp4"
-                MediaType.AUDIO -> "audio/wav"
-            }
-
-            val directory = when (type) {
-                MediaType.IMAGE -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                MediaType.VIDEO -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)
-                MediaType.AUDIO -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
+            when (type) {
+                MediaType.IMAGE -> {
+                    extension = "jpg"
+                    mimeType = "image/jpeg"
+                    collection = MediaStore.Images.Media.getContentUri("external")
+                    directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                }
+                MediaType.VIDEO -> {
+                    extension = "mp4"
+                    mimeType = "video/mp4"
+                    collection = MediaStore.Images.Media.getContentUri("external")
+                    directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)
+                }
+                MediaType.AUDIO -> {
+                    extension = "wav"
+                    mimeType = "audio/x-wav"
+                    collection = MediaStore.Images.Media.getContentUri("external")
+                    directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
+                }
             }
 
             val uri = fileSystem.createMediaStoreUri(
                 filename = "added-${System.currentTimeMillis()}.$extension",
+                collection = collection,
                 directory = directory.absolutePath
             ) ?: return@launch clearAddedFile()
 
-            val path = uri.toPath()
+            val path = uri.toOkioPath()
 
-            fileSystem.sink(path).buffer().writeAll(context.assets.open("sample.$extension").source())
+            fileSystem.write(path, false) {
+                context.assets.open("sample.$extension").source().use { source ->
+                    writeAll(source)
+                }
+            }
             fileSystem.scanUri(uri, mimeType)
 
             val metadata = fileSystem.metadataOrNull(path) ?: return@launch clearAddedFile()
@@ -84,26 +99,37 @@ class MediaStoreViewModel(application: Application) : AndroidViewModel(applicati
 
     fun addDocument(type: DocumentType) {
         viewModelScope.launch {
-            val extension = when (type) {
-                DocumentType.TEXT -> "txt"
-                DocumentType.PDF -> "pdf"
-                DocumentType.ZIP -> "zip"
-            }
+            val extension: String
+            val mimeType: String
 
-            val mimeType = when (type) {
-                DocumentType.TEXT -> "text/plain"
-                DocumentType.PDF -> "application/pdf"
-                DocumentType.ZIP -> "application/zip"
+            when (type) {
+                DocumentType.TEXT -> {
+                    extension = "txt"
+                    mimeType = "text/plain"
+                }
+                DocumentType.PDF -> {
+                    extension = "pdf"
+                    mimeType = "application/pdf"
+                }
+                DocumentType.ZIP -> {
+                    extension = "zip"
+                    mimeType = "application/zip"
+                }
             }
 
             val uri = fileSystem.createMediaStoreUri(
                 filename = "added-${System.currentTimeMillis()}.$extension",
+                collection = MediaStore.Files.getContentUri("external"),
                 directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath
-            ) ?: return@launch clearAddedFile()
+            )!!
 
-            val path = uri.toPath()
+            val path = uri.toOkioPath()
 
-            fileSystem.sink(path).buffer().writeAll(context.assets.open("sample.$extension").source())
+            fileSystem.write(path, false) {
+                context.assets.open("sample.$extension").source().use { source ->
+                    writeAll(source)
+                }
+            }
             fileSystem.scanUri(uri, mimeType)
 
             val metadata = fileSystem.metadataOrNull(path) ?: return@launch clearAddedFile()

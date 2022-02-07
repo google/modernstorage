@@ -44,8 +44,8 @@ import com.google.modernstorage.sample.HomeRoute
 import com.google.modernstorage.sample.R
 import com.google.modernstorage.sample.ui.shared.FileDetails
 import com.google.modernstorage.sample.ui.shared.MediaPreviewCard
-import com.google.modernstorage.storage.SharedFileSystem
-import com.google.modernstorage.storage.toPath
+import com.google.modernstorage.storage.AndroidFileSystem
+import com.google.modernstorage.storage.toOkioPath
 
 const val GENERIC_MIMETYPE = "*/*"
 const val PDF_MIMETYPE = "application/pdf"
@@ -56,13 +56,13 @@ const val VIDEO_MIMETYPE = "video/*"
 @ExperimentalFoundationApi
 @Composable
 fun SelectDocumentFileScreen(navController: NavController) {
-    val fileSystem = SharedFileSystem(LocalContext.current)
+    val fileSystem = AndroidFileSystem(LocalContext.current)
     var selectedFile by remember { mutableStateOf<FileDetails?>(null) }
 
     val selectFile =
         rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
             uri?.let { uri ->
-                val path = uri.toPath()
+                val path = uri.toOkioPath()
                 fileSystem.metadataOrNull(path)?.let { metadata ->
                     selectedFile = FileDetails(uri, path, metadata)
                 }
