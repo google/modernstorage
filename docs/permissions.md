@@ -92,7 +92,7 @@ storagePermissions.hasAccess(
 
 ```kotlin
 // Get required permissions to read & write video & audio files created by all apps
-storagePermissions.getPermissions(
+StoragePermissions.getPermissions(
     action = Action.READ,
     types = listOf(FileType.Video, FileType.Audio),
     createdBy = StoragePermissions.CreatedBy.AllApps
@@ -134,9 +134,9 @@ Jetpack Activity or Fragment library to request storage permissions with input f
                         types = listOf(
                             StoragePermissions.FileType.Video,
                             StoragePermissions.FileType.Audio
-                        )
+                        ),
+                        createdBy = StoragePermissions.CreatedBy.AllApps
                     ),
-                    createdBy = StoragePermissions.CreatedBy.AllApps
                 )
             }) {
                 Text("I want to read all video & audio files")
@@ -150,9 +150,9 @@ Jetpack Activity or Fragment library to request storage permissions with input f
                         types = listOf(
                             StoragePermissions.FileType.Image,
                             StoragePermissions.FileType.Document
-                        )
-                    ),
-                    createdBy = StoragePermissions.CreatedBy.Self
+                        ),
+                        createdBy = StoragePermissions.CreatedBy.Self
+                    )
                 )
             }) {
                 Text("I want to read & write the app's image & document files")
