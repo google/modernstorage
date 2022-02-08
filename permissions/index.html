@@ -581,7 +581,7 @@ request explicitly user's consent. Read more <a href="https://developer.android.
 usage,  doesn't need any permissions.</p>
 </div>
 <div class="highlight"><pre><span></span><code><span class="c1">// Get required permissions to read &amp; write video &amp; audio files created by all apps</span>
-<span class="n">storagePermissions</span><span class="p">.</span><span class="na">getPermissions</span><span class="p">(</span>
+<span class="n">StoragePermissions</span><span class="p">.</span><span class="na">getPermissions</span><span class="p">(</span>
     <span class="n">action</span> <span class="o">=</span> <span class="n">Action</span><span class="p">.</span><span class="na">READ</span><span class="p">,</span>
     <span class="n">types</span> <span class="o">=</span> <span class="n">listOf</span><span class="p">(</span><span class="n">FileType</span><span class="p">.</span><span class="na">Video</span><span class="p">,</span> <span class="n">FileType</span><span class="p">.</span><span class="na">Audio</span><span class="p">),</span>
     <span class="n">createdBy</span> <span class="o">=</span> <span class="n">StoragePermissions</span><span class="p">.</span><span class="na">CreatedBy</span><span class="p">.</span><span class="na">AllApps</span>
@@ -618,9 +618,9 @@ Jetpack Activity or Fragment library to request storage permissions with input f
                     <span class="n">types</span> <span class="o">=</span> <span class="n">listOf</span><span class="p">(</span>
                         <span class="n">StoragePermissions</span><span class="p">.</span><span class="na">FileType</span><span class="p">.</span><span class="na">Video</span><span class="p">,</span>
                         <span class="n">StoragePermissions</span><span class="p">.</span><span class="na">FileType</span><span class="p">.</span><span class="na">Audio</span>
-                    <span class="p">)</span>
+                    <span class="p">),</span>
+                    <span class="n">createdBy</span> <span class="o">=</span> <span class="n">StoragePermissions</span><span class="p">.</span><span class="na">CreatedBy</span><span class="p">.</span><span class="na">AllApps</span>
                 <span class="p">),</span>
-                <span class="n">createdBy</span> <span class="o">=</span> <span class="n">StoragePermissions</span><span class="p">.</span><span class="na">CreatedBy</span><span class="p">.</span><span class="na">AllApps</span>
             <span class="p">)</span>
         <span class="p">})</span> <span class="p">{</span>
             <span class="n">Text</span><span class="p">(</span><span class="s">&quot;I want to read all video &amp; audio files&quot;</span><span class="p">)</span>
@@ -634,9 +634,9 @@ Jetpack Activity or Fragment library to request storage permissions with input f
                     <span class="n">types</span> <span class="o">=</span> <span class="n">listOf</span><span class="p">(</span>
                         <span class="n">StoragePermissions</span><span class="p">.</span><span class="na">FileType</span><span class="p">.</span><span class="na">Image</span><span class="p">,</span>
                         <span class="n">StoragePermissions</span><span class="p">.</span><span class="na">FileType</span><span class="p">.</span><span class="na">Document</span>
-                    <span class="p">)</span>
-                <span class="p">),</span>
-                <span class="n">createdBy</span> <span class="o">=</span> <span class="n">StoragePermissions</span><span class="p">.</span><span class="na">CreatedBy</span><span class="p">.</span><span class="na">Self</span>
+                    <span class="p">),</span>
+                    <span class="n">createdBy</span> <span class="o">=</span> <span class="n">StoragePermissions</span><span class="p">.</span><span class="na">CreatedBy</span><span class="p">.</span><span class="na">Self</span>
+                <span class="p">)</span>
             <span class="p">)</span>
         <span class="p">})</span> <span class="p">{</span>
             <span class="n">Text</span><span class="p">(</span><span class="s">&quot;I want to read &amp; write the app&#39;s image &amp; document files&quot;</span><span class="p">)</span>
