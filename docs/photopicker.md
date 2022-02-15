@@ -10,9 +10,9 @@ or rely on the existing system file picker using the `ACTION_OPEN_DOCUMENT` inte
 Android 21+.
 
 !!! info
-    The Photo Picker feature is part of the next Android version as mentioned
-    [**here**][ads_photo_picker]. There isn't a developer release yet, but you can use it already as it
-    will rely on `ACTION_OPEN_DOCUMENT` for existing versions
+    The Photo Picker feature is part of [Android 13][android13_photo_picker]. The backport to 
+    Android 11 & 12 will be released this year and `{{ artifact }}` will be able to support it
+    with an update without any code changes on your side
 
 ## Add dependency to project
 
@@ -87,3 +87,4 @@ implementation("com.google.modernstorage:{{ artifact }}:{{ lib_version }}")
 [api_reference]: /modernstorage/api/photopicker/
 [activity_result_api]: https://developer.android.com/training/basics/intents/result#register
 [ads_photo_picker]: https://youtu.be/hBVwr2ErQCw?t=907
+[android13_photo_picker]: https://developer.android.com/about/versions/13/features/photopicker
