@@ -2,6 +2,9 @@
 kotlin = "1.5.31"
 
 [libraries]
+agp = { module = "com.android.tools.build:gradle", version = "7.1.2" }
+kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+
 stdlib-jdk7 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version = "1.5.2" }
 
@@ -10,3 +13,10 @@ glide = { module = "com.github.skydoves:landscapist-glide", version = "1.4.5" }
 
 junit = { module = "junit:junit", version = "4.13.2" }
 robolectric = { module = "org.robolectric:robolectric", version = "4.7.3" }
+
+[plugins]
+spotless = { id = "com.diffplug.spotless", version = "5.12.5" }
+dokka = { id = "org.jetbrains.dokka", version = "1.4.32" }
+metalava = { id = "me.tylerbwong.gradle.metalava", version = "0.1.9" }
+maven-publish = { id = "com.vanniktech.maven.publish", version = "0.18.0" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version = "1.4.32" }
