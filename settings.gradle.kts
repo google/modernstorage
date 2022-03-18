@@ -13,19 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-enableFeaturePreview("VERSION_CATALOGS")
-
-dependencyResolutionManagement {
-    versionCatalogs {
-        create("compose") {
-            from(files("gradle/compose.versions.toml"))
-        }
-        create("androidx") {
-            from(files("gradle/androidx.versions.toml"))
-        }
-    }
-}
-
 plugins {
     // See https://jmfayard.github.io/refreshVersions
     id("de.fayard.refreshVersions") version "0.40.1"
