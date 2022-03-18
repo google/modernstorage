@@ -20,7 +20,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.annotation.CallSuper
 import androidx.core.os.BuildCompat
 import java.util.ArrayList
 import java.util.LinkedHashSet
@@ -43,7 +42,6 @@ class PhotoPicker : ActivityResultContract<PhotoPicker.Args, List<Uri>>() {
 
     class Args(val type: Type, val maxItems: Int)
 
-    @CallSuper
     override fun createIntent(context: Context, input: Args): Intent {
         if (isPhotoPickerAvailable()) {
             val intent = Intent(INTENT_PICK_IMAGES).apply {

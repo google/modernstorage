@@ -31,8 +31,7 @@ import com.google.modernstorage.sample.saf.SelectDocumentFileScreen
 import com.google.modernstorage.sample.ui.theme.ModernStorageTheme
 
 class MainActivity : ComponentActivity() {
-    @ExperimentalFoundationApi
-    @ExperimentalMaterialApi
+    @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

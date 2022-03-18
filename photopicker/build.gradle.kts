@@ -52,7 +52,7 @@ android {
 dependencies {
 
     implementation(AndroidX.core.ktx)
-    implementation(AndroidX.appCompat)
+    implementation(AndroidX.activity.ktx)
     testImplementation(Testing.junit4)
     androidTestImplementation(AndroidX.test.ext.junit)
     androidTestImplementation(AndroidX.test.ext.junitKtx)

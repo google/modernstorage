@@ -58,7 +58,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = compose.versions.current.get()
+        kotlinCompilerExtensionVersion = "1.1.1"
     }
 
     packagingOptions {

@@ -59,8 +59,7 @@ android {
 
 dependencies {
     implementation(AndroidX.core.ktx)
-    implementation(AndroidX.appCompat)
-    implementation(Google.android.material)
+    implementation(AndroidX.activity.ktx)
     testImplementation(Testing.junit4)
     testImplementation(Testing.robolectric)
     androidTestImplementation(AndroidX.test.ext.junit)
