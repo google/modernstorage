@@ -74,11 +74,13 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
         }
     }
 
-    /**
-     * Not yet implemented
-     */
     override fun atomicMove(source: Path, target: Path) {
-        TODO("Not yet implemented")
+        if (!isPhysicalFile(source)) {
+            throw UnsupportedOperationException("URI can't be moved in AndroidFileSystem")
+        }
+
+        val renamed = source.toFile().renameTo(target.toFile())
+        if (!renamed) throw IOException("failed to move $source to $target")
     }
 
     override fun canonicalize(path: Path): Path {
