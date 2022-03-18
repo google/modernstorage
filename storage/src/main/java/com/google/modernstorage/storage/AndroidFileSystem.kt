@@ -425,6 +425,23 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
         return context.contentResolver.insert(collection, newEntry)
     }
 
+
+    private suspend fun scanFile(path: String, mimeType: String): Uri? {
+        return suspendCancellableCoroutine { continuation ->
+            MediaScannerConnection.scanFile(
+                context,
+                arrayOf(path),
+                arrayOf(mimeType)
+            ) { _, scannedUri ->
+                if (scannedUri == null) {
+                    continuation.cancel(Exception("File $path could not be scanned"))
+                } else {
+                    continuation.resume(scannedUri)
+                }
+            }
+        }
+    }
+
     suspend fun scanUri(uri: Uri, mimeType: String): Uri? {
         val cursor = contentResolver.query(
             uri,
@@ -442,34 +459,9 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
             cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA))
         }
 
-        return suspendCancellableCoroutine { continuation ->
-            MediaScannerConnection.scanFile(
-                context,
-                arrayOf(path),
-                arrayOf(mimeType)
-            ) { _, scannedUri ->
-                if (scannedUri == null) {
-                    continuation.cancel(Exception("File $path could not be scanned"))
-                } else {
-                    continuation.resume(scannedUri)
-                }
-            }
-        }
+        return scanFile(path, mimeType)
     }
 
-    suspend fun scanFile(file: File, mimeType: String): Uri? {
-        return suspendCancellableCoroutine { continuation ->
-            MediaScannerConnection.scanFile(
-                context,
-                arrayOf(file.toString()),
-                arrayOf(mimeType)
-            ) { _, scannedUri ->
-                if (scannedUri == null) {
-                    continuation.cancel(Exception("File $file could not be scanned"))
-                } else {
-                    continuation.resume(scannedUri)
-                }
-            }
-        }
-    }
+    suspend fun scanFile(file: File, mimeType: String) = scanFile(file.toString(), mimeType)
 }
+
