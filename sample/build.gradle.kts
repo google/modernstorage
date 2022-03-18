@@ -1,3 +1,5 @@
+import de.fayard.refreshVersions.core.versionFor
+
 /*
  * Copyright 2021 Google LLC
  *
@@ -58,7 +60,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.1.1"
+        kotlinCompilerExtensionVersion = versionFor(AndroidX.compose.compiler)
     }
 
     packagingOptions {
