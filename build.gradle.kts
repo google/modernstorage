@@ -23,8 +23,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.1.1")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31")
+        classpath(Android.tools.build.gradlePlugin)
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:_")
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -32,11 +32,11 @@ buildscript {
 }
 
 plugins {
-    id("com.diffplug.spotless") version "5.12.5"
-    id("org.jetbrains.dokka") version "1.4.32"
-    id("me.tylerbwong.gradle.metalava") version "0.1.9" apply false
-    id("com.vanniktech.maven.publish") version "0.18.0" apply false
-    id("org.jetbrains.kotlin.plugin.parcelize") version "1.4.32" apply false
+    id("com.diffplug.spotless")
+    id("org.jetbrains.dokka")
+    id("me.tylerbwong.gradle.metalava") apply false
+    id("com.vanniktech.maven.publish") apply false
+    id("org.jetbrains.kotlin.plugin.parcelize") apply false
 }
 
 allprojects {
