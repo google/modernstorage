@@ -87,11 +87,19 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
         throw UnsupportedOperationException("Paths can't be canonicalized in AndroidFileSystem")
     }
 
-    /**
-     * Not yet implemented
-     */
     override fun createDirectory(dir: Path, mustCreate: Boolean) {
-        TODO("Not yet implemented")
+        if (!isPhysicalFile(dir)) {
+            throw UnsupportedOperationException("Directory can't be created with URI")
+        }
+
+        if (!dir.toFile().mkdir()) {
+            val alreadyExist = metadataOrNull(dir)?.isDirectory == true
+            if (alreadyExist) {
+                if (mustCreate) throw IOException("$dir already exist.")
+                else return
+            }
+            throw IOException("failed to create directory: $dir")
+        }
     }
 
     override fun createSymlink(source: Path, target: Path) {
@@ -427,7 +435,6 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
         return context.contentResolver.insert(collection, newEntry)
     }
 
-
     private suspend fun scanFile(path: String, mimeType: String): Uri? {
         return suspendCancellableCoroutine { continuation ->
             MediaScannerConnection.scanFile(
@@ -466,4 +473,3 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
 
     suspend fun scanFile(file: File, mimeType: String) = scanFile(file.toString(), mimeType)
 }
-
