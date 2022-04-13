@@ -21,7 +21,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions.Companion.EXTRA_PERMISSION_GRANT_RESULTS
+//import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions.Companion.EXTRA_PERMISSION_GRANT_RESULTS
 import androidx.core.content.ContextCompat
 
 class RequestAccess : ActivityResultContract<RequestAccess.Args, Boolean>() {
@@ -69,9 +69,10 @@ class RequestAccess : ActivityResultContract<RequestAccess.Args, Boolean>() {
         if (intent == null) return false
         val permissions =
             intent.getStringArrayExtra(ActivityResultContracts.RequestMultiplePermissions.EXTRA_PERMISSIONS)
-        val grantResults = intent.getIntArrayExtra(EXTRA_PERMISSION_GRANT_RESULTS)
-        if (grantResults == null || permissions == null) return false
-
-        return grantResults.all { result -> result == PackageManager.PERMISSION_GRANTED }
+        return false
+//        val grantResults = intent.getIntArrayExtra(EXTRA_PERMISSION_GRANT_RESULTS)
+//        if (grantResults == null || permissions == null) return false
+//
+//        return grantResults.all { result -> result == PackageManager.PERMISSION_GRANTED }
     }
 }
