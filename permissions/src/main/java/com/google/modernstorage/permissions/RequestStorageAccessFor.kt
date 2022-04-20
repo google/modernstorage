@@ -20,32 +20,33 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions.Companion.EXTRA_PERMISSION_GRANT_RESULTS
+import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions.ACTION_REQUEST_PERMISSIONS
+import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions.EXTRA_PERMISSIONS
+import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions.EXTRA_PERMISSION_GRANT_RESULTS
 import androidx.core.content.ContextCompat
 
-class RequestAccess : ActivityResultContract<RequestAccess.Args, Boolean>() {
-    class Args(
-        val action: StoragePermissions.Action,
-        val types: List<StoragePermissions.FileType>,
-        val createdBy: StoragePermissions.CreatedBy
-    )
+abstract class RequestStorageAccessFor(
+    private val action: StoragePermissions.Action,
+    private val fileTypes: List<StoragePermissions.FileType>,
+    private val createdBy: StoragePermissions.CreatedBy
+) : ActivityResultContract<Void?, Boolean>() {
 
-    override fun createIntent(context: Context, input: Args): Intent {
+    override fun createIntent(context: Context, input: Void?): Intent {
+        val targetSdk = context.applicationInfo.targetSdkVersion
         val permissions =
-            StoragePermissions.getPermissions(input.action, input.types, input.createdBy)
-        return Intent(ActivityResultContracts.RequestMultiplePermissions.ACTION_REQUEST_PERMISSIONS).putExtra(
-            ActivityResultContracts.RequestMultiplePermissions.EXTRA_PERMISSIONS,
-            permissions.toTypedArray()
-        )
+            StoragePermissions.getPermissions(action, fileTypes, createdBy, targetSdk)
+        return Intent(ACTION_REQUEST_PERMISSIONS).apply {
+            putExtra(EXTRA_PERMISSIONS, permissions.toTypedArray())
+        }
     }
 
     override fun getSynchronousResult(
         context: Context,
-        input: Args
+        input: Void?
     ): SynchronousResult<Boolean>? {
+        val targetSdk = context.applicationInfo.targetSdkVersion
         val permissions =
-            StoragePermissions.getPermissions(input.action, input.types, input.createdBy)
+            StoragePermissions.getPermissions(action, fileTypes, createdBy, targetSdk)
 
         if (permissions.isEmpty()) {
             return SynchronousResult(true)
@@ -67,11 +68,20 @@ class RequestAccess : ActivityResultContract<RequestAccess.Args, Boolean>() {
     ): Boolean {
         if (resultCode != Activity.RESULT_OK) return false
         if (intent == null) return false
-        val permissions =
-            intent.getStringArrayExtra(ActivityResultContracts.RequestMultiplePermissions.EXTRA_PERMISSIONS)
+        val permissions = intent.getStringArrayExtra(EXTRA_PERMISSIONS)
         val grantResults = intent.getIntArrayExtra(EXTRA_PERMISSION_GRANT_RESULTS)
         if (grantResults == null || permissions == null) return false
 
         return grantResults.all { result -> result == PackageManager.PERMISSION_GRANTED }
     }
 }
+
+class RequestStorageReadAccessFor(
+    fileTypes: List<StoragePermissions.FileType>,
+    createdBy: StoragePermissions.CreatedBy
+) : RequestStorageAccessFor(StoragePermissions.Action.READ, fileTypes, createdBy)
+
+class RequestStorageReadWriteAccessFor(
+    fileTypes: List<StoragePermissions.FileType>,
+    createdBy: StoragePermissions.CreatedBy
+) : RequestStorageAccessFor(StoragePermissions.Action.READ_AND_WRITE, fileTypes, createdBy)

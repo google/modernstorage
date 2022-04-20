@@ -8,7 +8,7 @@ dependencies {
         api(project(":permissions"))
         api(project(":photopicker"))
         api(project(":storage"))
-        api(Square.okio)
+        api(libs.okio)
     }
 }
 

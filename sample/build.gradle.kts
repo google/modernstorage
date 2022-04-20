@@ -1,5 +1,3 @@
-import de.fayard.refreshVersions.core.versionFor
-
 /*
  * Copyright 2021 Google LLC
  *
@@ -60,7 +58,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = versionFor(AndroidX.compose.compiler)
+        kotlinCompilerExtensionVersion = compose.versions.current.get()
     }
 
     packagingOptions {
@@ -72,16 +70,16 @@ android {
 
 dependencies {
 
-    implementation(AndroidX.core.ktx)
-    implementation(AndroidX.appCompat)
-    implementation(Google.android.material)
-    implementation(AndroidX.compose.ui)
-    implementation(AndroidX.compose.material)
-    implementation(AndroidX.compose.material.icons.extended)
-    implementation(AndroidX.compose.ui.toolingPreview)
-    implementation(AndroidX.lifecycle.runtimeKtx)
-    implementation(AndroidX.activity.compose)
-    implementation(AndroidX.navigation.compose)
+    implementation(androidx.corektx)
+    implementation(androidx.appcompat)
+    implementation(androidx.material)
+    implementation(compose.ui)
+    implementation(compose.material)
+    implementation(compose.icons)
+    implementation(compose.uitoolingpreview)
+    implementation(androidx.lifecycleruntimektx)
+    implementation(compose.activity)
+    implementation(compose.navigation)
 
     /*
      * In a real world project you can use the BOM to import the different dependencies without needing
@@ -94,14 +92,14 @@ dependencies {
      */
     implementation(project(":permissions"))
     implementation(project(":photopicker"))
-    implementation(Square.okio)
+    implementation(libs.okio)
     implementation(project(":storage"))
 
-    implementation("com.github.skydoves:landscapist-glide:_")
+    implementation(libs.glide)
 
-    testImplementation(Testing.junit4)
-    androidTestImplementation(AndroidX.test.ext.junit)
-    androidTestImplementation(AndroidX.test.espresso.core)
-    androidTestImplementation(AndroidX.compose.ui.testJunit4)
-    debugImplementation(AndroidX.compose.ui.tooling)
+    testImplementation(libs.junit)
+    androidTestImplementation(androidx.junit)
+    androidTestImplementation(androidx.espresso)
+    androidTestImplementation(compose.junit)
+    debugImplementation(compose.uitooling)
 }
