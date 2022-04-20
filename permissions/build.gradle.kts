@@ -21,11 +21,13 @@ plugins {
 }
 
 android {
-    compileSdk = 31
+//    compileSdk = 31
+    compileSdkPreview = "Tiramisu"
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 31
+//        targetSdk = 31
+        targetSdkPreview = "Tiramisu"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
