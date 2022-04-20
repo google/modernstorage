@@ -45,10 +45,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.google.modernstorage.permissions.StoragePermissions
 import com.google.modernstorage.permissions.StoragePermissions.Action
 import com.google.modernstorage.permissions.StoragePermissions.CreatedBy
 import com.google.modernstorage.permissions.StoragePermissions.FileType
+import com.google.modernstorage.permissions.StoragePermissions.hasStorageReadAccessFor
+import com.google.modernstorage.permissions.StoragePermissions.hasStorageReadWriteAccessFor
 import com.google.modernstorage.sample.Demos
 import com.google.modernstorage.sample.HomeRoute
 import com.google.modernstorage.sample.R
@@ -57,7 +58,7 @@ import com.google.modernstorage.sample.R
 @ExperimentalFoundationApi
 @Composable
 fun CheckPermissionScreen(navController: NavController) {
-    val check = StoragePermissions(LocalContext.current)
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -84,8 +85,7 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ,
                                     createdBy = CreatedBy.Self,
-                                    enabled = check.hasAccess(
-                                        Action.READ,
+                                    enabled = context.hasStorageReadAccessFor(
                                         listOf(FileType.Image),
                                         CreatedBy.Self
                                     )
@@ -93,8 +93,7 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ,
                                     createdBy = CreatedBy.AllApps,
-                                    enabled = check.hasAccess(
-                                        Action.READ,
+                                    enabled = context.hasStorageReadAccessFor(
                                         listOf(FileType.Image),
                                         CreatedBy.AllApps
                                     )
@@ -103,8 +102,7 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ_AND_WRITE,
                                     createdBy = CreatedBy.Self,
-                                    enabled = check.hasAccess(
-                                        Action.READ_AND_WRITE,
+                                    enabled = context.hasStorageReadWriteAccessFor(
                                         listOf(FileType.Image),
                                         CreatedBy.Self
                                     )
@@ -112,8 +110,7 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ_AND_WRITE,
                                     createdBy = CreatedBy.AllApps,
-                                    enabled = check.hasAccess(
-                                        Action.READ_AND_WRITE,
+                                    enabled = context.hasStorageReadWriteAccessFor(
                                         listOf(FileType.Image),
                                         CreatedBy.AllApps
                                     )
@@ -130,8 +127,7 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ,
                                     createdBy = CreatedBy.Self,
-                                    enabled = check.hasAccess(
-                                        Action.READ,
+                                    enabled = context.hasStorageReadAccessFor(
                                         listOf(FileType.Video),
                                         CreatedBy.Self
                                     )
@@ -139,8 +135,7 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ,
                                     createdBy = CreatedBy.AllApps,
-                                    enabled = check.hasAccess(
-                                        Action.READ,
+                                    enabled = context.hasStorageReadAccessFor(
                                         listOf(FileType.Video),
                                         CreatedBy.AllApps
                                     )
@@ -149,8 +144,7 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ_AND_WRITE,
                                     createdBy = CreatedBy.Self,
-                                    enabled = check.hasAccess(
-                                        Action.READ_AND_WRITE,
+                                    enabled = context.hasStorageReadWriteAccessFor(
                                         listOf(FileType.Video),
                                         CreatedBy.Self
                                     )
@@ -158,8 +152,7 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ_AND_WRITE,
                                     createdBy = CreatedBy.AllApps,
-                                    enabled = check.hasAccess(
-                                        Action.READ_AND_WRITE,
+                                    enabled = context.hasStorageReadWriteAccessFor(
                                         listOf(FileType.Video),
                                         CreatedBy.AllApps
                                     )
@@ -176,8 +169,7 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ,
                                     createdBy = CreatedBy.Self,
-                                    enabled = check.hasAccess(
-                                        Action.READ,
+                                    enabled = context.hasStorageReadAccessFor(
                                         listOf(FileType.Audio),
                                         CreatedBy.Self
                                     )
@@ -185,8 +177,7 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ,
                                     createdBy = CreatedBy.AllApps,
-                                    enabled = check.hasAccess(
-                                        Action.READ,
+                                    enabled = context.hasStorageReadAccessFor(
                                         listOf(FileType.Audio),
                                         CreatedBy.AllApps
                                     )
@@ -195,8 +186,7 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ_AND_WRITE,
                                     createdBy = CreatedBy.Self,
-                                    enabled = check.hasAccess(
-                                        Action.READ_AND_WRITE,
+                                    enabled = context.hasStorageReadWriteAccessFor(
                                         listOf(FileType.Audio),
                                         CreatedBy.Self
                                     )
@@ -204,8 +194,7 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ_AND_WRITE,
                                     createdBy = CreatedBy.AllApps,
-                                    enabled = check.hasAccess(
-                                        Action.READ_AND_WRITE,
+                                    enabled = context.hasStorageReadWriteAccessFor(
                                         listOf(FileType.Audio),
                                         CreatedBy.AllApps
                                     )
@@ -222,8 +211,7 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ,
                                     createdBy = CreatedBy.Self,
-                                    enabled = check.hasAccess(
-                                        Action.READ,
+                                    enabled = context.hasStorageReadAccessFor(
                                         listOf(FileType.Document),
                                         CreatedBy.Self
                                     )
@@ -231,8 +219,7 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ,
                                     createdBy = CreatedBy.AllApps,
-                                    enabled = check.hasAccess(
-                                        Action.READ,
+                                    enabled = context.hasStorageReadAccessFor(
                                         listOf(FileType.Document),
                                         CreatedBy.AllApps
                                     )
@@ -241,8 +228,7 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ_AND_WRITE,
                                     createdBy = CreatedBy.Self,
-                                    enabled = check.hasAccess(
-                                        Action.READ_AND_WRITE,
+                                    enabled = context.hasStorageReadWriteAccessFor(
                                         listOf(FileType.Document),
                                         CreatedBy.Self
                                     )
@@ -250,8 +236,7 @@ fun CheckPermissionScreen(navController: NavController) {
                                 CreatedByLabel(
                                     action = Action.READ_AND_WRITE,
                                     createdBy = CreatedBy.AllApps,
-                                    enabled = check.hasAccess(
-                                        Action.READ_AND_WRITE,
+                                    enabled = context.hasStorageReadWriteAccessFor(
                                         listOf(FileType.Document),
                                         CreatedBy.AllApps
                                     )
@@ -268,24 +253,24 @@ fun CheckPermissionScreen(navController: NavController) {
 
 @Composable
 fun CreatedByLabel(action: Action, createdBy: CreatedBy, enabled: Boolean) {
-    Text(
-        buildAnnotatedString {
-            append(if (enabled) "✅ " else "❌ ")
-            when (action) {
-                Action.READ -> append(stringResource(R.string.demo_check_permission_read_label))
-                Action.READ_AND_WRITE -> append(stringResource(R.string.demo_check_permission_read_and_write_label))
-            }
+    val textContent = buildAnnotatedString {
+        append(if (enabled) "✅ " else "❌ ")
+        when (action) {
+            Action.READ -> append(stringResource(R.string.demo_check_permission_read_label))
+            Action.READ_AND_WRITE -> append(stringResource(R.string.demo_check_permission_read_and_write_label))
+        }
 
-            append(" ")
-            append(stringResource(R.string.demo_check_permission_created_by_label))
-            append(" ")
+        append(" ")
+        append(stringResource(R.string.demo_check_permission_created_by_label))
+        append(" ")
 
-            withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                when (createdBy) {
-                    CreatedBy.Self -> append(stringResource(R.string.demo_check_permission_created_by_self_label))
-                    CreatedBy.AllApps -> append(stringResource(R.string.demo_check_permission_created_by_all_apps_label))
-                }
+        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+            when (createdBy) {
+                CreatedBy.Self -> append(stringResource(R.string.demo_check_permission_created_by_self_label))
+                CreatedBy.AllApps -> append(stringResource(R.string.demo_check_permission_created_by_all_apps_label))
             }
         }
-    )
+    }
+
+    Text(textContent)
 }

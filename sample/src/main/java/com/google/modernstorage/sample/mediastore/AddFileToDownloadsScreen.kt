@@ -16,6 +16,7 @@
 package com.google.modernstorage.sample.mediastore
 
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.launch
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -44,9 +45,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.modernstorage.permissions.RequestAccess
+import com.google.modernstorage.permissions.RequestStorageReadWriteAccessFor
 import com.google.modernstorage.permissions.StoragePermissions
-import com.google.modernstorage.permissions.StoragePermissions.Action
+import com.google.modernstorage.permissions.StoragePermissions.hasStorageReadWriteAccessFor
 import com.google.modernstorage.sample.Demos
 import com.google.modernstorage.sample.HomeRoute
 import com.google.modernstorage.sample.R
@@ -64,11 +65,11 @@ fun AddFileToDownloadsScreen(
     var openPermissionDialog by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
-    val permissions = StoragePermissions(LocalContext.current)
     val toastMessage = stringResource(R.string.authorization_dialog_success_toast)
-    val requestPermission =
-        rememberLauncherForActivityResult(RequestAccess()) { hasAccess ->
+    val requestReadWritePermission =
+        rememberLauncherForActivityResult(RequestStorageReadWriteAccessFor(listOf(StoragePermissions.FileType.Document), StoragePermissions.CreatedBy.Self)) { hasAccess ->
             if (hasAccess) {
                 scope.launch {
                     scaffoldState.snackbarHostState.showSnackbar(toastMessage)
@@ -84,13 +85,7 @@ fun AddFileToDownloadsScreen(
                 TextButton(
                     onClick = {
                         openPermissionDialog = false
-                        requestPermission.launch(
-                            RequestAccess.Args(
-                                action = Action.READ_AND_WRITE,
-                                types = listOf(StoragePermissions.FileType.Document),
-                                createdBy = StoragePermissions.CreatedBy.Self
-                            )
-                        )
+                        requestReadWritePermission.launch()
                     }
                 ) {
                     Text(stringResource(R.string.authorization_dialog_confirm_label))
@@ -106,9 +101,10 @@ fun AddFileToDownloadsScreen(
     }
 
     fun checkAndRequestStoragePermission(onSuccess: () -> Unit) {
-        val isGranted = permissions.hasAccess(
-            action = Action.READ_AND_WRITE,
-            types = listOf(StoragePermissions.FileType.Document),
+        val isGranted = context.hasStorageReadWriteAccessFor(
+            fileTypes = listOf(
+                StoragePermissions.FileType.Document
+            ),
             createdBy = StoragePermissions.CreatedBy.Self
         )
 
