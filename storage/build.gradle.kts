@@ -50,21 +50,21 @@ android {
 }
 
 dependencies {
-    implementation(Kotlin.stdlib.jdk7)
-    implementation(KotlinX.coroutines.android)
-    androidTestImplementation(KotlinX.coroutines.android)
+    implementation(libs.stdlib.jdk7)
+    implementation(libs.coroutines.android)
+    androidTestImplementation(libs.coroutines.android)
 
-    implementation(AndroidX.core.ktx)
-    implementation(AndroidX.appCompat)
-    implementation(Square.okio)
+    implementation(androidx.corektx)
+    implementation(androidx.appcompat)
+    implementation(libs.okio)
 
-    testImplementation(Testing.junit4)
-    androidTestImplementation(AndroidX.test.ext.junit)
-    androidTestImplementation(AndroidX.test.ext.junitKtx)
-    androidTestImplementation(AndroidX.test.espresso.core)
-    androidTestImplementation(AndroidX.test.rules)
-    androidTestImplementation(AndroidX.test.uiAutomator)
-    androidTestImplementation(AndroidX.test.runner)
+    testImplementation(libs.junit)
+    androidTestImplementation(androidx.junit)
+    androidTestImplementation(androidx.junitktx)
+    androidTestImplementation(androidx.espresso)
+    androidTestImplementation(androidx.rules)
+    androidTestImplementation(androidx.uiautomator)
+    androidTestImplementation(androidx.runner)
 }
 repositories {
     mavenCentral()

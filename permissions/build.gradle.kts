@@ -60,10 +60,11 @@ android {
 }
 
 dependencies {
-    implementation(AndroidX.core.ktx)
-    implementation(AndroidX.activity.ktx)
-    testImplementation(Testing.junit4)
-    testImplementation(Testing.robolectric)
-    androidTestImplementation(AndroidX.test.ext.junit)
-    androidTestImplementation(AndroidX.test.ext.junitKtx)
+    implementation(androidx.corektx)
+    implementation(androidx.appcompat)
+    implementation(androidx.material)
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    androidTestImplementation(androidx.junit)
+    androidTestImplementation(androidx.junitktx)
 }
