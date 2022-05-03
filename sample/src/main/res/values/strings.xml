@@ -66,5 +66,5 @@
     <string name="demo_pick_video">Select Video (1 max)</string>
     <string name="demo_pick_image_and_video">Select Image or Video (1 max)</string>
     <string name="demo_pick_multiple_images_and_video">Select Image or Video (multiple)</string>
-    <string name="demo_pick_multiple_images_video_photo_picker">Select Images and/or Video (10 max)</string>
+    <string name="demo_pick_multiple_images_video_photo_picker">Select Images and/or Video (3 max)</string>
 </resources>

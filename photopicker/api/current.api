@@ -1,31 +1,87 @@
 // Signature format: 4.0
 package com.google.modernstorage.photopicker {
 
-  @androidx.core.os.BuildCompat.PrereleaseSdkCheck public final class PhotoPicker extends androidx.activity.result.contract.ActivityResultContract<com.google.modernstorage.photopicker.PhotoPicker.Args,java.util.List<? extends android.net.Uri>> {
-    ctor public PhotoPicker();
-    method @CallSuper public android.content.Intent createIntent(android.content.Context context, com.google.modernstorage.photopicker.PhotoPicker.Args input);
-    method public androidx.activity.result.contract.ActivityResultContract.SynchronousResult<java.util.List<android.net.Uri>>? getSynchronousResult(android.content.Context context, com.google.modernstorage.photopicker.PhotoPicker.Args input);
-    method public static boolean isPhotoPickerAvailable();
-    method public java.util.List<android.net.Uri> parseResult(int resultCode, android.content.Intent? intent);
-    field public static final com.google.modernstorage.photopicker.PhotoPicker.Companion Companion;
+  @Deprecated @androidx.core.os.BuildCompat.PrereleaseSdkCheck public final class PhotoPicker extends androidx.activity.result.contract.ActivityResultContract<com.google.modernstorage.photopicker.PhotoPicker.Args,java.util.List<? extends android.net.Uri>> {
+    ctor @Deprecated public PhotoPicker();
+    method @Deprecated @CallSuper public android.content.Intent createIntent(android.content.Context context, com.google.modernstorage.photopicker.PhotoPicker.Args input);
+    method @Deprecated public androidx.activity.result.contract.ActivityResultContract.SynchronousResult<java.util.List<android.net.Uri>>? getSynchronousResult(android.content.Context context, com.google.modernstorage.photopicker.PhotoPicker.Args input);
+    method @Deprecated public static boolean isPhotoPickerAvailable();
+    method @Deprecated public java.util.List<android.net.Uri> parseResult(int resultCode, android.content.Intent? intent);
+    field @Deprecated public static final com.google.modernstorage.photopicker.PhotoPicker.Companion Companion;
   }
 
-  public static final class PhotoPicker.Args {
-    ctor public PhotoPicker.Args(com.google.modernstorage.photopicker.PhotoPicker.Type type, int maxItems);
-    method public int getMaxItems();
-    method public com.google.modernstorage.photopicker.PhotoPicker.Type getType();
+  @Deprecated public static final class PhotoPicker.Args {
+    ctor @Deprecated public PhotoPicker.Args(com.google.modernstorage.photopicker.PhotoPicker.Type type, int maxItems);
+    method @Deprecated public int getMaxItems();
+    method @Deprecated public com.google.modernstorage.photopicker.PhotoPicker.Type getType();
     property public final int maxItems;
     property public final com.google.modernstorage.photopicker.PhotoPicker.Type type;
   }
 
-  public static final class PhotoPicker.Companion {
+  @Deprecated public static final class PhotoPicker.Companion {
+    method @Deprecated public boolean isPhotoPickerAvailable();
+  }
+
+  @Deprecated public enum PhotoPicker.Type {
+    enum_constant @Deprecated public static final com.google.modernstorage.photopicker.PhotoPicker.Type IMAGES_AND_VIDEO;
+    enum_constant @Deprecated public static final com.google.modernstorage.photopicker.PhotoPicker.Type IMAGES_ONLY;
+    enum_constant @Deprecated public static final com.google.modernstorage.photopicker.PhotoPicker.Type VIDEO_ONLY;
+  }
+
+  @androidx.core.os.BuildCompat.PrereleaseSdkCheck public class PickMedia extends androidx.activity.result.contract.ActivityResultContract<com.google.modernstorage.photopicker.PickMediaRequest,android.net.Uri> {
+    ctor public PickMedia();
+    method @CallSuper public android.content.Intent createIntent(android.content.Context context, com.google.modernstorage.photopicker.PickMediaRequest input);
+    method public final androidx.activity.result.contract.ActivityResultContract.SynchronousResult<android.net.Uri>? getSynchronousResult(android.content.Context context, com.google.modernstorage.photopicker.PickMediaRequest input);
+    method public static final boolean isPhotoPickerAvailable();
+    method public final android.net.Uri? parseResult(int resultCode, android.content.Intent? intent);
+    field public static final com.google.modernstorage.photopicker.PickMedia.Companion Companion;
+  }
+
+  public static final class PickMedia.Companion {
     method public boolean isPhotoPickerAvailable();
   }
 
-  public enum PhotoPicker.Type {
-    enum_constant public static final com.google.modernstorage.photopicker.PhotoPicker.Type IMAGES_AND_VIDEO;
-    enum_constant public static final com.google.modernstorage.photopicker.PhotoPicker.Type IMAGES_ONLY;
-    enum_constant public static final com.google.modernstorage.photopicker.PhotoPicker.Type VIDEO_ONLY;
+  public static final class PickMedia.ImageAndVideo implements com.google.modernstorage.photopicker.PickMedia.MediaType {
+    field public static final com.google.modernstorage.photopicker.PickMedia.ImageAndVideo INSTANCE;
+  }
+
+  public static final class PickMedia.ImageOnly implements com.google.modernstorage.photopicker.PickMedia.MediaType {
+    field public static final com.google.modernstorage.photopicker.PickMedia.ImageOnly INSTANCE;
+  }
+
+  public static sealed interface PickMedia.MediaType {
+  }
+
+  public static final class PickMedia.SingleMimeType implements com.google.modernstorage.photopicker.PickMedia.MediaType {
+    ctor public PickMedia.SingleMimeType(String mimeType);
+    method public String getMimeType();
+    property public final String mimeType;
+  }
+
+  public static final class PickMedia.VideoOnly implements com.google.modernstorage.photopicker.PickMedia.MediaType {
+    field public static final com.google.modernstorage.photopicker.PickMedia.VideoOnly INSTANCE;
+  }
+
+  public final class PickMediaRequest {
+    method public com.google.modernstorage.photopicker.PickMedia.MediaType getMediaType();
+    property public final com.google.modernstorage.photopicker.PickMedia.MediaType mediaType;
+  }
+
+  public static final class PickMediaRequest.Builder {
+    ctor public PickMediaRequest.Builder();
+    method public com.google.modernstorage.photopicker.PickMediaRequest build();
+    method public com.google.modernstorage.photopicker.PickMediaRequest.Builder setMediaType(com.google.modernstorage.photopicker.PickMedia.MediaType mediaType);
+  }
+
+  public final class PickMediaRequestKt {
+    method public static com.google.modernstorage.photopicker.PickMediaRequest PickMediaRequest(optional com.google.modernstorage.photopicker.PickMedia.MediaType mediaType);
+  }
+
+  @androidx.core.os.BuildCompat.PrereleaseSdkCheck public class PickMultipleMedia extends androidx.activity.result.contract.ActivityResultContract<com.google.modernstorage.photopicker.PickMediaRequest,java.util.List<android.net.Uri>> {
+    ctor public PickMultipleMedia(optional int maxItems);
+    method @CallSuper public android.content.Intent createIntent(android.content.Context context, com.google.modernstorage.photopicker.PickMediaRequest input);
+    method public final androidx.activity.result.contract.ActivityResultContract.SynchronousResult<java.util.List<android.net.Uri>>? getSynchronousResult(android.content.Context context, com.google.modernstorage.photopicker.PickMediaRequest input);
+    method public final java.util.List<android.net.Uri> parseResult(int resultCode, android.content.Intent? intent);
   }
 
 }

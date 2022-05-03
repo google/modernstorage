@@ -21,7 +21,7 @@ plugins {
 }
 
 android {
-    compileSdk = 31
+    compileSdkPreview = "Tiramisu"
 
     defaultConfig {
         minSdk = 21
