@@ -142,33 +142,6 @@ class StoragePermissions(private val context: Context) {
 
             return requiredPermissions
         }
-
-        /**
-         * Get list of required permissions for given read usage
-         */
-        @Deprecated(
-            "Use the new getPermissions() method",
-            ReplaceWith("getPermissions(Action.READ, types, createdBy)"),
-            DeprecationLevel.WARNING
-        )
-        fun getReadFilesPermissions(types: List<FileType>, createdBy: CreatedBy): List<String> {
-            return getPermissions(Action.READ, types, createdBy)
-        }
-
-        /**
-         * Get list of required permissions for given read usage
-         */
-        @Deprecated(
-            "Use the new getPermissions() method",
-            ReplaceWith("getPermissions(Action.READ_AND_WRITE, types, createdBy)"),
-            DeprecationLevel.WARNING
-        )
-        fun getReadAndWriteFilesPermissions(
-            types: List<FileType>,
-            createdBy: CreatedBy
-        ): List<String> {
-            return getPermissions(Action.READ_AND_WRITE, types, createdBy)
-        }
     }
 
     /**
@@ -208,29 +181,5 @@ class StoragePermissions(private val context: Context) {
         }
 
         return getPermissions(action, types, createdBy).all { hasPermission(it) }
-    }
-
-    /**
-     * Check if app can read shared files
-     */
-    @Deprecated(
-        "Use the new hasAccess() method",
-        ReplaceWith("hasAccess(Action.READ, types, createdBy)"),
-        DeprecationLevel.WARNING
-    )
-    fun canReadFiles(types: List<FileType>, createdBy: CreatedBy): Boolean {
-        return hasAccess(Action.READ, types, createdBy)
-    }
-
-    /**
-     * Check if app can read and write shared files
-     */
-    @Deprecated(
-        "Use the new hasAccess() method",
-        ReplaceWith("hasAccess(Action.READ_AND_WRITE, types, createdBy)"),
-        DeprecationLevel.WARNING
-    )
-    fun canReadAndWriteFiles(types: List<FileType>, createdBy: CreatedBy): Boolean {
-        return hasAccess(Action.READ_AND_WRITE, types, createdBy)
     }
 }

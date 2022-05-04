@@ -20,8 +20,6 @@ package com.google.modernstorage.permissions {
 
   public final class StoragePermissions {
     ctor public StoragePermissions(android.content.Context context);
-    method @Deprecated public boolean canReadAndWriteFiles(java.util.List<? extends com.google.modernstorage.permissions.StoragePermissions.FileType> types, com.google.modernstorage.permissions.StoragePermissions.CreatedBy createdBy);
-    method @Deprecated public boolean canReadFiles(java.util.List<? extends com.google.modernstorage.permissions.StoragePermissions.FileType> types, com.google.modernstorage.permissions.StoragePermissions.CreatedBy createdBy);
     method public static java.util.List<java.lang.String> getPermissions(com.google.modernstorage.permissions.StoragePermissions.Action action, java.util.List<? extends com.google.modernstorage.permissions.StoragePermissions.FileType> types, com.google.modernstorage.permissions.StoragePermissions.CreatedBy createdBy);
     method public boolean hasAccess(com.google.modernstorage.permissions.StoragePermissions.Action action, java.util.List<? extends com.google.modernstorage.permissions.StoragePermissions.FileType> types, com.google.modernstorage.permissions.StoragePermissions.CreatedBy createdBy);
     field public static final com.google.modernstorage.permissions.StoragePermissions.Companion Companion;
@@ -34,8 +32,6 @@ package com.google.modernstorage.permissions {
 
   public static final class StoragePermissions.Companion {
     method public java.util.List<java.lang.String> getPermissions(com.google.modernstorage.permissions.StoragePermissions.Action action, java.util.List<? extends com.google.modernstorage.permissions.StoragePermissions.FileType> types, com.google.modernstorage.permissions.StoragePermissions.CreatedBy createdBy);
-    method @Deprecated public java.util.List<java.lang.String> getReadAndWriteFilesPermissions(java.util.List<? extends com.google.modernstorage.permissions.StoragePermissions.FileType> types, com.google.modernstorage.permissions.StoragePermissions.CreatedBy createdBy);
-    method @Deprecated public java.util.List<java.lang.String> getReadFilesPermissions(java.util.List<? extends com.google.modernstorage.permissions.StoragePermissions.FileType> types, com.google.modernstorage.permissions.StoragePermissions.CreatedBy createdBy);
   }
 
   public enum StoragePermissions.CreatedBy {
