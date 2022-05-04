@@ -15,6 +15,7 @@
  */
 package com.google.modernstorage.photopicker
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -138,6 +139,9 @@ open class PickMedia : ActivityResultContract<PickMediaRequest, Uri?>() {
          * Check if the current device has support for the photo picker by checking the running
          * Android version or the SDK extension version
          */
+        // The SuppressLint(NewApi) is due to the complex nature of SDK extensions. They're
+        // available from Android 11 (API 30) but hidden when compiling with a SDK older than API 33
+        @SuppressLint("NewApi")
         @JvmStatic
         fun isPhotoPickerAvailable(): Boolean {
             return when {
