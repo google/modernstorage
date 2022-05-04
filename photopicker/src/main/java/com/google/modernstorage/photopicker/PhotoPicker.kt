@@ -187,6 +187,10 @@ open class PickMedia : ActivityResultContract<PickMediaRequest, Uri?>() {
      */
     class SingleMimeType(val mimeType: String) : MediaType
 
+    // MediaStore.getPickImagesMaxLimit is only called when the photo picker is available but
+    // it's currently complex to label it as available from Android 11 (API 30) with the right
+    // mainline version
+    @SuppressLint("NewApi")
     @CallSuper
     override fun createIntent(context: Context, input: PickMediaRequest): Intent {
         // Check if Photo Picker is available on the device
@@ -249,6 +253,7 @@ open class PickMultipleMedia(
         }
     }
 
+    @SuppressLint("NewApi")
     @CallSuper
     override fun createIntent(context: Context, input: PickMediaRequest): Intent {
         // Check to see if the photo picker is available
@@ -321,6 +326,10 @@ open class PickMultipleMedia(
          *
          * @see MediaStore.EXTRA_PICK_IMAGES_MAX
          */
+        // MediaStore.getPickImagesMaxLimit is only called when the photo picker is available but
+        // it's currently complex to label it as available from Android 11 (API 30) with the right
+        // mainline version
+        @SuppressLint("NewApi")
         internal fun getMaxItems() = if (PickMedia.isPhotoPickerAvailable()) {
             MediaStore.getPickImagesMaxLimit()
         } else {
