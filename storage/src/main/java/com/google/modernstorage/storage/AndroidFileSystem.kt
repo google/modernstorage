@@ -21,7 +21,10 @@ import android.media.MediaScannerConnection
 import android.net.Uri
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
+import androidx.core.database.getLongOrNull
+import androidx.core.database.getStringOrNull
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okio.FileHandle
 import okio.FileMetadata
@@ -298,15 +301,11 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
         }
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     private fun fetchMetadataFromDocumentProvider(path: Path, uri: Uri): FileMetadata? {
         val cursor = contentResolver.query(
             uri,
-            arrayOf(
-                DocumentsContract.Document.COLUMN_LAST_MODIFIED,
-                DocumentsContract.Document.COLUMN_DISPLAY_NAME,
-                DocumentsContract.Document.COLUMN_MIME_TYPE,
-                DocumentsContract.Document.COLUMN_SIZE
-            ),
+            null,
             null,
             null,
             null
@@ -317,14 +316,13 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
                 return null
             }
 
-            // DocumentsContract.Document.COLUMN_LAST_MODIFIED
-            val lastModifiedTime = cursor.getLong(0)
-            // DocumentsContract.Document.COLUMN_DISPLAY_NAME
-            val displayName = cursor.getString(1)
-            // DocumentsContract.Document.COLUMN_MIME_TYPE
-            val mimeType = cursor.getString(2)
-            // DocumentsContract.Document.COLUMN_SIZE
-            val size = cursor.getLong(3)
+            val displayName = cursor.getString(cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
+            val size = cursor.getLong(cursor.getColumnIndexOrThrow(OpenableColumns.SIZE))
+
+            // These two columns are optional and may not be implemented by the providing app.
+            val lastModifiedTime = cursor.getLongOrNull(cursor.getColumnIndex(DocumentsContract.Document.COLUMN_LAST_MODIFIED))
+            val mimeType = cursor.getStringOrNull(cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE))
+                ?: contentResolver.getType(uri)
 
             val isFolder = mimeType == DocumentsContract.Document.MIME_TYPE_DIR ||
                 mimeType == DocumentsContract.Root.MIME_TYPE_ITEM
@@ -337,12 +335,14 @@ class AndroidFileSystem(private val context: Context) : FileSystem() {
                 createdAtMillis = null,
                 lastModifiedAtMillis = lastModifiedTime,
                 lastAccessedAtMillis = null,
-                extras = mapOf(
-                    Path::class to path,
-                    Uri::class to uri,
-                    MetadataExtras.DisplayName::class to MetadataExtras.DisplayName(displayName),
-                    MetadataExtras.MimeType::class to MetadataExtras.MimeType(mimeType),
-                )
+                extras = buildMap {
+                    put(Path::class, path)
+                    put(Uri::class, uri)
+                    put(MetadataExtras.DisplayName::class, MetadataExtras.DisplayName(displayName))
+                    if (mimeType != null) {
+                        put(MetadataExtras.MimeType::class, MetadataExtras.MimeType(mimeType))
+                    }
+                }
             )
         }
     }
