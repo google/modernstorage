@@ -62,13 +62,13 @@ class MediaStoreViewModel(application: Application) : AndroidViewModel(applicati
                 MediaType.VIDEO -> {
                     extension = "mp4"
                     mimeType = "video/mp4"
-                    collection = MediaStore.Images.Media.getContentUri("external")
+                    collection = MediaStore.Video.Media.getContentUri("external")
                     directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)
                 }
                 MediaType.AUDIO -> {
                     extension = "wav"
                     mimeType = "audio/x-wav"
-                    collection = MediaStore.Images.Media.getContentUri("external")
+                    collection = MediaStore.Audio.Media.getContentUri("external")
                     directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
                 }
             }
