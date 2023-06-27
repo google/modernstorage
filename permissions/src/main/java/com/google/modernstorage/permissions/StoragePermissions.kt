@@ -18,7 +18,7 @@ package com.google.modernstorage.permissions
 import android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.READ_MEDIA_AUDIO
-import android.Manifest.permission.READ_MEDIA_IMAGE
+import android.Manifest.permission.READ_MEDIA_IMAGES
 import android.Manifest.permission.READ_MEDIA_VIDEO
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Context
@@ -106,7 +106,7 @@ object StoragePermissions {
                 if (types.contains(FileType.Image)) {
                     permissions += when {
                         Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && targetSdk >= Build.VERSION_CODES.TIRAMISU -> {
-                            READ_MEDIA_IMAGE
+                            READ_MEDIA_IMAGES
                         }
                         Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
                             READ_EXTERNAL_STORAGE
